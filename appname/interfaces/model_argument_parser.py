@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from sqlalchemy import Integer, String, Float, Boolean
 
-from appname.src.interfaces.model_controller import ModelController
+from appname.interfaces.model_controller import ModelController
 
 class ModelArgumentParser(ABC):
 
@@ -52,18 +52,18 @@ class ModelArgumentParser(ABC):
         if args.command != self.model_command:
             return
         
-        filters = {key: getattr(args, key) for key in self.model_columns.keys() if hasattr(args, key) and getattr(args, key)}
-
+        filters = {}
         for column_name, column_type in self.model_columns.items():
             if hasattr(args, column_name) and getattr(args, column_name):
                 try:
                     filters[column_name] = column_type(getattr(args, column_name))
                 except ValueError as e:
-                    print(f"Error casting {column_name}: {str(e)}")
-                    exit(1)
+                    raise ValueError(f"Error casting {column_name}: {str(e)}")
         
         if args.action == "save":
             model = self.model_class(**filters)
+            if not model.validate():
+                raise ValueError("Model validation failed.")
             self.controller.save(model)
             print(model.json())
         
@@ -71,33 +71,33 @@ class ModelArgumentParser(ABC):
             model = self.controller.get(**filters)
             if not model:
                 print(f"{self.model_name} object not found.")
-                exit(0)
+                return
             print(model.json())
         
         elif args.action == "get-all":
             model_list = self.controller.get_all(**filters)
             if not model_list:
                 print(f"No {self.model_name} objects found.")
-                exit(0)
+                return
             print(self.model_class.list_to_json(model_list))
         
         elif args.action == "delete":
             model = self.controller.get(**filters)
             if not model:
                 print(f"{self.model_name} object not found.")
-                exit(0)
+                return
             self.controller.delete(model)
-            print("Deleted ojects")
+            print("Deleted object:")
             print(model.json())
         
         elif args.action == "delete-all":
             model_list = self.controller.get_all(**filters)
             if not model_list:
                 print(f"No {self.model_name} objects found.")
-                exit(0)
+                return
             for model in model_list:
-                self.controller.delete()
-            print("Deleted ojects:")
+                self.controller.delete(model)
+            print("Deleted objects:")
             print(self.model_class.list_to_json(model_list))
         
         else:

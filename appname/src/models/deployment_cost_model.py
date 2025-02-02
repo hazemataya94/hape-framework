@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, Boolean, BigInteger
 from datetime import datetime
-from appname.src.interfaces.model import Model
+from appname.interfaces.model import Model
 
 class DeploymentCost(Model):
     __tablename__ = 'deployment_costs'

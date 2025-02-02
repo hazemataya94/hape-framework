@@ -1,4 +1,4 @@
-from appname.src.controllers.config_controller import ConfigController
+from appname.src.config.config import Config
 
 class ConfigArgumentParser:
 
@@ -13,7 +13,8 @@ class ConfigArgumentParser:
             return
         
         if args.action == "check":
-            ConfigController.check_configurations()
+            Config.check_variables()
+            print('Configurations are set correctly.')
         else:
             print(f"Error: Invalid {args.comman} action. Use `appname {args.comman} --help` for more details.")
             exit(1)

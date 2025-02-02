@@ -106,9 +106,6 @@ class Model(Base):
 
     @classmethod
     def delete_all(cls, **filters):
-        if not cls._is_allowed():
-            raise PermissionError(f"Access denied: Only {cls.__class__.__name__}Controller can call this method.")
-        
         session = cls._get_session()
         try:
             query = session.query(cls)
@@ -125,4 +122,5 @@ class Model(Base):
             return 0
         finally:
             session.close()
+
 
