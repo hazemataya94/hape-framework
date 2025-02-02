@@ -8,7 +8,9 @@ class ModelController():
     def save(self, model):
         if model.validate():
             try:
-                return model.save()
+                if model.save():
+                    return True
+                raise RuntimeError(f"Couldn't save {model.json()}")
             except Exception as e:
                 raise RuntimeError(f"An error occurred while saving: {e}")
         

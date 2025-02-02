@@ -3,6 +3,7 @@ import logging
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.exc import OperationalError
 
 class Config:
     _env_loaded = False
@@ -47,10 +48,27 @@ The following environment variables are required
     @staticmethod
     def get_db_session() -> sessionmaker:
         
-        if not Config._db_session:
+        try:
             DATABASE_URL = Config.get_db_url()
-            engine = create_engine(DATABASE_URL, echo=True)
-            Config._db_session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+            engine = create_engine(DATABASE_URL)
+            with engine.connect() as connection:
+                connection.execute("SELECT 1")  # Basic check to see if DB is reachable
+            print("Database connection validated successfully.")
+        except OperationalError:
+            print("Error: Unable to connect to the database. Please check the configuration.")
+            raise
+        
+        if not Config._db_session:
+            try:
+                DATABASE_URL = Config.get_db_url()
+                engine = create_engine(DATABASE_URL, echo=True)
+                with engine.connect() as connection:
+                    connection.execute("SELECT 1")  # Basic check to see if DB is reachable
+                Config._db_session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+                print("Database seassion created successfully.")
+            except OperationalError:
+                print("Error: Unable to connect to the database. Please check the configuration.")
+                raise
 
         return Config._db_session()
 

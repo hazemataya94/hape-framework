@@ -15,18 +15,20 @@ class Model(Base):
     @classmethod
     def initialize_from_sqlalchemy(cls, sqlalchemy_model):
         cls.__required_fields = {
-            column.name: column.nullable for column in sqlalchemy_model.__table__.columns
+            column.name: not column.nullable for column in sqlalchemy_model.__table__.columns
         }
         cls.__field_types = {
             column.name: column.type.python_type for column in sqlalchemy_model.__table__.columns
         }
     
     def validate(self):
-        for field in self.__required_fields:
-            if field not in self.__dict__ or self.__dict__[field] is None:
-                return False
+        for field, is_required in self.__required_fields.items():
+            if is_required and field not in self.__dict__ or self.__dict__[field] is None:
+                if field not in ['id', 'created_at']:
+                    return False
         for field, field_type in self.__field_types.items():
             if field in self.__dict__ and not isinstance(self.__dict__[field], field_type):
+                print("invalid!")
                 return False
         return True
     
@@ -46,14 +48,19 @@ class Model(Base):
 
     def save(self):
         session = Model._get_session() 
+        exit_status = True
         try:
             session.add(self)
             session.commit()
             session.refresh(self)
         except Exception:
+            exit_status = False
             session.rollback()
+            print("---rollback---")
         finally:
             session.close()
+            print("---close---")
+            return exit_status
 
     @classmethod
     def get(cls, **filters):

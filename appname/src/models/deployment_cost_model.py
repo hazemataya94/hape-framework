@@ -21,6 +21,6 @@ class DeploymentCost(Model):
 
     def __init__(self, **kwargs):
         filtered_kwargs = {key: kwargs[key] for key in self.__table__.columns.keys() if key in kwargs}
-        super().__init__(filtered_kwargs)
+        super().__init__(**filtered_kwargs)
         for key, value in filtered_kwargs.items():
             setattr(self, key, value)

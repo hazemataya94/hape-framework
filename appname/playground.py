@@ -1,23 +1,27 @@
 import json
 
 from appname.src.models.deployment_cost_model import DeploymentCost
+from appname.src.controllers.deployment_cost_controller import DeploymentCostController
 
 class Playground:
+
+    deployment_cost_controller = DeploymentCostController()
 
     # main playground function
     @classmethod
     def main(self):
-        self.save_deployment_cost()
-        # self.get_all_deployment_costs()
-        # self.delete_deployment_cost()
-        # self.delete_all_deployment_cost()
+        playground = Playground()
+        playground.save_deployment_cost()
+        # playground.get_all_deployment_costs()
+        # playground.delete_deployment_cost()
+        # playground.delete_all_deployment_cost()
 
         
-    def get_all_deployment_costs():
+    def get_all_deployment_costs(self):
         deployment_costs = DeploymentCost.get_all()
         print(DeploymentCost.list_to_json(deployment_costs))
 
-    def save_deployment_cost():
+    def save_deployment_cost(self):
         deployment_cost = DeploymentCost(
             service_name="Test Service",
             pod_cpu="2",
@@ -31,11 +35,14 @@ class Playground:
             total_cost=0.30,
             cost_unit="$"
         )
-        deployment_cost.save()
+        if self.deployment_cost_controller.save(deployment_cost):
+            print('-----saved successfully-----')
+        else:
+            print('-----saving failed-----')
+        
         print(deployment_cost.json())
 
-
-    def delete_deployment_cost():
+    def delete_deployment_cost(self):
         deployment_cost = DeploymentCost.get(id=2)
         if not deployment_cost:
             print("Object id=2 does not exist!")
@@ -43,6 +50,6 @@ class Playground:
         print(deployment_cost.json())
         deployment_cost.delete()
 
-    def delete_all_deployment_cost():
+    def delete_all_deployment_cost(self):
         print("delete all where id in [1,4] and service_name='Test Service'")
         DeploymentCost.delete_all(id=["1", "4"], service_name="Test Service")

@@ -1,9 +1,9 @@
-from src.bootstrap import bootstrapApplication
+from appname.src.bootstrap import bootstrap_application
 
 from appname.argument_parsers.main_argument_parser import MainArgumentParser
 
 def main():
-    bootstrapApplication()
+    bootstrap_application()
     
     main_parser = MainArgumentParser()
     
