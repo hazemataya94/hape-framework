@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:9.2.0
+    container_name: mysql_dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: appname_db
+      MYSQL_USER: appname_user
+      MYSQL_PASSWORD: appname_password
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "3306:3306"
+    networks:
+      - host_network
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_dev
+    restart: always
+    environment:
+      PMA_HOST: host.docker.internal
+      PMA_PORT: 3306
+    ports:
+      - "8081:80"
+    networks:
+      - host_network
+
+networks:
+  host_network:
+    driver: bridge
+
+volumes:
+  mysql_data:

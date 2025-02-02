@@ -1,0 +1,96 @@
+clean:
+	rm -rf build dist appname.egg-info playground/* appname.zip
+
+zip:
+	zip -r appname.zip . -x ".env" ".venv/*" ".git/*" "playground/*"
+	open .
+
+.venv:
+	@if [ ! -d ".venv" ]; then \
+		echo "Creating virtual environment"; \
+		python -m venv .venv; \
+	fi
+
+init-dev: .venv
+	@echo "Installing venv dependencies"
+	./scripts/start-venv.sh
+	@echo "Dependencies Installed."
+	@echo
+	@echo "Starting docker-compose services"
+	@docker-compose -f dockerfiles/docker-compose-dev.yml up -d
+	@echo
+	@echo "Now run the following to start your virtual env"
+	@echo "\$$ source ./scripts/start-venv.sh"
+	@echo
+
+init-cli:
+	@echo "Installing `appname` CLI"
+	@pip install -r requirements-cli.txt --break-system-packages
+
+freeze-dev:
+	@pip freeze > requirements-dev.txt
+
+freeze-cli:
+	@pip freeze > requirements-cli.txt
+
+install: init-cli
+	pip install --upgrade --break-system-packages --index-url https://pypi_link appname
+
+run-test-container:
+	./scripts/run-test-env.sh 
+
+bump-version:
+	@echo "🔄 Bumping patch version in setup.py..."
+	@sed -i.bak -E 's/(version="([0-9]+)\.([0-9]+)\.([0-9]+)")/\1/' setup.py && \
+	version=$$(grep -oE 'version="[0-9]+\.[0-9]+\.[0-9]+"' setup.py | grep -oE '[0-9]+\.[0-9]+\.[0-9]+') && \
+	major=$$(echo $$version | cut -d. -f1) && \
+	minor=$$(echo $$version | cut -d. -f2) && \
+	patch=$$(echo $$version | cut -d. -f3) && \
+	new_patch=$$((patch + 1)) && \
+	new_version="$$major.$$minor.$$new_patch" && \
+	sed -i.bak -E "s/version=\"[0-9]+\.[0-9]+\.[0-9]+\"/version=\"$$new_version\"/" setup.py && \
+	rm -f setup.py.bak && \
+	echo "Version updated to $$new_version"
+
+publish: bump-version
+	@rm -rf dist/*
+	@python setup.py sdist
+	@python setup.py bdist_wheel --plat-name manylinux2014_x86_64
+	@python setup.py bdist_wheel --plat-name manylinux2014_aarch64
+	@export TWINE_USERNAME=aws && \
+	export TWINE_PASSWORD=$$(aws codeartifact get-authorization-token --domain pypi --domain-owner 910325995766 --query authorizationToken --output text) && \
+	twine upload --repository-url https://pypi-910325995766.d.codeartifact.eu-central-1.amazonaws.com/pypi/devops/ dist/* && \
+	( \
+		echo "Upload successful. Committing version bump..."; \
+		git add setup.py; \
+		git commit -m "Bump version"; \
+		git push; \
+	) || ( \
+		echo "Upload failed. Not committing version bump."; \
+	)
+
+run:
+	python main.py play
+
+migration-init:
+	@cd appname && alembic init migrations
+
+migration-create:
+	@read -p "Enter migration message: " migration_msg && \
+	 alembic revision --autogenerate -m "$$migration_msg"
+
+migration-run:
+	@ALEMBIC_CONFIG=./alembic.ini alembic upgrade head
+
+docker-restart:
+	@docker-compose -f dockerfiles/docker-compose-dev.yml down
+	@docker-compose -f dockerfiles/docker-compose-dev.yml up -d
+
+docker-up:
+	@docker-compose -f dockerfiles/docker-compose-dev.yml up -d
+
+docker-down:
+	@docker-compose -f dockerfiles/docker-compose-dev.yml down
+
+docker-ps:
+	@docker-compose -f dockerfiles/docker-compose-dev.yml ps
