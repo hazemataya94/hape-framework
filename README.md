@@ -1,5 +1,18 @@
 # HAPE Framework: Build an Automation Tool With Ease
 
+# Overview
+Nowadays we hear about Internal Development Platforms everywhere, and we strive to build a customized Platform that integrates with all the tools required for a DevOps or Platform engineer to guarantee a high-performing infrastructure to enable rapid software development process. However, building a platform requires a lot of effort to integrate with a variety of tools, each with its own state, different syntax and language. 
+
+The available platforms in the market target general solutions, and require a subsicription for something that can't be modified. The market has no framework -yet- to help you build your own platform to solve your own use-cases. 
+
+HAPE Framework aims to fill the gap in the market, and provide a framework to simplify the work of Infrastructure and Automation management by enabling engineers to build a personlized centralized solution, customized to fulfill different use-cases each time. 
+
+At the moment it's still in very early stages, but there is a lot of potential to build a framework that benifits everyone. 
+
+If you're interested in contributing feel free to email the Author. 
+
+Hazem Ataya: hazem.ataya94@gmail.com
+
 ## For Users
 
 ### Installation
@@ -117,3 +130,6 @@ Tables are managed via models (likely under appname/src/models/).
 make create-migration: generate new database migration files
 make run-migration: run database migrations.
 ```
+
+# Author
+Hazem Ataya: hazem.ataya94@gmail.com
