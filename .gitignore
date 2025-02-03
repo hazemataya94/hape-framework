@@ -1,5 +1,7 @@
+dockerfiles/*-init
 playground/*
 !playground/.gitkeep
+!appname/migrations/.gitkeep
 *.zip
 *.venv
 

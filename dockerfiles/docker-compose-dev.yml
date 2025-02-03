@@ -1,23 +1,22 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:9.2.0
-    container_name: mysql_dev
+  mariadb:
+    image: mariadb:11.4.4
+    container_name: mariadb_dev
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: appname_db
-      MYSQL_USER: appname_user
-      MYSQL_PASSWORD: appname_password
-      MYSQL_ROOT_HOST: '%'
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: appname_db
+      MARIADB_USER: appname_user
+      MARIADB_PASSWORD: appname_password
     ports:
       - "3306:3306"
     networks:
       - host_network
     volumes:
-      - mysql_data:/var/lib/mysql
-      - ./mysql-init:/docker-entrypoint-initdb.d
+      - mariadb_data:/var/lib/mysql
+      - ./mariadb-init:/docker-entrypoint-initdb.d
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -36,4 +35,4 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_data:
+  mariadb_data:
