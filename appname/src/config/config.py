@@ -1,14 +1,15 @@
 import os
-import logging
+import json
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
+from appname.src.config.logging import logger
 
 class Config:
     _env_loaded = False
     _db_session = None
-    required_env_variables = ["GITLAB_TOKEN", "GITLAB_DOMAIN", "MYSQL_HOST", "MYSQL_USERNAME", "MYSQL_PASSWORD", "MYSQL_DATABASE"]
+    required_env_variables = ["HAPE_GITLAB_TOKEN", "HAPE_GITLAB_DOMAIN", "HAPE_MARIADB_HOST", "HAPE_MARIADB_USERNAME", "HAPE_MARIADB_PASSWORD", "HAPE_MARIADB_DATABASE"]
 
     @staticmethod
     def check_variables():
@@ -28,77 +29,57 @@ class Config:
         env_value = os.getenv(env)
         
         if not env_value and env in Config.required_env_variables:
-            print(f"""
-Error: One or more of the required environment variables is missing.
+            logger.error(f"""One or more of the required environment variables is missing.
 
 To set the value of the environment variable run:
 $ export ENV_VARIABLE_NAME="value"
 
-The following environment variables are required
-{Config.required_env_variables}
+The following environment variables are required:
+{json.dumps(Config.required_env_variables, indent=4)}
 """)
             exit(1)
         return env_value
 
-    # DB Session Initialization
     @staticmethod
     def get_db_url():
         return f"mysql+pymysql://{Config.get_mysql_username()}:{Config.get_mysql_password()}@{Config.get_mysql_host()}/{Config.get_mysql_database()}"
 
     @staticmethod
     def get_db_session() -> sessionmaker:
-        
-        try:
-            DATABASE_URL = Config.get_db_url()
-            engine = create_engine(DATABASE_URL)
-            with engine.connect() as connection:
-                connection.execute("SELECT 1")  # Basic check to see if DB is reachable
-            print("Database connection validated successfully.")
-        except OperationalError:
-            print("Error: Unable to connect to the database. Please check the configuration.")
-            raise
-        
         if not Config._db_session:
             try:
                 DATABASE_URL = Config.get_db_url()
                 engine = create_engine(DATABASE_URL, echo=True)
                 with engine.connect() as connection:
-                    connection.execute("SELECT 1")  # Basic check to see if DB is reachable
+                    connection.execute("SELECT 1")
                 Config._db_session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-                print("Database seassion created successfully.")
+                logger.info("Database seassion created successfully.")
             except OperationalError:
-                print("Error: Unable to connect to the database. Please check the configuration.")
+                logger.error("Error: Unable to connect to the database. Please check the configuration.")
                 raise
 
         return Config._db_session()
 
-    # Env Variables Methods
-    ## GITLAB
     @staticmethod
     def get_gitlab_token():
-        return Config._get_env_value("GITLAB_TOKEN")
+        return Config._get_env_value("HAPE_GITLAB_TOKEN")
     
     @staticmethod
     def get_gitlab_domain():
-        return Config._get_env_value("GITLAB_DOMAIN")
+        return Config._get_env_value("HAPE_GITLAB_DOMAIN")
     
-    ## MYSQL
     @staticmethod
     def get_mysql_host():
-        Config._load_environment()
-        return os.getenv("MYSQL_HOST", "localhost")
+        return Config._get_env_value("HAPE_MARIADB_HOST")
 
     @staticmethod
     def get_mysql_username():
-        Config._load_environment()
-        return os.getenv("MYSQL_USERNAME", "root")
+        return Config._get_env_value("HAPE_MARIADB_USERNAME")
 
     @staticmethod
     def get_mysql_password():
-        Config._load_environment()
-        return os.getenv("MYSQL_PASSWORD", "")
+        return Config._get_env_value("HAPE_MARIADB_PASSWORD")
 
     @staticmethod
     def get_mysql_database():
-        Config._load_environment()
-        return os.getenv("MYSQL_DATABASE", "deployments_db")
+        return Config._get_env_value("HAPE_MARIADB_DATABASE")
