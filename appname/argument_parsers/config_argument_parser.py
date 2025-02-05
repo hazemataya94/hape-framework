@@ -14,7 +14,7 @@ class ConfigArgumentParser:
         
         if args.action == "check":
             Config.check_variables()
-            print('Configurations are set correctly.')
+            print("Configurations are set correctly.")
         else:
             print(f"Error: Invalid {args.comman} action. Use `appname {args.comman} --help` for more details.")
             exit(1)
