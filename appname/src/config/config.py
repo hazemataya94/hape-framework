@@ -4,7 +4,10 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
+from sqlalchemy.sql import text
 from appname.src.config.logging import logger
+
+
 
 class Config:
     _env_loaded = False
@@ -51,7 +54,8 @@ The following environment variables are required:
                 DATABASE_URL = Config.get_db_url()
                 engine = create_engine(DATABASE_URL, echo=True)
                 with engine.connect() as connection:
-                    connection.execute("SELECT 1")
+                    connection.execute(text("SELECT 1"))
+
                 Config._db_session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
                 logger.info("Database seassion created successfully.")
             except OperationalError:
