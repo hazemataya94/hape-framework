@@ -70,6 +70,18 @@ class FileHelper():
                 clean_data.append(clean_row)
             return clean_data
         
+    def write_csv_file(self, filename, data):
+        if not data:
+            print("No data provided to write CSV file.")
+            return
+        
+        fieldnames = list(data[0].keys())
+        
+        with open(filename, mode="w", newline="", encoding="utf-8") as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(data)
+        
     def find_files_with_keyword(self, keyword, directory, return_parent_directory=False):
         matching_files = []
         for root, dirs, files in os.walk(directory):

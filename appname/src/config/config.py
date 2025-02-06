@@ -12,11 +12,11 @@ from appname.src.config.logging import logger
 class Config:
     _env_loaded = False
     _db_session = None
-    required_env_variables = ["HAPE_GITLAB_TOKEN", "HAPE_GITLAB_DOMAIN", "HAPE_MARIADB_HOST", "HAPE_MARIADB_USERNAME", "HAPE_MARIADB_PASSWORD", "HAPE_MARIADB_DATABASE"]
+    _required_env_variables = ["HAPE_GITLAB_TOKEN", "HAPE_GITLAB_DOMAIN", "HAPE_MARIADB_HOST", "HAPE_MARIADB_USERNAME", "HAPE_MARIADB_PASSWORD", "HAPE_MARIADB_DATABASE"]
 
     @staticmethod
     def check_variables():
-        for variable in Config.required_env_variables:
+        for variable in Config._required_env_variables:
             Config._get_env_value(variable)
 
     @staticmethod
@@ -31,14 +31,14 @@ class Config:
         Config._load_environment()
         env_value = os.getenv(env)
         
-        if not env_value and env in Config.required_env_variables:
+        if not env_value and env in Config._required_env_variables:
             logger.error(f"""One or more of the required environment variables is missing.
 
 To set the value of the environment variable run:
 $ export ENV_VARIABLE_NAME="value"
 
 The following environment variables are required:
-{json.dumps(Config.required_env_variables, indent=4)}
+{json.dumps(Config._required_env_variables, indent=4)}
 """)
             exit(1)
         return env_value

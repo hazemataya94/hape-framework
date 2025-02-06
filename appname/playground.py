@@ -1,21 +1,18 @@
 import json
-
+from datetime import datetime
 from appname.src.models.deployment_cost_model import DeploymentCost
 from appname.src.controllers.deployment_cost_controller import DeploymentCostController
+from appname.src.models.gitlab_model import GitlabModel
+from appname.src.helpers.file_helper import FileHelper
 
 class Playground:
 
     deployment_cost_controller = DeploymentCostController()
 
-    # main playground function
     @classmethod
     def main(self):
         playground = Playground()
-        playground.save_deployment_cost()
-        # playground.get_all_deployment_costs()
-        # playground.delete_deployment_cost()
-        # playground.delete_all_deployment_cost()
-
+        playground.play()
         
     def get_all_deployment_costs(self):
         deployment_costs = DeploymentCost.get_all()
@@ -53,3 +50,23 @@ class Playground:
     def delete_all_deployment_cost(self):
         print("delete all where id in [1,4] and service_name='Test Service'")
         DeploymentCost.delete_all(id=["1", "4"], service_name="Test Service")
+
+    def generate_gitlab_changes_report(self):
+        gitlab = GitlabModel()
+        start_date = datetime(2025, 2, 3)
+        end_date = datetime(2025, 2, 5)
+        gitlab.generate_changes_report(
+            group_id=178,
+            start_date=start_date,
+            end_date=end_date,
+            output_file="/Users/hazemataya/Desktop/workspace/innodp/playground/test.csv",
+            file_regex=r".*values.*.yaml"
+        )
+
+    def play(self):
+        # Playground().save_deployment_cost()
+        # Playground().get_all_deployment_costs()
+        # Playground().delete_deployment_cost()
+        # Playground().delete_all_deployment_cost()
+        # Playground().generate_gitlab_changes_report()
+        pass

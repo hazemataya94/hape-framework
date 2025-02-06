@@ -72,8 +72,8 @@ publish: bump-version
 		echo "Upload failed. Not committing version bump."; \
 	)
 
-run:
-	python main.py play
+play:
+	time python main.py play
 
 migration-init:
 	@cd appname && alembic init migrations

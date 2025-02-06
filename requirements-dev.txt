@@ -33,6 +33,7 @@ Pygments==2.19.1
 PyMySQL==1.1.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
+python-gitlab==5.6.0
 python-json-logger==3.2.1
 PyYAML==6.0.2
 readme_renderer==44.0
@@ -42,6 +43,8 @@ requests-toolbelt==1.0.0
 rfc3986==2.0.0
 rich==13.9.4
 rsa==4.9
+ruamel.yaml==0.18.10
+ruamel.yaml.clib==0.2.12
 setuptools==75.8.0
 six==1.17.0
 SQLAlchemy==2.0.37

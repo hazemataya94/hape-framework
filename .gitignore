@@ -4,6 +4,7 @@ playground/*
 !appname/migrations/.gitkeep
 *.zip
 *.venv
+*.vscode
 
 .DS_Store
 *.DS_Store
