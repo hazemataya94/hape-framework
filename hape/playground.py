@@ -55,7 +55,7 @@ class Playground:
         gitlab = GitlabModel()
         start_date = datetime(2025, 2, 3)
         end_date = datetime(2025, 2, 5)
-        gitlab.generate_changes_report(
+        gitlab.generate_csv_changes_in_cicd_repos(
             group_id=178,
             start_date=start_date,
             end_date=end_date,
@@ -64,9 +64,9 @@ class Playground:
         )
 
     def play(self):
-        # Playground().save_deployment_cost()
-        # Playground().get_all_deployment_costs()
-        # Playground().delete_deployment_cost()
-        # Playground().delete_all_deployment_cost()
-        # Playground().generate_gitlab_changes_report()
+        Playground().save_deployment_cost()
+        Playground().get_all_deployment_costs()
+        Playground().delete_deployment_cost()
+        Playground().delete_all_deployment_cost()
+        Playground().generate_gitlab_changes_report()
         pass
