@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, Boolean, BigInteger
 from datetime import datetime
-from hape.interfaces.model import Model
+from hape.base.model import Model
 
 class DeploymentCost(Model):
     __tablename__ = 'deployment_costs'

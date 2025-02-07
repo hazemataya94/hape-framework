@@ -2,7 +2,6 @@ from hape.src.config.config import Config
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 import json
-import inspect
 
 Base = declarative_base()
 
@@ -13,12 +12,12 @@ class Model(Base):
     __field_types = {}
 
     @classmethod
-    def initialize_from_sqlalchemy(cls, sqlalchemy_model):
+    def initialize_from_sqlalchemy(cls, sqlalchemy_base_model):
         cls.__required_fields = {
-            column.name: not column.nullable for column in sqlalchemy_model.__table__.columns
+            column.name: not column.nullable for column in sqlalchemy_base_model.__table__.columns
         }
         cls.__field_types = {
-            column.name: column.type.python_type for column in sqlalchemy_model.__table__.columns
+            column.name: column.type.python_type for column in sqlalchemy_base_model.__table__.columns
         }
     
     def validate(self):
@@ -129,5 +128,3 @@ class Model(Base):
             return 0
         finally:
             session.close()
-
-

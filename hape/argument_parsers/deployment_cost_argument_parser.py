@@ -1,4 +1,4 @@
-from hape.interfaces.model_argument_parser import ModelArgumentParser
+from hape.base.model_argument_parser import ModelArgumentParser
 from hape.src.models.deployment_cost_model import DeploymentCost
 from hape.src.controllers.deployment_cost_controller import DeploymentCostController
 

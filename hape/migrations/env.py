@@ -18,7 +18,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from hape.interfaces.model import Base  # Modify this to match your project structure
+from hape.base.model import Base  # Modify this to match your project structure
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
