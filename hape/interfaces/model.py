@@ -1,4 +1,4 @@
-from appname.src.config.config import Config
+from hape.src.config.config import Config
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 import json

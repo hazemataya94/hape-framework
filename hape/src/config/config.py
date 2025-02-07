@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql import text
-from appname.src.config.logging import logger
+from hape.src.config.logging import logger
 
 
 

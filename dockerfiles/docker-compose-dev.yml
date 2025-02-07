@@ -7,9 +7,9 @@ services:
     restart: always
     environment:
       MARIADB_ROOT_PASSWORD: root
-      MARIADB_DATABASE: appname_db
-      MARIADB_USER: appname_user
-      MARIADB_PASSWORD: appname_password
+      MARIADB_DATABASE: hape_db
+      MARIADB_USER: hape_user
+      MARIADB_PASSWORD: hape_password
     ports:
       - "3306:3306"
     networks:

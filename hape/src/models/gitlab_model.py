@@ -3,8 +3,8 @@ from typing import List, Optional
 from datetime import datetime
 from gitlab import Gitlab
 from gitlab.v4.objects import Group, Project, GroupProject, ProjectCommit
-from appname.src.config.config import Config
-from appname.src.helpers.file_helper import FileHelper
+from hape.src.config.config import Config
+from hape.src.helpers.file_helper import FileHelper
 
 class GitlabModel:
     def __init__(self):

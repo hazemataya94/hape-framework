@@ -1,19 +1,19 @@
 import argparse
 from importlib.metadata import version
 
-from appname.argument_parsers.playground_argument_parser import PlaygroundArgumentParser
-from appname.argument_parsers.config_argument_parser import ConfigArgumentParser
-from appname.argument_parsers.git_argument_parser import GitArgumentParser
-from appname.argument_parsers.deployment_cost_argument_parser import DeploymentCostArgumentParser
+from hape.argument_parsers.playground_argument_parser import PlaygroundArgumentParser
+from hape.argument_parsers.config_argument_parser import ConfigArgumentParser
+from hape.argument_parsers.git_argument_parser import GitArgumentParser
+from hape.argument_parsers.deployment_cost_argument_parser import DeploymentCostArgumentParser
 
 class MainArgumentParser:
 
     def create_parser(self):
         parser = argparse.ArgumentParser(
-            description="AppNameShortLong used to streamline development operations"
+            description="hapeShortLong used to streamline development operations"
         )
         try:
-            parser.add_argument("-v", "--version", action="version", version=version("appname"))
+            parser.add_argument("-v", "--version", action="version", version=version("hape"))
         except:
             parser.add_argument("-v", "--version", action="version", version="0.0.0")
         

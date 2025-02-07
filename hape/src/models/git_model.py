@@ -1,4 +1,4 @@
-from appname.src.helpers.git_helper import GitHelper
+from hape.src.helpers.git_helper import GitHelper
 
 class GitModel:
     def __init__(self):

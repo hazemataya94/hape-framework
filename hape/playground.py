@@ -1,9 +1,9 @@
 import json
 from datetime import datetime
-from appname.src.models.deployment_cost_model import DeploymentCost
-from appname.src.controllers.deployment_cost_controller import DeploymentCostController
-from appname.src.models.gitlab_model import GitlabModel
-from appname.src.helpers.file_helper import FileHelper
+from hape.src.models.deployment_cost_model import DeploymentCost
+from hape.src.controllers.deployment_cost_controller import DeploymentCostController
+from hape.src.models.gitlab_model import GitlabModel
+from hape.src.helpers.file_helper import FileHelper
 
 class Playground:
 

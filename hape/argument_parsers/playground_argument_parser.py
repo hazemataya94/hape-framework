@@ -1,5 +1,5 @@
 import sys
-from appname.playground import Playground
+from hape.playground import Playground
 
 class PlaygroundArgumentParser:
 

@@ -1,15 +1,15 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="appname",
+    name="hape",
     version="0.1.32",
-    packages=find_packages(include=["appname", "appname.*"]),
+    packages=find_packages(include=["hape", "hape.*"]),
     install_requires=[
         "python-dotenv",
     ],
     entry_points={
         "console_scripts": [
-            "appname=appname.cli:main",
+            "hape=hape.cli:main",
         ],
     },
     author="Hazem Ataya",

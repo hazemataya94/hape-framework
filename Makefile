@@ -1,8 +1,8 @@
 clean:
-	rm -rf build dist appname.egg-info playground/* appname.zip
+	rm -rf build dist hape.egg-info playground/* hape.zip
 
 zip:
-	zip -r appname.zip . -x ".env" ".venv/*" ".git/*" "playground/*"
+	zip -r hape.zip . -x ".env" ".venv/*" ".git/*" "playground/*"
 	open .
 
 .venv:
@@ -27,7 +27,7 @@ init-dev: .venv
 	@echo
 
 init-cli:
-	@echo "Installing `appname` CLI"
+	@echo "Installing `hape` CLI"
 	@pip install -r requirements-cli.txt --break-system-packages
 
 freeze-dev:
@@ -37,7 +37,7 @@ freeze-cli:
 	@pip freeze > requirements-cli.txt
 
 install: init-cli
-	pip install --upgrade --break-system-packages --index-url https://pypi_link appname
+	pip install --upgrade --break-system-packages --index-url https://pypi_link hape
 
 run-test-container:
 	./scripts/run-test-env.sh 
@@ -76,7 +76,7 @@ play:
 	time python main.py play
 
 migration-init:
-	@cd appname && alembic init migrations
+	@cd hape && alembic init migrations
 
 migration-create:
 	@read -p "Enter migration message: " migration_msg && \

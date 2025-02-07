@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from sqlalchemy import Integer, String, Float, Boolean
 
-from appname.interfaces.model_controller import ModelController
+from hape.interfaces.model_controller import ModelController
 
 class ModelArgumentParser(ABC):
 

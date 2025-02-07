@@ -1,4 +1,4 @@
-from appname.src.controllers.git_controller import GitController
+from hape.src.controllers.git_controller import GitController
 
 class GitArgumentParser:
 
@@ -32,5 +32,5 @@ class GitArgumentParser:
         elif args.action == "pull":
             controller.pull_projects(args.dir, args.prefix)
         else:
-            print(f"Error: Invalid {args.command} action. Use `appname {args.command} --help` for more details.")
+            print(f"Error: Invalid {args.command} action. Use `hape {args.command} --help` for more details.")
             exit(1)

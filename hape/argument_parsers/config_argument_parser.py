@@ -1,4 +1,4 @@
-from appname.src.config.config import Config
+from hape.src.config.config import Config
 
 class ConfigArgumentParser:
 
@@ -16,5 +16,5 @@ class ConfigArgumentParser:
             Config.check_variables()
             print("Configurations are set correctly.")
         else:
-            print(f"Error: Invalid {args.comman} action. Use `appname {args.comman} --help` for more details.")
+            print(f"Error: Invalid {args.comman} action. Use `hape {args.comman} --help` for more details.")
             exit(1)

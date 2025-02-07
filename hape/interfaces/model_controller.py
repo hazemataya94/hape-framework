@@ -1,4 +1,4 @@
-from appname.interfaces.model import Model
+from hape.interfaces.model import Model
 
 class ModelController():
 

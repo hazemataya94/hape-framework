@@ -16,7 +16,7 @@ Hazem Ataya: hazem.ataya94@gmail.com
 ## For Users
 
 ### Installation
-To install appname CLI, run:
+To install hape CLI, run:
 ```sh
 make install
 ```
@@ -24,38 +24,31 @@ make install
 ### Usage
 To execute a command, use:
 ```sh
-appname <command> [options]
+hape <command> [options]
 ```
 Example:
 ```sh
-appname --help
+hape --help
 ```
 
 ## For Developers
 
 ### Setup
-1. Clone the repository:
+- Clone the repository:
    ```sh
    git clone <repo_url>
    ```
    
-2. Rename hape-framework to your AppNameShort
-   ```sh
-   mv appname yourappname
-   cd yourappname
-   ./scripts/rename-hape-framework.sh
-   ```
-
-3. Create and activate a virtual environment:
+- Create and activate a virtual environment:
    ```sh
    make init-dev
 
    ```
-4. Create and activate a virtual environment:
+- Create and activate a virtual environment:
    ```sh
    make init-dev
    ```
-5. activate virtual environment venv
+- activate virtual environment venv
    ```sh
    source ./.scripts/start-venv.sh
    ```
@@ -67,9 +60,9 @@ make run-test-container
 ```
 ```sh
 make install
-appname --version
+hape --version
 ```
-To run the function playground() in src/controllers/appname_controller.py run
+To run the function playground() in src/controllers/hape_controller.py run
 ```
 make run
 ```
@@ -92,7 +85,7 @@ make publish
 
 ### Project Overview
 #### CLI Name
-appname CLI
+hape CLI
 #### Primary Files
 ```
 Makefile → Automates setup, testing, migrations, publishing.
@@ -124,7 +117,7 @@ make publish: Build and Publish PYPI package to AWS CodeArtifact.
 ### Database & Migrations
 Uses SQLAlchemy & Alembic for database schema management.
 The Alembic environment (alembic.ini) is set up.
-Tables are managed via models (likely under appname/src/models/).
+Tables are managed via models (likely under hape/src/models/).
 #### Commands
 ```
 make create-migration: generate new database migration files

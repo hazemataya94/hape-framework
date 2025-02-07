@@ -2,7 +2,7 @@ import subprocess
 from dotenv import load_dotenv
 import os
 import requests
-from appname.src.config.config import Config
+from hape.src.config.config import Config
 
 class GitHelper:
     

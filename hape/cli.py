@@ -1,6 +1,6 @@
-from appname.src.bootstrap import bootstrap_application
+from hape.src.bootstrap import bootstrap_application
 
-from appname.argument_parsers.main_argument_parser import MainArgumentParser
+from hape.argument_parsers.main_argument_parser import MainArgumentParser
 
 def main():
     bootstrap_application()

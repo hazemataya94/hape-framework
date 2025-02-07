@@ -1,6 +1,6 @@
-from appname.src.config.logging import logger
-from appname.src.config.config import Config
-from appname.src.models.deployment_cost_model import DeploymentCost
+from hape.src.config.logging import logger
+from hape.src.config.config import Config
+from hape.src.models.deployment_cost_model import DeploymentCost
 
 def bootstrap_application():
     logger.info("Checking configurations.")
