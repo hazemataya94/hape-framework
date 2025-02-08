@@ -13,7 +13,7 @@ zip:
 
 init-dev: .venv
 	@echo "Installing venv dependencies"
-	./scripts/start-venv.sh
+	@source .venv/bin/activate && pip install -r requirements-dev.txt
 	@echo "Dependencies Installed."
 	@echo
 	@echo "Starting docker-compose services"
@@ -37,7 +37,7 @@ freeze-cli:
 	@pip freeze > requirements-cli.txt
 
 install: init-cli
-	pip install --upgrade --break-system-packages --index-url https://pypi_link hape
+	pip install --upgrade --index-url https://pypi_link hape
 
 run-test-container:
 	./scripts/run-test-env.sh 

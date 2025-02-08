@@ -1,4 +1,4 @@
-from hape.src.controllers.git_controller import GitController
+from hape.controllers.git_controller import GitController
 
 class GitArgumentParser:
 

@@ -2,9 +2,9 @@ import subprocess
 from dotenv import load_dotenv
 import os
 import requests
-from hape.src.config.config import Config
+from hape.config import Config
 
-class GitHelper:
+class GitService:
     
     def __init__(self):
         self.dry_run = False

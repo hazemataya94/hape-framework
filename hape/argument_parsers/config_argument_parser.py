@@ -1,4 +1,4 @@
-from hape.src.config.config import Config
+from hape.config import Config
 
 class ConfigArgumentParser:
 

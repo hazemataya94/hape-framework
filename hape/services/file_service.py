@@ -3,7 +3,7 @@ import sys
 from ruamel.yaml import YAML
 import csv
 
-class FileHelper():
+class FileService():
     def __init__(self):
         self.yaml = YAML()
         self.yaml.width = sys.maxsize

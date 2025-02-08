@@ -1,4 +1,4 @@
-from hape.src.bootstrap import bootstrap_application
+from hape.bootstrap import bootstrap_application
 
 from hape.argument_parsers.main_argument_parser import MainArgumentParser
 
@@ -16,5 +16,9 @@ def main():
 
     main_parser.run_action(args)
 
+def hape():
+    pass
+
 if __name__ == "__main__":
-    main()
+    # main()
+    hape()

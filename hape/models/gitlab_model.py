@@ -3,8 +3,8 @@ from typing import List, Optional
 from datetime import datetime
 from gitlab import Gitlab
 from gitlab.v4.objects import Group, Project, GroupProject, ProjectCommit
-from hape.src.config.config import Config
-from hape.src.helpers.file_helper import FileHelper
+from hape.config import Config
+from hape.services.file_service import FileService
 
 class GitlabModel:
     def __init__(self):
@@ -57,5 +57,5 @@ class GitlabModel:
                             "web_url": commit.web_url
                         })
 
-        FileHelper().write_csv_file(output_file, all_commits)
+        FileService().write_csv_file(output_file, all_commits)
         print(f"CSV report generated: {output_file}")

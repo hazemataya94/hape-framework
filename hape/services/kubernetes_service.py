@@ -3,7 +3,7 @@ import os
 import subprocess
 import json
 
-class KubernetesClient:
+class KubernetesService:
     
     _context_dev = ""
     _context_test = ""
