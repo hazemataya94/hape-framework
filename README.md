@@ -1,128 +1,40 @@
-# HAPE Framework: Build an Automation Tool With Ease
+# HAPE Framework: Overview & Vision
 
-# Overview
-Nowadays we hear about Internal Development Platforms everywhere, and we strive to build a customized Platform that integrates with all the tools required for a DevOps or Platform engineer to guarantee a high-performing infrastructure to enable rapid software development process. However, building a platform requires a lot of effort to integrate with a variety of tools, each with its own state, different syntax and language. 
+## What is HAPE Framework?
+HAPE Framework is a lightweight and extensible Python framework designed to help platform engineers build customized CLI and API-driven platforms with minimal effort. It provides a structured way to develop orchestrators for managing infrastructure, CI/CD pipelines, cloud resources, and other platform engineering needs. 
 
-The available platforms in the market target general solutions, and require a subsicription for something that can't be modified. The market has no framework -yet- to help you build your own platform to solve your own use-cases. 
+HAPE is built around abstraction and automation, allowing engineers to define and manage resources like AWS, Kubernetes, GitHub, GitLab, ArgoCD, Prometheus, Grafana, HashiCorp Vault, and many others in a unified manner. It eliminates the need to manually integrate multiple packages for each tool, offering a streamlined way to build self-service developer portals and engineering platforms. 
 
-HAPE Framework aims to fill the gap in the market, and provide a framework to simplify the work of Infrastructure and Automation management by enabling engineers to build a personlized centralized solution, customized to fulfill different use-cases each time. 
+## Where It All Started
+Modern organizations manage hundreds of microservices, each with its own infrastructure, CI/CD, monitoring, and deployment configurations. This complexity increases the cognitive load on developers and slows down platform operations. 
 
-At the moment it's still in very early stages, but there is a lot of potential to build a framework that benifits everyone. 
+HAPE Framework aims to reduce this complexity by enabling platform engineers to build opinionated, yet flexible automation tools that simplify onboarding, deployment, and operations. 
 
-If you're interested in contributing feel free to email the Author. 
+With HAPE, developers can interact with a CLI or API to create, deploy, and manage their services without diving into complex configurations. The framework also supports custom workflows, state management via databases, and integration with existing DevOps tools. 
 
-Hazem Ataya: hazem.ataya94@gmail.com
+## Core Principles
+- *Abstraction & Modularity* – Developers work with high-level constructs rather than low-level implement- ation details. 
+- *CLI & API Driven* – HAPE enables both CLI and API-based interactions, making it ideal for automation. 
+- *Extensibility* – Supports custom workflows, integrations, and automation logic.
+- *Minimal Cognitive Load* – Aims to provide intuitive commands and automation, so platform engineers don’t need to reinvent the wheel.
+- *Infrastructure & CI/CD Agnostic* – Can be adapted to any cloud provider, DevOps stack, or orchestration tool.
+- *State Management via Database* – Unlike static configuration-based tools, HAPE tracks states dynamically using a database.
 
-## For Users
+# Key Features
+- Automated CRUD generation for platform services (e.g., hape crud --create ServiceName {...}).
+- Built-in CLI framework that can be extended for various platform engineering use cases.
+- Pre-built integrations with cloud providers and DevOps tools.
+- Simplified orchestration of deployments, CI/CD, monitoring, and permissions.
+- Database-backed state tracking for workflows and configurations.
+- Python-based, for efficiency and language simplicity.
+- Supports automation beyond platform engineering, making it useful for multiple domains.
 
-### Installation
-To install hape CLI, run:
-```sh
-make install
-```
+## Vision for the Future
+HAPE Framework aims to become the go-to tool for building Internal Developer Platforms (IDPs) and self-service DevOps automation. It envisions a future where platform engineers can quickly spin up customizable automation platforms without needing to start from scratch. 
 
-### Usage
-To execute a command, use:
-```sh
-hape <command> [options]
-```
-Example:
-```sh
-hape --help
-```
+The framework is flexible, it enables users to build fully managed solutions for CI/CD, infrastructure provisioning, developer access, cost monitoring, and beyond
 
-## For Developers
-
-### Setup
-- Clone the repository:
-   ```sh
-   git clone <repo_url>
-   ```
-   
-- Create and activate a virtual environment:
-   ```sh
-   make init-dev
-
-   ```
-- Create and activate a virtual environment:
-   ```sh
-   make init-dev
-   ```
-- activate virtual environment venv
-   ```sh
-   source ./.scripts/start-venv.sh
-   ```
-
-### Running Tests
-To execute tests for the executable run:
-```sh
-make run-test-container
-```
-```sh
-make install
-hape --version
-```
-To run the function playground() in src/controllers/hape_controller.py run
-```
-make run
-```
-
-### Database Migrations
-1. Create a new migration:
-   ```sh
-   make create-migration
-   ```
-2. Apply migrations:
-   ```sh
-   make run-migration
-   ```
-
-### Publishing a New Version of CLI
-To publish a new version:
-```sh
-make publish
-```
-
-### Project Overview
-#### CLI Name
-hape CLI
-#### Primary Files
-```
-Makefile → Automates setup, testing, migrations, publishing.
-README.md → Updated documentation for users & developers.
-setup.py → Packaging configuration.
-main.py → Entry point for CLI execution.
-.env → Environment variables for database & configurations.
-alembic.ini → Database migrations configuration.
-```
-#### Dependencies:
-```
-requirements-dev.txt (for development)
-requirements-command.txt (for CLI commands)
-```
-#### Scripts:
-```
-.scripts/start-venv.sh → Starts the virtual environment.
-.scripts/run-test-env.sh → Runs tests in a containerized environment.
-```
-
-### Build & Deployment
-Uses Makefile to:
-```
-make install: Install.
-make run-test-container: runs a python debian bookworm container for testing.
-make publish: Build and Publish PYPI package to AWS CodeArtifact.
-```
-
-### Database & Migrations
-Uses SQLAlchemy & Alembic for database schema management.
-The Alembic environment (alembic.ini) is set up.
-Tables are managed via models (likely under hape/src/models/).
-#### Commands
-```
-make create-migration: generate new database migration files
-make run-migration: run database migrations.
-```
+While the framework itself remains agnostic, it enables users to build fully managed solutions for CI/CD, infrastructure provisioning, developer access, cost monitoring, and more. The long-term goal is to foster open-source community contributions to extend integrations and functionality. 
 
 # Author
 Hazem Ataya: hazem.ataya94@gmail.com
