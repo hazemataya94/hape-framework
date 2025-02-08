@@ -229,5 +229,20 @@ Updating the framework is as simple as:
 pip install --upgrade hape-framework
 ```
 
+### Using Prebuilt HAPE Services
+Developers can use any services, classes, or models that are provided with the public framework in their own private platform by importing them:
+```
+from hape.logging import logger
+
+from hape.config import Config
+
+from hape.models.deployment_cost_model import DeploymentCost
+
+from hape.services.kubernetes_service import KubernetesService
+
+from hape.argument_parsers.config_argument_parser import ConfigArgumentParser
+```
+This allows developers to leverage HAPE’s built-in functionalities while maintaining the flexibility to extend and integrate with their custom platform setup.
+
 # Author
 Hazem Ataya: hazem.ataya94@gmail.com
