@@ -1,10 +1,10 @@
 from hape.bootstrap import bootstrap_application
-from hape.argument_parsers.main_argument_parser import MainArgumentParser
+from hape.hape_cli.argument_parsers.main_argument_parser import MainArgumentParser
 
 class CLI:
     
     @classmethod
-    def main():
+    def main(cls):
         bootstrap_application()
         
         main_parser = MainArgumentParser()

@@ -15,17 +15,21 @@ class FileService:
     def create_directory(self, path: str):
         os.makedirs(path, exist_ok=True)
 
-    def create_file(self, path: str, content: str = ""):
-        with open(path, "w", encoding="utf-8") as file:
-            file.write(content)
+    def create_directory(self, path: str):
+        if not os.path.exists(path):
+            os.makedirs(path, exist_ok=True)
 
-    def copy_file(self, source: str, destination: str):
-        if os.path.exists(source):
+    def copy_file(self, source: str, destination: str, overwrite: bool):
+        if os.path.exists(source) or overwrite:
             shutil.copy2(source, destination)
 
     def copy_directory(self, source: str, destination: str):
         if os.path.exists(source):
+            print(f"copying {source} to {destination}")
             shutil.copytree(source, destination, dirs_exist_ok=True)
+        
+    def path_exists(self, path):
+        return os.path.exists(path)
 
     def replace_text_in_file(self, source: str, destination: str, old_text: str, new_text: str):
         if os.path.exists(source):
@@ -119,4 +123,4 @@ class FileService:
     def get_sorted_subdirectories(self, dir_path, prefix):
         subdirectories = sorted(os.listdir(dir_path))
         return [os.path.join(dir_path, subdir) for subdir in subdirectories
-                if subdir.startswith(prefix) and os.path.isdir(os.p
+                if subdir.startswith(prefix) and os.path.isdir(os.path.join(dir_path, subdir))]

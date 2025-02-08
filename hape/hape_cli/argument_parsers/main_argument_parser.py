@@ -5,7 +5,7 @@ from hape.hape_cli.argument_parsers.init_argument_parser import InitArgumentPars
 
 class MainArgumentParser:
 
-    def create_parser():
+    def create_parser(self):
         parser = argparse.ArgumentParser(description="HAPE Framework CLI")
 
         try:
