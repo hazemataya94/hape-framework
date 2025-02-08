@@ -23,7 +23,7 @@ init-dev: .venv
 	@[ -f .env ] || cp .env.example .env
 	@echo
 	@echo "Now run the following to start your virtual env"
-	@echo "\$$ source ./scripts/start-venv.sh"
+	@echo "\$$ source .venv/bin/activate"
 	@echo
 
 init-cli:
