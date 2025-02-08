@@ -13,12 +13,12 @@ HAPE Framework aims to reduce this complexity by enabling platform engineers to 
 With HAPE, developers can interact with a CLI or API to create, deploy, and manage their services without diving into complex configurations. The framework also supports custom workflows, state management via databases, and integration with existing DevOps tools. 
 
 ## Core Principles
-- *Abstraction & Modularity* – Developers work with high-level constructs rather than low-level implement- ation details. 
-- *CLI & API Driven* – HAPE enables both CLI and API-based interactions, making it ideal for automation. 
-- *Extensibility* – Supports custom workflows, integrations, and automation logic.
-- *Minimal Cognitive Load* – Aims to provide intuitive commands and automation, so platform engineers don’t need to reinvent the wheel.
-- *Infrastructure & CI/CD Agnostic* – Can be adapted to any cloud provider, DevOps stack, or orchestration tool.
-- *State Management via Database* – Unlike static configuration-based tools, HAPE tracks states dynamically using a database.
+- **Abstraction & Modularity** – Developers work with high-level constructs rather than low-level implement- ation details. 
+- **CLI & API Driven** – HAPE enables both CLI and API-based interactions, making it ideal for automation. 
+- **Extensibility** – Supports custom workflows, integrations, and automation logic.
+- **Minimal Cognitive Load** – Aims to provide intuitive commands and automation, so platform engineers don’t need to reinvent the wheel.
+- **Infrastructure & CI/CD Agnostic** – Can be adapted to any cloud provider, DevOps stack, or orchestration tool.
+- **State Management via Database** – Unlike static configuration-based tools, HAPE tracks states dynamically using a database.
 
 # Key Features
 - Automated CRUD generation for platform services (e.g., hape crud --create ServiceName {...}).
