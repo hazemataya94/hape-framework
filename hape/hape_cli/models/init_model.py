@@ -22,19 +22,28 @@ class Init:
             exit(1)
         
         self.hape_files = [
-            "artifacts/.dockerignore",
-            "artifacts/.env.example",
-            "artifacts/.gitignore",
-            "artifacts/alembic.ini",
-            "artifacts/main.py",
-            "artifacts/Makefile",
-            "artifacts/requirements.txt",
-            "artifacts/setup.py"
+            'artifacts/Makefile',
+            'artifacts/alembic.ini',
+            'artifacts/main.py',
+            'artifacts/requirements.txt',
+            'artifacts/setup.py'
         ]
-        self.hape_dirs = [
-            "artifacts/dockerfiles",
-            "artifacts/scripts",
-        ]
+        # self.hape_files = [
+        #     "artifacts/.dockerignore",
+        #     "artifacts/.env.example",
+        #     "artifacts/.gitignore",
+        #     "artifacts/alembic.ini",
+        #     "artifacts/main.py",
+        #     "artifacts/Makefile",
+        #     "artifacts/requirements.txt",
+        #     "artifacts/setup.py"
+        # ]
+        
+        self.hape_dirs = []
+        # self.hape_dirs = [
+        #     "artifacts/dockerfiles",
+        #     "artifacts/scripts",
+        # ]
 
         self.PROJECT_STRUCTURE = {
             ".dockerignore": None,
