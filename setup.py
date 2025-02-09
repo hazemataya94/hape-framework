@@ -1,13 +1,14 @@
 from setuptools import setup, find_packages
+import os
 
 setup(
     name="hape",
-    version="0.2.31",
+    version="0.2.33",
     packages=find_packages(include=["hape", "hape/*", "hape/artifacts/*"]),
-    package_data={
-        'hape.artifacts': ['*.txt', '*.json', '*.csv', '*.md', '*.ini', 'Maefile']
-    },
     include_package_data=True,
+    package_data={
+        "hape.artifacts": ["*.txt", "*.md", "*.ini", "*.cfg", "*.json", "*.yml", "*.sh", "*.zip", "dockerfiles/*", "scripts/*"],
+    },
     install_requires=[
         "alembic==1.14.1", "cachetools==5.5.1", "certifi==2025.1.31", "charset-normalizer==3.4.1",
         "durationpy==0.9", "google-auth==2.38.0", "greenlet==3.1.1", "idna==3.10", "kubernetes==31.0.0",
