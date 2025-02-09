@@ -1,6 +1,8 @@
 FROM python:3.12-bookworm
 
-RUN apt update && apt install -y awscli && pip install --upgrade hape
+RUN apt update && \
+    apt install -y awscli tree && \
+    pip install --upgrade hape
 
 WORKDIR /workspace
 

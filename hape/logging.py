@@ -1,7 +1,10 @@
 import logging
 import logging.config
 import os
+import sys
 from pythonjsonlogger import jsonlogger
+
+LOGGER_NAME = "hape_logger"
 
 LOG_DIR = "logs"
 LOG_FILE = os.path.join(LOG_DIR, "app.log")
@@ -55,5 +58,7 @@ LOGGING_CONFIG = {
 }
 
 logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger("global_logger")
+logger = logging.getLogger(LOGGER_NAME)
+if "--version" in sys.argv:
+    logging.disable(logging.CRITICAL)
 logger.info("Global logger initialized.")

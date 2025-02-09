@@ -22,18 +22,18 @@ class Init:
             exit(1)
         
         self.hape_files = [
-            ".dockerignore",
-            ".env.example",
-            ".gitignore",
-            "alembic.ini",
-            "main.py",
-            "Makefile",
-            "requirements-dev.txt",
-            "setup.py"
+            "artifacts/.dockerignore",
+            "artifacts/.env.example",
+            "artifacts/.gitignore",
+            "artifacts/alembic.ini",
+            "artifacts/main.py",
+            "artifacts/Makefile",
+            "artifacts/requirements.txt",
+            "artifacts/setup.py"
         ]
         self.hape_dirs = [
-            "dockerfiles",
-            "scripts",
+            "artifacts/dockerfiles",
+            "artifacts/scripts",
         ]
 
         self.PROJECT_STRUCTURE = {
@@ -63,7 +63,7 @@ class Init:
     def __copy_hape_files(self):
         for file in self.hape_files:
             src_file = os.path.join(self.hape_framework_path, file)
-            dest_file = os.path.join(self.name, file)
+            dest_file = os.path.join(self.name, file).replace('artifacts/', '')
             logger.debug(f'Copying file: {src_file} -> {dest_file}')
             self.file_service.copy_file(src_file, dest_file, overwrite=True)
 
