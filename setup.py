@@ -2,8 +2,10 @@ from setuptools import setup, find_packages
 
 setup(
     name="hape",
-    version="0.2.34",
+    version="0.2.35",
     packages=find_packages(include=["hape", "hape/*"]),
+    package_data={},
+    include_package_data=True,
     install_requires=[
         "alembic==1.14.1", "cachetools==5.5.1", "certifi==2025.1.31", "charset-normalizer==3.4.1",
         "durationpy==0.9", "google-auth==2.38.0", "greenlet==3.1.1", "idna==3.10", "kubernetes==31.0.0",
