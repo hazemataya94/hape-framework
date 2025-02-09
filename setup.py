@@ -1,22 +1,12 @@
 from setuptools import setup, find_packages
-import os
-
-def package_artifacts(directory):
-    paths = []
-    for (path, _, filenames) in os.walk(directory):
-        for filename in filenames:
-            full_path = os.path.join(path, filename).replace('hape/', '')
-            relative_path = os.path.relpath(full_path, directory)
-            print(relative_path)
-            paths.append(relative_path)
-    return paths
-
-artifacts = package_artifacts("hape/artifacts")
 
 setup(
     name="hape",
-    version="0.2.30",
-    packages=find_packages(include=["hape", "hape/**"]),
+    version="0.2.31",
+    packages=find_packages(include=["hape", "hape/*", "hape/artifacts/*"]),
+    package_data={
+        'hape.artifacts': ['*.txt', '*.json', '*.csv', '*.md', '*.ini', 'Maefile']
+    },
     include_package_data=True,
     install_requires=[
         "alembic==1.14.1", "cachetools==5.5.1", "certifi==2025.1.31", "charset-normalizer==3.4.1",
