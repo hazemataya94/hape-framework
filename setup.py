@@ -15,8 +15,8 @@ artifacts = package_artifacts("hape/artifacts")
 
 setup(
     name="hape",
-    version="0.2.29",
-    packages=find_packages(include=["hape", "hape/*"]),
+    version="0.2.30",
+    packages=find_packages(include=["hape", "hape/**"]),
     include_package_data=True,
     install_requires=[
         "alembic==1.14.1", "cachetools==5.5.1", "certifi==2025.1.31", "charset-normalizer==3.4.1",
