@@ -1,16 +1,26 @@
 import os
 import re
 import sys
+import importlib.util
+
 from hape.logging import logger
 from hape.services.file_service import FileService
 
 class Init:
 
     def __init__(self, name: str):
+        
         self.name = name
         self.name_underscore = name.replace("-", "_")
         self.file_service = FileService()
-        self.hape_framework_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+        
+        spec = importlib.util.find_spec("hape")
+        if spec and spec.origin:
+            self.hape_framework_path = os.path.dirname(os.path.abspath(spec.origin))
+        else:
+            logger.error("Couldn't not find `hape` package. Execute `pip install --upgrade hape`.")
+            exit(1)
+        
         self.hape_files = [
             ".dockerignore",
             ".env.example",
