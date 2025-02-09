@@ -74,7 +74,16 @@ build: bump-version
 	@python -m build
 
 publish: build
-	@twine upload -u __token__ -p "$$(cat ../pypi.token)" dist/*
+	@twine upload -u __token__ -p "$$(cat ../pypi.token)" dist/* \
+	&& \
+	( \
+		echo "Upload successful. Committing version bump..."; \
+		git add setup.py; \
+		git commit -m "Bump version"; \
+		git push; \
+	) || ( \
+		echo "Upload failed. Not committing version bump."; \
+	)
 
 play:
 	time python main.py play
