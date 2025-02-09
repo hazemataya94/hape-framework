@@ -14,7 +14,7 @@ artifacts = package_artifacts("hape/artifacts")
 
 setup(
     name="hape",
-    version="0.2.10",
+    version="0.2.19",
     packages=find_packages(include=["hape", "hape/*"]),
     package_data={
         "hape.artifacts": artifacts,
