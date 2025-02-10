@@ -32,10 +32,10 @@ install              Install the package.
 list                 List available commands and description.
 migration-create     Create a new database migration.
 migration-run        Apply the latest database migrations.
-play                 Run hape.playground Playground.paly() and print the execution time.
-publish              Publish package to public PyPI, commit, tag, and push the version. Runs: build.
+play                 Run hape.playground Playground.paly() and print execution time.
+publish              Publish package to public PyPI, commit, tag, and push version. Runs: build.
 publish-aws          Publish package to AWS CodeArtifact. Runs: build.
-source-env           Print export statements for the environment variables from .env file.
+source-env           Print export statements for all environment variables from .env file.
 zip                  Create a zip archive excluding local files and playground.
 ```
 
