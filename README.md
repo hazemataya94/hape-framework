@@ -13,6 +13,32 @@ HAPE Framework aims to reduce this complexity by enabling platform engineers to 
 With HAPE, developers can interact with a CLI or API to create, deploy, and manage their services without diving into complex configurations. The framework also supports custom state management via databases, and integration with existing DevOps tools. 
 
 ## Done Features
+### Automate everyday's commands
+```
+$ make list
+build                Build the package in dist. Runs: bump-version.
+bump-version         Bump the patch version in setup.py.
+clean                Clean up build, cache, playground and zip files.
+docker-down          Stop Docker services.
+docker-exec          Execute a shell in the HAPE Docker container.
+docker-ps            List running Docker services.
+docker-restart       Restart Docker services.
+docker-up            Start Docker services.
+freeze-cli           Freeze dependencies for CLI.
+freeze-dev           Freeze dependencies for development.
+init-cli             Install CLI dependencies.
+init-dev             Install development dependencies in .venv, docker-compose up -d, and create .env if not exist.
+install              Install the package.
+list                 Show available commands.
+migration-create     Create a new database migration.
+migration-run        Apply the latest database migrations.
+play                 Run hape.playground Playground.paly() and print the execution time.
+publish              Publish package to public PyPI, commit, tag, and push the version. Runs: build.
+publish-aws          Publish package to AWS CodeArtifact. Runs: build.
+source-env           Print export statements for the environment variables from .env file.
+zip                  Create a zip archive excluding local files and playground.
+```
+
 ### Install
 ```
 $ pip install --upgrade hape

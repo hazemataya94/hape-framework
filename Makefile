@@ -1,17 +1,18 @@
-clean:
+
+clean: ## Clean up build, cache, playground and zip files.
 	rm -rf build dist hape.egg-info playground/* hape.zip
 
-zip:
+zip: ## Create a zip archive excluding local files and playground.
 	zip -r hape.zip . -x ".env" ".venv/*" ".git/*" "playground/*"
 	open .
 
-.venv:
+.venv: ## Create a virtual environment .venv if not exists.
 	@if [ ! -d ".venv" ]; then \
 		echo "Creating virtual environment"; \
 		python -m venv .venv; \
 	fi
 
-init-dev: .venv
+init-dev: .venv ## Install development dependencies in .venv, docker-compose up -d, and create .env if not exist.
 	@echo "Installing venv dependencies"
 	@source .venv/bin/activate && pip install -r requirements-dev.txt
 	@echo "Dependencies Installed."
@@ -26,20 +27,20 @@ init-dev: .venv
 	@echo "\$$ source .venv/bin/activate"
 	@echo
 
-init-cli:
+init-cli: ## Install CLI dependencies.
 	@echo "Installing `hape` CLI"
 	@pip install -r requirements-cli.txt --break-system-packages
 
-freeze-dev:
+freeze-dev: ## Freeze dependencies for development.
 	@pip freeze > requirements-dev.txt
 
-freeze-cli:
+freeze-cli: ## Freeze dependencies for CLI.
 	@pip freeze > requirements-cli.txt
 
-install: init-cli
-	pip install --upgrade --index-url https://pypi_link hape
+install: ## Install the package.
+	pip install --upgrade hape
 
-bump-version:
+bump-version: ## Bump the patch version in setup.py.
 	@echo "🔄 Bumping patch version in setup.py..."
 	@sed -i.bak -E 's/(version="([0-9]+)\.([0-9]+)\.([0-9]+)")/\1/' setup.py && \
 	version=$$(grep -oE 'version="[0-9]+\.[0-9]+\.[0-9]+"' setup.py | grep -oE '[0-9]+\.[0-9]+\.[0-9]+') && \
@@ -52,11 +53,7 @@ bump-version:
 	rm -f setup.py.bak && \
 	echo "Version updated to $$new_version"
 
-publish-aws: bump-version
-	@rm -rf dist/*
-	@python setup.py sdist
-	@python setup.py bdist_wheel --plat-name manylinux2014_x86_64
-	@python setup.py bdist_wheel --plat-name manylinux2014_aarch64
+publish-aws: build ## Publish package to AWS CodeArtifact. Runs: build.
 	@export TWINE_USERNAME=aws && \
 	export TWINE_PASSWORD=$$(aws codeartifact get-authorization-token --domain pypi --domain-owner 910325995766 --query authorizationToken --output text) && \
 	twine upload --repository-url https://pypi-910325995766.d.codeartifact.eu-central-1.amazonaws.com/pypi/devops/ dist/* && \
@@ -69,11 +66,11 @@ publish-aws: bump-version
 		echo "Upload failed. Not committing version bump."; \
 	)
 
-build: bump-version
+build: bump-version ## Build the package in dist. Runs: bump-version.
 	@rm -rf dist/*
 	@python -m build
 
-publish: build
+publish: build ## Publish package to public PyPI, commit, tag, and push the version. Runs: build.
 	@twine upload -u __token__ -p "$$(cat ../pypi.token)" dist/* \
 	&& \
 	( \
@@ -97,35 +94,37 @@ publish: build
 		echo "Upload failed. Not committing version bump."; \
 	)
 
-play:
+play: ## Run hape.playground Playground.paly() and print the execution time.
 	time python main.py play
 
-migration-init:
-	@cd hape && alembic init migrations
-
-migration-create:
+migration-create: ## Create a new database migration.
 	@read -p "Enter migration message: " migration_msg && \
 	 alembic revision --autogenerate -m "$$migration_msg"
 
-migration-run:
+migration-run: ## Apply the latest database migrations.
 	@ALEMBIC_CONFIG=./alembic.ini alembic upgrade head
 
-docker-restart:
+docker-restart: ## Restart Docker services.
 	@docker-compose -f dockerfiles/docker-compose-dev.yml down
 	@docker-compose -f dockerfiles/docker-compose-dev.yml up -d --build
 
-docker-up:
+docker-up: ## Start Docker services.
 	@docker-compose -f dockerfiles/docker-compose-dev.yml up -d --build
 
-docker-down:
+docker-down: ## Stop Docker services.
 	@docker-compose -f dockerfiles/docker-compose-dev.yml down
 
-docker-ps:
+docker-ps: ## List running Docker services.
 	@docker-compose -f dockerfiles/docker-compose-dev.yml ps
 
-docker-exec:
+docker-exec: ## Execute a shell in the HAPE Docker container.
 	@docker exec -it hape bash
 
-source-env:
+source-env: ## Print export statements for the environment variables from .env file.
 	@echo "Run the following command to export environment variables:"
 	@grep -v '^#' .env | xargs -I {} echo export {}
+
+list: ## Show available commands.
+	@grep -E '^[a-zA-Z_-]+:.*?## ' Makefile | \
+	awk -F ':.*?## ' '{printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' | \
+	sort

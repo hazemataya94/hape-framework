@@ -69,4 +69,3 @@ class Playground:
         Playground().delete_deployment_cost()
         Playground().delete_all_deployment_cost()
         Playground().generate_gitlab_changes_report()
-        pass
