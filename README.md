@@ -29,7 +29,7 @@ freeze-dev           Freeze dependencies for development.
 init-cli             Install CLI dependencies.
 init-dev             Install development dependencies in .venv, start docker services, and create .env if not exist.
 install              Install the package.
-list                 Show list of available commands and description.
+list                 List available commands and description.
 migration-create     Create a new database migration.
 migration-run        Apply the latest database migrations.
 play                 Run hape.playground Playground.paly() and print the execution time.
