@@ -77,12 +77,10 @@ publish: build
 	@twine upload -u __token__ -p "$$(cat ../pypi.token)" dist/* \
 	&& \
 	( \
-		echo "Upload successful. Committing version bump..." && \
-		version=$(shell sed -n 's/version="\(.*\)",/\1/p' setup.py | tr -d " ") && \
-		git add setup.py && \
-		git commit -m "Bump version $$version" && \
-		git tag $$version &&
-		git push \
+		version=$(shell sed -n 's/version="\(.*\)",/\1/p' setup.py | tr -d " "); \
+		echo "Pypi package has been successfully published." \
+		echo; echo "Committing and tagging version $$version" \
+		git add setup.py; \
 	) || ( \
 		echo "Upload failed. Not committing version bump."; \
 	)
