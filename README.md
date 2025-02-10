@@ -27,7 +27,7 @@ docker-up            Start Docker services.
 freeze-cli           Freeze dependencies for CLI.
 freeze-dev           Freeze dependencies for development.
 init-cli             Install CLI dependencies.
-init-dev             Install development dependencies in .venv, docker-compose up -d, and create .env if not exist.
+init-dev             Install development dependencies in .venv, start docker services, and create .env if not exist.
 install              Install the package.
 list                 Show available commands.
 migration-create     Create a new database migration.
