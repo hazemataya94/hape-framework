@@ -1,8 +1,8 @@
-from hape.bootstrap import bootstrap_application
+from hape.bootstrap import bootstrap
 from hape.hape_cli.argument_parsers.main_argument_parser import MainArgumentParser
 
 def main():
-    bootstrap_application()
+    bootstrap()
     
     main_parser = MainArgumentParser()
     

@@ -5,14 +5,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql import text
-from hape.logging import logger
-
-
+from hape.logging import Logging
 
 class Config:
+    __logger = Logging.get_logger()
     _env_loaded = False
     _db_session = None
-    _required_env_variables = ["HAPE_GITLAB_TOKEN", "HAPE_GITLAB_DOMAIN", "HAPE_MARIADB_HOST", "HAPE_MARIADB_USERNAME", "HAPE_MARIADB_PASSWORD", "HAPE_MARIADB_DATABASE"]
+    _required_env_variables = []
 
     @staticmethod
     def check_variables():
@@ -32,10 +31,10 @@ class Config:
         env_value = os.getenv(env)
         
         if not env_value and env in Config._required_env_variables:
-            logger.error(f"""One or more of the required environment variables is missing.
+            Config.__logger.error(f"""Environment variable {env} is missing.
 
 To set the value of the environment variable run:
-$ export ENV_VARIABLE_NAME="value"
+$ export {env}="value"
 
 The following environment variables are required:
 {json.dumps(Config._required_env_variables, indent=4)}
@@ -57,9 +56,9 @@ The following environment variables are required:
                     connection.execute(text("SELECT 1"))
 
                 Config._db_session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-                logger.info("Database seassion created successfully.")
+                Config.__logger.info("Database seassion created successfully.")
             except OperationalError:
-                logger.error("Error: Unable to connect to the database. Please check the configuration.")
+                Config.__logger.error("Error: Unable to connect to the database. Please check the configuration.")
                 raise
 
         return Config._db_session()
@@ -87,3 +86,14 @@ The following environment variables are required:
     @staticmethod
     def get_mysql_database():
         return Config._get_env_value("HAPE_MARIADB_DATABASE")
+    
+    @staticmethod
+    def get_log_level():
+        valid_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+        log_level = Config._get_env_value("HAPE_LOG_LEVEL")
+        return log_level if log_level and log_level in valid_levels else "DEBUG"
+    
+    @staticmethod
+    def get_log_file():
+        log_file = Config._get_env_value("HAPE_LOG_FILE")
+        return log_file if log_file else "hape"

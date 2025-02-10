@@ -3,13 +3,13 @@ import re
 import sys
 import importlib.util
 
-from hape.logging import logger
+from hape.logging import Logging
 from hape.services.file_service import FileService
 
 class Init:
 
     def __init__(self, name: str):
-        
+        self.logger = Logging.get_logger('hape.hape_cli.init_model')
         self.name = name
         self.name_underscore = name.replace("-", "_")
         self.file_service = FileService()
@@ -18,7 +18,7 @@ class Init:
         if spec and spec.origin:
             self.hape_framework_path = os.path.dirname(os.path.abspath(spec.origin))
         else:
-            logger.error("Couldn't not find `hape` package. Execute `pip install --upgrade hape`.")
+            self.logger.error("Couldn't not find `hape` package. Execute `pip install --upgrade hape`.")
             exit(1)
         
         self.hape_files = [
@@ -73,54 +73,54 @@ class Init:
         for file in self.hape_files:
             src_file = os.path.join(self.hape_framework_path, file)
             dest_file = os.path.join(self.name, file).replace('artifacts/', '')
-            logger.debug(f'Copying file: {src_file} -> {dest_file}')
+            self.logger.debug(f'Copying file: {src_file} -> {dest_file}')
             self.file_service.copy_file(src_file, dest_file, overwrite=True)
 
         for directory in self.hape_dirs:
             src_dir = os.path.join(self.hape_framework_path, directory)
             dest_dir = os.path.join(self.name, directory)
-            logger.debug(f'Copying directory: {src_dir} -> {dest_dir}')
+            self.logger.debug(f'Copying directory: {src_dir} -> {dest_dir}')
             self.file_service.copy_directory(src_dir, dest_dir)
 
     def __init_project_structure_process_dictionary(self, dictionary: dict, root_path: str):
         for key, value in dictionary.items():
             sub_path = os.path.join(root_path, key)
             if value is None:
-                logger.debug(f'Creating file: {sub_path}')
+                self.logger.debug(f'Creating file: {sub_path}')
                 self.file_service.write_file(sub_path, "")
             elif isinstance(value, str):
-                logger.debug(f'Creating file: {sub_path}')
+                self.logger.debug(f'Creating file: {sub_path}')
                 self.file_service.write_file(sub_path, value)
             elif isinstance(value, list):
-                logger.debug(f'Creating directory: {sub_path}')
+                self.logger.debug(f'Creating directory: {sub_path}')
                 self.file_service.create_directory(sub_path)
                 for file in value:
-                    logger.debug(f'Creating file: {sub_path}')
+                    self.logger.debug(f'Creating file: {sub_path}')
                     self.file_service.write_file(os.path.join(sub_path, file), "")
             elif isinstance(value, dict):
                 self.__init_project_structure_process_dictionary(value, sub_path)
 
     def __init_project_structure(self):
-        logger.debug(f'Creating directory: {self.name}')
+        self.logger.debug(f'Creating directory: {self.name}')
         if self.file_service.path_exists(self.name):
-            logger.error(f"Error: directory '{self.name}' already exists.")
+            self.logger.error(f"Error: directory '{self.name}' already exists.")
             sys.exit(1)
         self.file_service.create_directory(self.name)
         self.__init_project_structure_process_dictionary(self.PROJECT_STRUCTURE, self.name)
 
         readme_path = os.path.join(self.name, "README.md")
-        logger.debug(f'Creating file: {readme_path}')
+        self.logger.debug(f'Creating file: {readme_path}')
         self.file_service.write_file(readme_path, f"# {self.name}\n")
 
     def validate(self):
         name = self.name.strip()
-        logger.debug(f'Validating project name: {self.name}')
+        self.logger.debug(f'Validating project name: {self.name}')
         if not re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', name):
-            logger.error(f"Error: Project name '{name}' must contain only lowercase letters, numbers, and use '-' as a separator.")
+            self.logger.error(f"Error: Project name '{name}' must contain only lowercase letters, numbers, and use '-' as a separator.")
             sys.exit(1)
-        logger.debug(f'Valid project name.')
+        self.logger.debug(f'Valid project name.')
 
     def init_project(self):
         self.__init_project_structure()
         self.__copy_hape_files()
-        logger.info(f'Project {self.name} has been successfully initialized!')
+        self.logger.info(f'Project {self.name} has been successfully initialized!')

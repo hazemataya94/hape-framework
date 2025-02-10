@@ -113,3 +113,7 @@ docker-ps:
 
 docker-exec:
 	@docker exec -it hape bash
+
+source-env:
+	@echo "Run the following command to export environment variables:"
+	@grep -v '^#' .env | xargs -I {} echo export {}
