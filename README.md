@@ -36,7 +36,7 @@ play                 Run hape.playground Playground.paly() and print execution t
 publish              Publish package to public PyPI, commit, tag, and push version. Runs: build.
 publish-aws          Publish package to AWS CodeArtifact. Runs: build.
 source-env           Print export statements for all environment variables from .env file.
-zip                  Create a zip archive excluding local files and playground.
+zip                  Create a zip archive excluding local git, env, venv and playground.
 ```
 
 ### Publish to public PyPI repository
