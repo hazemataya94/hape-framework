@@ -1,3 +1,5 @@
+from hape.logging import Logging
+
 from hape.base.model_controller import ModelController
 from hape.models.deployment_cost_model import DeploymentCost
 

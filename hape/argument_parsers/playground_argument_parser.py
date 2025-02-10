@@ -1,3 +1,5 @@
+from hape.logging import Logging
+
 import sys
 from hape.playground import Playground
 

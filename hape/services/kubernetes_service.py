@@ -1,7 +1,7 @@
-import kubernetes
-import os
-import subprocess
-import json
+from hape.logging import Logging
+
+import kubernetes.config
+import kubernetes.client
 
 class KubernetesService:
     
@@ -21,11 +21,13 @@ class KubernetesService:
         
         kubernetes.config.load_kube_config(context=cluster_context)
 
+        self.logger = Logging.get_logger('hape.services.kubernetes_model')
         self.core_v1 = kubernetes.client.CoreV1Api()
         self.apps_v1 = kubernetes.client.AppsV1Api()
         self.autoscaling_v2 = kubernetes.client.AutoscalingV2Api()
 
     def get_deployments(self, namespace):
+        self.logger.debug(f"get_deployments(namespace: {namespace})")
         try:
             deployments = self.apps_v1.list_namespaced_deployment(namespace)
             return [deployment.metadata.name for deployment in deployments.items]
@@ -34,6 +36,7 @@ class KubernetesService:
             exit(1)
 
     def get_deployment_replicas(self, namespace):
+        self.logger.debug(f"get_deployment_replicas(namespace: {namespace})")
         try:
             deployments = self.apps_v1.list_namespaced_deployment(namespace)
             return {deployment.metadata.name: deployment.spec.replicas for deployment in deployments.items}
@@ -42,6 +45,7 @@ class KubernetesService:
             exit(1)
     
     def get_deployment_cost_details(self, namespace):
+        self.logger.debug(f"get_deployment_cost_details(namespace: {namespace})")
         try:
             deployments = self.apps_v1.list_namespaced_deployment(namespace)
             cost_details = {}
@@ -71,6 +75,7 @@ class KubernetesService:
             exit(1)
 
     def remove_hpa_downscaling_annotations(self, hpa_item):
+        self.logger.debug(f"remove_hpa_downscaling_annotations(hpa_item: {hpa_item})")
         if not hpa_item.metadata.annotations:
             return
         
@@ -80,8 +85,8 @@ class KubernetesService:
         for key in keys_to_remove:
             annotations.pop(key, None)
 
-        metadata = client.V1ObjectMeta(annotations=annotations)
-        body = client.V2HorizontalPodAutoscaler(metadata=metadata)
+        metadata = kubernetes.V1ObjectMeta(annotations=annotations)
+        body = kubernetes.V2HorizontalPodAutoscaler(metadata=metadata)
 
         try:
             self.autoscaling_v2.patch_namespaced_horizontal_pod_autoscaler(
@@ -93,6 +98,7 @@ class KubernetesService:
             print(f"Error removing HPA annotations in {hpa_item.metadata.namespace}/{hpa_item.metadata.name}: {e}")
 
     def remove_hpa_downscaling_annotations_namespaced(self, namespace):
+        self.logger.debug(f"remove_hpa_downscaling_annotations_namespaced(namespace: {namespace})")
         try:
             result = self.autoscaling_v2.list_namespaced_horizontal_pod_autoscaler(namespace)
             for item in result.items:
@@ -101,12 +107,13 @@ class KubernetesService:
             print(f"Error listing HPAs in namespace {namespace}: {e}")
 
     def add_hpa_downscaling_annotations(self, hpa_item):
+        self.logger.debug(f"add_hpa_downscaling_annotations(hpa_item: {hpa_item})")
         annotations = hpa_item.metadata.annotations or {}
         annotations["downscaler/downtime-replicas"] = "1"
         annotations["downscaler/uptime"] = "Mon-Fri 05:30-20:30 Europe/Berlin"
 
-        metadata = client.V1ObjectMeta(annotations=annotations)
-        body = client.V2HorizontalPodAutoscaler(metadata=metadata)
+        metadata = kubernetes.V1ObjectMeta(annotations=annotations)
+        body = kubernetes.V2HorizontalPodAutoscaler(metadata=metadata)
 
         try:
             self.autoscaling_v2.patch_namespaced_horizontal_pod_autoscaler(
@@ -118,6 +125,7 @@ class KubernetesService:
             print(f"Error adding HPA annotations in {hpa_item.metadata.namespace}/{hpa_item.metadata.name}: {e}")
 
     def add_hpa_downscaling_annotations_namespaced(self, namespace):
+        self.logger.debug(f"add_hpa_downscaling_annotations_namespaced(namespace: {namespace})")
         try:
             result = self.autoscaling_v2.list_namespaced_horizontal_pod_autoscaler(namespace)
             for item in result.items:

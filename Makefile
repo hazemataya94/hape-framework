@@ -77,10 +77,12 @@ publish: build
 	@twine upload -u __token__ -p "$$(cat ../pypi.token)" dist/* \
 	&& \
 	( \
-		echo "Upload successful. Committing version bump..."; \
-		git add setup.py; \
-		git commit -m "Bump version"; \
-		git push; \
+		echo "Upload successful. Committing version bump..." && \
+		version=$(shell sed -n 's/version="\(.*\)",/\1/p' setup.py | tr -d " ") && \
+		git add setup.py && \
+		git commit -m "Bump version $$version" && \
+		git tag $$version &&
+		git push \
 	) || ( \
 		echo "Upload failed. Not committing version bump."; \
 	)

@@ -8,7 +8,8 @@ def bootstrap():
     log_level = Config.get_log_level()
     log_file = Config.get_log_file()
     
-    Logging.rotate_log_file(log_file)
+    if Config.get_log_rotate_every_run() == "1":
+        Logging.rotate_log_file(log_file)
     
     logging_config_json = LOGGING_CONFIG.replace("{{log_level}}", log_level).replace("{{log_file}}", log_file)
     logging_config = json.loads(logging_config_json)

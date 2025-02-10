@@ -1,11 +1,18 @@
+import json
+from hape.models.git_model import GitModel
+from hape.logging import Logging
+
 class GitController:
     def __init__(self):
+        self.logger = Logging.get_logger('hape.controllers.git_controller')
         self.git_model = GitModel()
     
     def clone_project_in_group(self, dir, group_id):
+        self.logger.debug(f"clone_project_in_group(dir: {dir}, group_id: {group_id})")
         return self.git_model.clone_project_in_group(dir, group_id)
     
     def commit_projects(self, dir, message, prefix):
+        self.logger.debug(f"commit_projects(dir: {dir}, message: {message}, prefix: {prefix})")
         repos = self.git_model.get_repositories(dir, prefix)
         
         print("The following projects will be committed and pushed:")
@@ -26,6 +33,7 @@ class GitController:
                 print("No changes to commit.")
     
     def pull_projects(self, dir, prefix):
+        self.logger.debug(f"pull_projects(dir: {dir}, prefix: {prefix})")
         repos = self.git_model.get_repositories(dir, prefix)
         
         print("The following projects will be pulled:")

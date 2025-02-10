@@ -9,7 +9,7 @@ from hape.services.file_service import FileService
 class Init:
 
     def __init__(self, name: str):
-        self.logger = Logging.get_logger('hape.hape_cli.init_model')
+        self.logger = Logging.get_logger('hape.hape_cli.models.init_model')
         self.name = name
         self.name_underscore = name.replace("-", "_")
         self.file_service = FileService()
@@ -103,8 +103,13 @@ class Init:
     def __init_project_structure(self):
         self.logger.debug(f'Creating directory: {self.name}')
         if self.file_service.path_exists(self.name):
-            self.logger.error(f"Error: directory '{self.name}' already exists.")
-            sys.exit(1)
+            self.logger.warning(f"Warning: directory '{self.name}' already exists.")
+            user_input = input(f"ALL DATA IN '{self.name}' WILL BE LOST. Do you want to remove '{self.name}' and initialize a new project? yes/no: ").strip().lower()
+            if user_input == 'yes':
+                self.file_service.delete_directory(self.name)
+            else:
+                print("Operation canceled. Keeping the directory.")
+                sys.exit(1)
         self.file_service.create_directory(self.name)
         self.__init_project_structure_process_dictionary(self.PROJECT_STRUCTURE, self.name)
 
@@ -113,6 +118,7 @@ class Init:
         self.file_service.write_file(readme_path, f"# {self.name}\n")
 
     def validate(self):
+        self.logger.debug(f"validate()")
         name = self.name.strip()
         self.logger.debug(f'Validating project name: {self.name}')
         if not re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', name):
@@ -121,6 +127,7 @@ class Init:
         self.logger.debug(f'Valid project name.')
 
     def init_project(self):
+        self.logger.debug(f"init_project()")
         self.__init_project_structure()
         self.__copy_hape_files()
         self.logger.info(f'Project {self.name} has been successfully initialized!')

@@ -1,3 +1,5 @@
+from hape.logging import Logging
+
 import re
 from typing import List, Optional
 from datetime import datetime
@@ -8,6 +10,7 @@ from hape.services.file_service import FileService
 
 class GitlabService:
     def __init__(self):
+        self.logger = Logging.get_logger('hape.models.gitlab_model')
         gitlab_domain = Config.get_gitlab_domain()
         gitlab_token = Config.get_gitlab_token()
         self.client = Gitlab(f"https://{gitlab_domain}", private_token=gitlab_token)
@@ -33,6 +36,7 @@ class GitlabService:
         return project.commits.list(**params)
     
     def generate_csv_changes_in_cicd_repos(self, group_id: int, output_file: str, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None, file_regex: Optional[str] = None):
+        self.logger.debug(f"generate_csv_changes_in_cicd_repos(group_id: int: {group_id: int}, output_file: str: {output_file: str}, start_date: Optional[datetime] : {start_date: Optional[datetime] }, end_date: Optional[datetime] : {end_date: Optional[datetime] }, file_regex: Optional[str] : {file_regex: Optional[str] })")
         
         group_projects = self._get_group_projects(group_id, recursive=True, search="cicd-")
         project_ids = [project.id for project in group_projects]

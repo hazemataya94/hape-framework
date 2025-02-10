@@ -1,3 +1,5 @@
+from hape.logging import Logging
+
 from sqlalchemy import Column, Integer, String, Float, Boolean, BigInteger
 from datetime import datetime
 from hape.base.model import Model
