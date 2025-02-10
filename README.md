@@ -13,7 +13,7 @@ HAPE Framework aims to reduce this complexity by enabling platform engineers to 
 With HAPE, developers can interact with a CLI or API to create, deploy, and manage their services without diving into complex configurations. The framework also supports custom state management via databases, and integration with existing DevOps tools. 
 
 ## Done Features
-### Automate everyday's commands
+### Automate everyday commands
 ```
 $ make list
 build                Build the package in dist. Runs: bump-version.
@@ -39,7 +39,7 @@ source-env           Print export statements for the environment variables from 
 zip                  Create a zip archive excluding local files and playground.
 ```
 
-### Install
+### Publish to public PyPI repository
 ```
 $ pip install --upgrade hape
 $ hape --version
