@@ -19,17 +19,4 @@ def bootstrap():
     }
     logging.config.dictConfig(logging_config)
     logger = Logging.get_logger()
-    print(logger)
-    
-    logger.info("Checking configurations.")
-    Config.check_variables()
-    session = Config.get_db_session()
-    try:
-        DeploymentCost.initialize_from_sqlalchemy(DeploymentCost)
-        logger.info("Database initialized successfully!")
-    except Exception as e:
-        logger.error(f"Error initializing database: {e}")
-    finally:
-        session.close()
-
     logger.info("Application started!")

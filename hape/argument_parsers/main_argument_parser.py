@@ -1,5 +1,3 @@
-from hape.logging import Logging
-
 import argparse
 from importlib.metadata import version
 

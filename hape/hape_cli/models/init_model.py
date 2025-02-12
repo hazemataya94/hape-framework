@@ -2,9 +2,9 @@ import os
 import re
 import sys
 import importlib.util
-
 from hape.logging import Logging
 from hape.services.file_service import FileService
+from hape.hape_cli.init_structure.new_project_structure import NEW_PROJECT_STRUCTURE
 
 class Init:
 
@@ -20,102 +20,6 @@ class Init:
         else:
             self.logger.error("Couldn't not find `hape` package. Execute `pip install --upgrade hape`.")
             exit(1)
-        
-        self.hape_files = [
-            'artifacts/Makefile',
-            'artifacts/alembic.ini',
-            'artifacts/main.py',
-            'artifacts/requirements.txt',
-            'artifacts/setup.py'
-        ]
-        # self.hape_files = [
-        #     "artifacts/.dockerignore",
-        #     "artifacts/.env.example",
-        #     "artifacts/.gitignore",
-        #     "artifacts/alembic.ini",
-        #     "artifacts/main.py",
-        #     "artifacts/Makefile",
-        #     "artifacts/requirements.txt",
-        #     "artifacts/setup.py"
-        # ]
-        
-        self.hape_dirs = []
-        # self.hape_dirs = [
-        #     "artifacts/dockerfiles",
-        #     "artifacts/scripts",
-        # ]
-
-        self.PROJECT_STRUCTURE = {
-            ".dockerignore": None,
-            ".env.example": None,
-            ".gitignore": None,
-            "alembic.ini": None,
-            "main.py": None,
-            "Makefile": None,
-            "README.md": None,
-            "requirements-dev.txt": None,
-            "setup.py": None,
-            "dockerfiles": [],
-            "scripts": [],
-            self.name_underscore: {
-                "argument_parsers": [".gitkeep"],
-                "cli.py": None,
-                "controllers": ["__init__.py"],
-                "enums": ["__init__.py"],
-                "migrations": ["README", "env.py", "script.py.mako"],
-                "migrations/versions": [".gitkeep"],
-                "models": ["__init__.py"],
-                "services": ["__init__.py"],
-            }
-        }
-
-    def __copy_hape_files(self):
-        for file in self.hape_files:
-            src_file = os.path.join(self.hape_framework_path, file)
-            dest_file = os.path.join(self.name, file).replace('artifacts/', '')
-            self.logger.debug(f'Copying file: {src_file} -> {dest_file}')
-            self.file_service.copy_file(src_file, dest_file, overwrite=True)
-
-        for directory in self.hape_dirs:
-            src_dir = os.path.join(self.hape_framework_path, directory)
-            dest_dir = os.path.join(self.name, directory)
-            self.logger.debug(f'Copying directory: {src_dir} -> {dest_dir}')
-            self.file_service.copy_directory(src_dir, dest_dir)
-
-    def __init_project_structure_process_dictionary(self, dictionary: dict, root_path: str):
-        for key, value in dictionary.items():
-            sub_path = os.path.join(root_path, key)
-            if value is None:
-                self.logger.debug(f'Creating file: {sub_path}')
-                self.file_service.write_file(sub_path, "")
-            elif isinstance(value, str):
-                self.logger.debug(f'Creating file: {sub_path}')
-                self.file_service.write_file(sub_path, value)
-            elif isinstance(value, list):
-                self.logger.debug(f'Creating directory: {sub_path}')
-                self.file_service.create_directory(sub_path)
-                for file in value:
-                    self.logger.debug(f'Creating file: {sub_path}')
-                    self.file_service.write_file(os.path.join(sub_path, file), "")
-            elif isinstance(value, dict):
-                self.__init_project_structure_process_dictionary(value, sub_path)
-
-    def __init_project_structure(self):
-        self.logger.debug(f'Creating directory: {self.name}')
-        if self.file_service.path_exists(self.name):
-            self.logger.warning(f"Warning: directory '{self.name}' already exists.")
-            user_input = input(f"ALL DATA IN '{self.name}' WILL BE LOST. Do you want to remove '{self.name}' and initialize a new project? yes/no: ").strip().lower()
-            if user_input == 'yes':
-                self.file_service.delete_directory(self.name)
-            else:
-                print("Operation canceled. Keeping the directory.")
-                sys.exit(1)
-        self.file_service.create_directory(self.name)
-        self.__init_project_structure_process_dictionary(self.PROJECT_STRUCTURE, self.name)
-
-        readme_path = os.path.join(self.name, "README.md")
-        self.logger.debug(f'Creating file: {readme_path}')
-        self.file_service.write_file(readme_path, f"# {self.name}\n")
 
     def validate(self):
         self.logger.debug(f"validate()")
@@ -126,8 +30,45 @@ class Init:
             sys.exit(1)
         self.logger.debug(f'Valid project name.')
 
+    def _init_file(self, path: str, content: str):
+        self.logger.debug(f"_init_file(path: {path}, content: {content})")
+        if content:
+            content = content.replace("{{project_name}}", self.name_underscore)
+        self.file_service.write_file(path, content)
+
+    def _init_directory(self, root_path: str, dictionary: dict):
+        self.logger.debug(f"_init_directory(root_path: {root_path}, dictionary: {dictionary})")
+        for name, content in dictionary.items():
+            if name == 'project_name':
+                name = self.name_underscore
+            sub_path = os.path.join(root_path, name)
+            if content is None:
+                self._init_file(sub_path,"")
+            elif isinstance(content, str):
+                self._init_file(sub_path, content)
+            elif isinstance(content, dict):
+                self.file_service.create_directory(sub_path)
+                self._init_directory(sub_path, content)
+            else:
+                self.logger.error(f"Content type for {content} is not supported.")
+                exit(1)
+
+    def _init_project_structure(self):
+        self.logger.debug(f"_init_project_structure()")
+        if self.file_service.path_exists(self.name):
+            self.logger.warning(f"Warning: directory '{self.name}' already exists.")
+            user_input = input(f"ALL DATA IN '{self.name}' WILL BE LOST. Do you want to remove '{self.name}' and initialize a new project? yes/no: ").strip().lower()
+            if user_input == 'yes':
+                self.file_service.delete_directory(self.name)
+            else:
+                print("Operation canceled. Keeping the directory.")
+                sys.exit(1)
+        self.file_service.create_directory(self.name)
+        self._init_directory(self.name, NEW_PROJECT_STRUCTURE)
+
     def init_project(self):
         self.logger.debug(f"init_project()")
-        self.__init_project_structure()
-        self.__copy_hape_files()
+        self._init_project_structure()
         self.logger.info(f'Project {self.name} has been successfully initialized!')
+        print(f'Project {self.name} has been successfully initialized!')
+

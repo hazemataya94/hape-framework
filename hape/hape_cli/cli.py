@@ -1,5 +1,3 @@
-from hape.logging import Logging
-
 from hape.bootstrap import bootstrap
 from hape.hape_cli.argument_parsers.main_argument_parser import MainArgumentParser
 

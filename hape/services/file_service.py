@@ -17,6 +17,10 @@ class FileService:
     def create_directory(self, path: str):
         self.logger.debug(f"create_directory(path: {path})")
         os.makedirs(path, exist_ok=True)
+    
+    def create_directory(self, path: str):
+        self.logger.debug(f"create_directory(path: {path})")
+        os.makedirs(path, exist_ok=True)
 
     def delete_directory(self, directory_path: str):
         self.logger.debug(f"delete_directory(directory_path: {directory_path})")

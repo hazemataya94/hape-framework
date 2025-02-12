@@ -1,4 +1,3 @@
-from hape.logging import Logging
 from hape.base.model_argument_parser import ModelArgumentParser
 from hape.models.deployment_cost_model import DeploymentCost
 from hape.controllers.deployment_cost_controller import DeploymentCostController
