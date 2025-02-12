@@ -18,7 +18,7 @@ init-dev: .venv ## Install development dependencies in .venv, docker-compose up 
 	@echo "Dependencies Installed."
 	@echo
 	@echo "Starting docker-compose services"
-	@docker-compose -f dockerfiles/docker-compose-dev.yml up -d
+	@docker-compose -f dockerfiles/docker-compose.yml up -d
 	@echo
 	@echo "Creating .env file"
 	@[ -f .env ] || cp .env.example .env
@@ -105,17 +105,17 @@ migration-run: ## Apply the latest database migrations.
 	@ALEMBIC_CONFIG=./alembic.ini alembic upgrade head
 
 docker-restart: ## Restart Docker services.
-	@docker-compose -f dockerfiles/docker-compose-dev.yml down
-	@docker-compose -f dockerfiles/docker-compose-dev.yml up -d --build
+	@docker-compose -f dockerfiles/docker-compose.yml down
+	@docker-compose -f dockerfiles/docker-compose.yml up -d --build
 
 docker-up: ## Start Docker services.
-	@docker-compose -f dockerfiles/docker-compose-dev.yml up -d --build
+	@docker-compose -f dockerfiles/docker-compose.yml up -d --build
 
 docker-down: ## Stop Docker services.
-	@docker-compose -f dockerfiles/docker-compose-dev.yml down
+	@docker-compose -f dockerfiles/docker-compose.yml down
 
 docker-ps: ## List running Docker services.
-	@docker-compose -f dockerfiles/docker-compose-dev.yml ps
+	@docker-compose -f dockerfiles/docker-compose.yml ps
 
 docker-exec: ## Execute a shell in the HAPE Docker container.
 	@docker exec -it hape bash
