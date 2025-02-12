@@ -20,10 +20,9 @@ init-dev: .venv ## Install development dependencies in .venv, docker-compose up 
 	@echo "Creating .env file"
 	@[ -f .env ] || cp .env.example .env
 	@echo
-	@echo "Starting docker-compose services"
-	@docker-compose -f dockerfiles/docker-compose.yml up -d
-	@echo
-	@echo "Now run the following to start your virtual env"
+	@echo "Run the following to start docker-compose services"
+	@echo "\$$ make docker-up"
+	@echo "Run the following to start virtual env"
 	@echo "\$$ source .venv/bin/activate"
 	@echo
 
