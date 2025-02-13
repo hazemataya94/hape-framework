@@ -1,8 +1,6 @@
 BOOTSTRAP_PY = """
-import hape.bootstrap
-
 def bootstrap():
-    hape.bootstrap.bootstrap()
+    pass
 """.strip()
 
 

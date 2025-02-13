@@ -1,5 +1,4 @@
 from hape.logging import Logging
-
 from hape.hape_cli.controllers.init_controller import InitController
 
 class InitArgumentParser:

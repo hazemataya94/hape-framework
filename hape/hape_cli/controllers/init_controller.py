@@ -1,4 +1,3 @@
-from hape.logging import Logging
 from hape.hape_cli.models.init_model import Init
 
 class InitController:

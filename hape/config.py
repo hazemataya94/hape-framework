@@ -101,7 +101,7 @@ The following environment variables are required:
         Config.logger.debug(f"get_log_level()")
         valid_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
         log_level = Config._get_env_value("HAPE_LOG_LEVEL")
-        return log_level if log_level and log_level in valid_levels else "DEBUG"
+        return log_level if log_level and log_level in valid_levels else "WARNING"
     
     @staticmethod
     def get_log_file():
@@ -113,4 +113,4 @@ The following environment variables are required:
     def get_log_rotate_every_run():
         Config.logger.debug(f"get_log_rotate_every_run()")
         log_file = Config._get_env_value("HAPE_LOG_ROTATE_EVERY_RUN")
-        return log_file if log_file else "1"
+        return log_file if log_file else "0"
