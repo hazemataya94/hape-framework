@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="hape",
-    version="0.2.61",
+    version="0.2.62",
     packages=[
         "hape.hape_cli",
         "hape.base",
