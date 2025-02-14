@@ -46,8 +46,6 @@ $ hape --version
 0.x.x
 ```
 
-## In Progress Features
-
 ### Support Initializing Project
 ```
 $ hape init --help
@@ -77,7 +75,7 @@ myawesomeplatform/
 │── README.md
 ```
 
-## TODO Features
+## In Progress Features
 ### Support CRUD Generate and Create migrations/json/model_name.json 
 ```
 $ hape crud generate --json """
@@ -113,6 +111,8 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
 ```
+
+## TODO Features
 
 ### Create migrations/json/model_name.json and run CRUD Geneartion for file in migrations/schema_json/{*}.json if models/file.py doesn't exist
 ```
@@ -174,3 +174,42 @@ Any other needed step
 
 Serving HAPE on http://127.0.0.1:8088
 ```
+
+### Support CRUD Environment Variables
+```
+$ hape env add --key MY_ENV_KEY --value MY_ENV_VALUE
+$ hape env get --key MY_ENV_KEY
+MY_ENV_KEY=MY_ENV_VALUE
+$ hape env delete --key MY_ENV_KEY
+$ hape env get --key MY_ENV_KEY
+MY_ENV_KEY=MY_ENV_VALUE
+```
+
+### Store Configuration in Database
+```
+$ hape config add --key MY_CONFIG_KEY --value MY_CONFIG_VALUE
+$ hape config get --key MY_CONFIG_KEY
+MY_CONFIG_KEY=MY_CONFIG_VALUE
+$ hape config delete --key MY_CONFIG_KEY
+$ hape config get --key MY_CONFIG_KEY
+MY_CONFIG_KEY=MY_CONFIG_VALUE
+```
+
+### Run Using Environment Variables or Database Configuration
+```
+$ hape config set --config_source env
+$ hape config set --config_source db
+```
+
+### Whitelabeling 
+```
+$ hape whitelabel --name myawesomeplatform
+```
+or when the project is initialized.
+```
+$ hape init project --name myawesomeplatform
+```
+```
+$ hape init project --name myawesomeplatform --disable-whitelabel
+```
+
