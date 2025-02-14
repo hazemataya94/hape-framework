@@ -1,6 +1,6 @@
 MAKEFILE = """
 clean: ## Clean up build, cache, playground and zip files.
-	rm -rf build dist {{project_name}}.egg-info playground/* {{project_name}}.zip
+	rm -rf build dist {{project_name_underscore}}.egg-info playground/* {{project_name}}.zip
 
 zip: ## Create a zip archive excluding local files and playground.
 	zip -r {{project_name}}.zip . -x ".env" ".venv/*" ".git/*" "playground/*"
@@ -80,7 +80,7 @@ publish: build ## Publish package to public PyPI, commit, tag, and push the vers
 		echo "Upload failed. Not committing version bump."; \\
 	)
 
-play: ## Run {{project_name}}.playground Playground.paly() and print the execution time.
+play: ## Run {{project_name_underscore}}.playground Playground.paly() and print the execution time.
 	time python main.py play
 
 migration-create: ## Create a new database migration.

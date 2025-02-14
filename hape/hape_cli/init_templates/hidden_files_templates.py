@@ -6,12 +6,10 @@ dockerfiles
 """.strip()
 
 ENV_EXAMPLE = """
-HAPE_MARIADB_HOST="127.0.0.1"
-HAPE_MARIADB_USERNAME="{{project_name}}_user"
-HAPE_MARIADB_PASSWORD="{{project_name}}_password"
-HAPE_MARIADB_DATABASE="{{project_name}}_db"
-NEW_VAR_1="1"
-NEW_VAR_2="2"
+{{project_name_capitalized}}_MARIADB_HOST="127.0.0.1"
+{{project_name_capitalized}}_MARIADB_USERNAME="{{project_name_underscore}}_user"
+{{project_name_capitalized}}_MARIADB_PASSWORD="{{project_name_underscore}}_password"
+{{project_name_capitalized}}_MARIADB_DATABASE="{{project_name_underscore}}_db"
 """.strip()
 
 GIT_IGNORE = """

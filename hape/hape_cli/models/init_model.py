@@ -2,9 +2,10 @@ import os
 import re
 import sys
 import importlib.util
+from copy import deepcopy
 from hape.logging import Logging
 from hape.services.file_service import FileService
-from hape.hape_cli.init_structure.new_project_structure import NEW_PROJECT_STRUCTURE
+from hape.hape_cli.init_templates.init_project_template import INIT_PROJECT_TEMPLATE
 
 class Init:
 
@@ -12,6 +13,9 @@ class Init:
         self.logger = Logging.get_logger('hape.hape_cli.models.init_model')
         self.name = name
         self.name_underscore = name.replace("-", "_")
+        self.name_camel_case = name.title().replace("-", "")
+        self.name_capitalized = name.upper().replace("-", "_")
+        self.name_title = name.title().replace("-", " ")
         self.file_service = FileService()
         
         spec = importlib.util.find_spec("hape")
@@ -32,8 +36,16 @@ class Init:
 
     def _init_file(self, path: str, content: str):
         self.logger.debug(f"_init_file(path: {path}, content: {content})")
+
         if content:
-            content = content.replace("{{project_name}}", self.name_underscore)
+            new_content = deepcopy(content)
+            new_content = new_content.replace("{{project_name_underscore}}", self.name_underscore)
+            new_content = new_content.replace("{{project_name_capitalized}}", self.name_capitalized)
+            new_content = new_content.replace("{{project_name}}", self.name)
+            new_content = new_content.replace("{{project_name_camel_case}}", self.name_camel_case)
+            new_content = new_content.replace("{{project_name_title}}", self.name_title)
+            content = new_content
+
         self.file_service.write_file(path, content)
 
     def _init_directory(self, root_path: str, dictionary: dict):
@@ -53,8 +65,8 @@ class Init:
                 self.logger.error(f"Content type for {content} is not supported.")
                 exit(1)
 
-    def _init_project_structure(self):
-        self.logger.debug(f"_init_project_structure()")
+    def _init_project_template(self):
+        self.logger.debug(f"_init_project_template()")
         if self.file_service.path_exists(self.name):
             self.logger.warning(f"Warning: directory '{self.name}' already exists.")
             user_input = input(f"ALL DATA IN '{self.name}' WILL BE LOST. Do you want to remove '{self.name}' and initialize a new project? yes/no: ").strip().lower()
@@ -64,11 +76,11 @@ class Init:
                 print("Operation canceled. Keeping the directory.")
                 sys.exit(1)
         self.file_service.create_directory(self.name)
-        self._init_directory(self.name, NEW_PROJECT_STRUCTURE)
+        self._init_directory(self.name, INIT_PROJECT_TEMPLATE)
 
     def init_project(self):
         self.logger.debug(f"init_project()")
-        self._init_project_structure()
+        self._init_project_templates()
         self.logger.info(f'Project {self.name} has been successfully initialized!')
         print(f'Project {self.name} has been successfully initialized!')
 

@@ -63,7 +63,7 @@ version_path_separator = os
 # the output encoding used when revision files
 # are written from script.py.mako
 # output_encoding = utf-8
-sqlalchemy.url = mysql+pymysql://{{project_name}}_user:{{project_name}}_password@127.0.0.1/{{project_name}}_db
+sqlalchemy.url = mysql+pymysql://{{project_name_underscore}}_user:{{project_name_underscore}}_password@127.0.0.1/{{project_name_underscore}}_db
 
 
 [post_write_hooks]

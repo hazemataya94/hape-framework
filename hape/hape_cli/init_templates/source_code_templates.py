@@ -5,7 +5,7 @@ def bootstrap():
 
 
 MAIN_PY = """
-from {{project_name}}.cli import main
+from {{project_name_underscore}}.cli import main
 
 if __name__ == "__main__":
     main()
@@ -26,8 +26,8 @@ class Playground:
 
 
 CLI_PY = """
-from {{project_name}}.bootstrap import bootstrap
-from {{project_name}}.argument_parsers.main_argument_parser import MainArgumentParser
+from {{project_name_underscore}}.bootstrap import bootstrap
+from {{project_name_underscore}}.argument_parsers.main_argument_parser import MainArgumentParser
 
 def main():
     bootstrap()
@@ -49,13 +49,13 @@ MAIN_ARGUMENT_PARSER = """
 import argparse
 from importlib.metadata import version
 
-from {{project_name}}.argument_parsers.playground_argument_parser import PlaygroundArgumentParser
+from {{project_name_underscore}}.argument_parsers.playground_argument_parser import PlaygroundArgumentParser
 
 class MainArgumentParser:
 
     def create_parser(self):
         parser = argparse.ArgumentParser(
-            description="{{project_name}} created by HAPE Framework"
+            description="{{project_name_title}} created by HAPE Framework"
         )
         try:
             parser.add_argument("-v", "--version", action="version", version=version("{{project_name}}"))
@@ -76,8 +76,7 @@ class MainArgumentParser:
 """.strip()
 
 PLAYGROUND_ARGUMENT_PARSER = """
-import sys
-from {{project_name}}.playground import Playground
+from {{project_name_underscore}}.playground import Playground
 
 class PlaygroundArgumentParser:
     def create_subparser(self, subparsers):    
