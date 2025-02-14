@@ -207,6 +207,8 @@ MY_ENV_KEY=MY_ENV_VALUE
 ### Store Configuration in Database
 ```
 $ hape config add --key MY_CONFIG_KEY --value MY_CONFIG_VALUE
+$ hape config set --key MY_CONFIG_KEY --value MY_CONFIG_VALUE
+$ hape config set --key MY_CONFIG_KEY --value MY_CONFIG_VALUE
 $ hape config get --key MY_CONFIG_KEY
 MY_CONFIG_KEY=MY_CONFIG_VALUE
 $ hape config delete --key MY_CONFIG_KEY
@@ -218,4 +220,5 @@ MY_CONFIG_KEY=MY_CONFIG_VALUE
 ```
 $ hape config set --config_source env
 $ hape config set --config_source db
+$ hape config set --config_env_prefix MY_ENV_PREFIX
 ```
