@@ -14,7 +14,7 @@ With HAPE, developers can interact with a CLI or API to create, deploy, and mana
 
 ## Done Features
 ### Automate everyday commands
-```bash
+```sh
 $ make list
 build                Build the package in dist. Runs: bump-version.
 bump-version         Bump the patch version in setup.py.
@@ -40,14 +40,14 @@ zip                  Create a zip archive excluding local git, env, venv and pla
 ```
 
 ### Publish to public PyPI repository
-```
+```sh
 $ pip install --upgrade hape
 $ hape --version
 0.x.x
 ```
 
 ### Support Initializing Project
-```
+```sh
 $ hape init project --help
 usage: hape init project [-h] -n NAME
 
@@ -96,7 +96,7 @@ hello-world
 
 ## In Progress Features
 ### Support CRUD Generate and Create migrations/json/model_name.json 
-```
+```sh
 $ hape crud generate --json """
 {
     "name": "deployment-cost"
@@ -134,7 +134,7 @@ options:
 ## TODO Features
 
 ### Create migrations/json/model_name.json and run CRUD Geneartion for file in migrations/schema_json/{*}.json if models/file.py doesn't exist
-```
+```sh
 $ export MY_JSON_FILE="""
 {
     "name": "deployment-cost"
@@ -172,7 +172,7 @@ options:
 ```
 
 ### Support Scalable Secure RESTful API
-```
+```sh
 $ hape serve http --allow-cidr '0.0.0.0/0,10.0.1.0/24' --deny-cidr '10.200.0.0/24,0,10.0.1.0/24,10.107.0.0/24' --workers 2 --port 80
 or
 $ hape serve http --json """
@@ -195,7 +195,7 @@ Serving HAPE on http://127.0.0.1:8088
 ```
 
 ### Support CRUD Environment Variables
-```
+```sh
 $ hape env add --key MY_ENV_KEY --value MY_ENV_VALUE
 $ hape env get --key MY_ENV_KEY
 MY_ENV_KEY=MY_ENV_VALUE
@@ -205,7 +205,7 @@ MY_ENV_KEY=MY_ENV_VALUE
 ```
 
 ### Store Configuration in Database
-```
+```sh
 $ hape config add --key MY_CONFIG_KEY --value MY_CONFIG_VALUE
 $ hape config set --key MY_CONFIG_KEY --value MY_CONFIG_VALUE
 $ hape config set --key MY_CONFIG_KEY --value MY_CONFIG_VALUE
@@ -217,7 +217,7 @@ MY_CONFIG_KEY=MY_CONFIG_VALUE
 ```
 
 ### Run Using Environment Variables or Database Configuration
-```
+```sh
 $ hape config set --config_source env
 $ hape config set --config_source db
 $ hape config set --config_env_prefix MY_ENV_PREFIX
