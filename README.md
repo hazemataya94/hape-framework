@@ -54,6 +54,9 @@ usage: hape init project [-h] -n NAME
 options:
   -h, --help       show this help message and exit
   -n, --name NAME  Name of the project
+$ pip install --upgrade hape > /dev/null 2>&1
+$ hape init project --name hello-world
+Project hello-world has been successfully initialized!
 $ tree hello-world 
 hello-world
 ├── Makefile
