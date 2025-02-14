@@ -14,7 +14,7 @@ With HAPE, developers can interact with a CLI or API to create, deploy, and mana
 
 ## Done Features
 ### Automate everyday commands
-```
+```bash
 $ make list
 build                Build the package in dist. Runs: bump-version.
 bump-version         Bump the patch version in setup.py.
