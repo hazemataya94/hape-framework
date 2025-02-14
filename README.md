@@ -219,16 +219,3 @@ MY_CONFIG_KEY=MY_CONFIG_VALUE
 $ hape config set --config_source env
 $ hape config set --config_source db
 ```
-
-### Whitelabeling 
-```
-$ hape whitelabel --name myawesomeplatform
-```
-or when the project is initialized.
-```
-$ hape init project --name myawesomeplatform
-```
-```
-$ hape init project --name myawesomeplatform --disable-whitelabel
-```
-
