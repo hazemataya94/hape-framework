@@ -48,31 +48,47 @@ $ hape --version
 
 ### Support Initializing Project
 ```
-$ hape init --help
-usage: hape init [-h] {project} ...
-
-positional arguments:
-  {project}
-    project   Initializes a new project
+$ hape init project --help
+usage: hape init project [-h] -n NAME
 
 options:
-  -h, --help  show this help message and exit
-$ hape init project --name myawesomeplatform
-myawesomeplatform/
-│── dockerfiles/  (Copied from HAPE Framework)
-│── Makefile      (Copied from HAPE Framework)
-│── src/
-│   ├── migrations/
-│   ├── models/
-│   ├── controllers/
-│   ├── services/
-│   ├── utils/
-│   ├── config/
-│   ├── tests/
-│── docs/
-│── scripts/
-│── setup.py
-│── README.md
+  -h, --help       show this help message and exit
+  -n, --name NAME  Name of the project
+$ tree hello-world 
+hello-world
+├── Makefile
+├── README.md
+├── alembic.ini
+├── dockerfiles
+│   ├── Dockerfile.dev
+│   ├── Dockerfile.prod
+│   └── docker-compose.yml
+├── hello_world
+│   ├── __init__.py
+│   ├── argument_parsers
+│   │   ├── __init__.py
+│   │   ├── main_argument_parser.py
+│   │   └── playground_argument_parser.py
+│   ├── bootstrap.py
+│   ├── cli.py
+│   ├── controllers
+│   │   └── __init__.py
+│   ├── enums
+│   │   └── __init__.py
+│   ├── migrations
+│   │   ├── README
+│   │   ├── env.py
+│   │   ├── script.py.mako
+│   │   └── versions
+│   ├── models
+│   │   └── __init__.py
+│   ├── playground.py
+│   └── services
+│       └── __init__.py
+├── main.py
+├── requirements-cli.txt
+├── requirements-dev.txt
+└── setup.py
 ```
 
 ## In Progress Features
