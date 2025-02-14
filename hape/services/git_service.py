@@ -4,15 +4,15 @@ import subprocess
 from dotenv import load_dotenv
 import os
 import requests
-from hape.config import Config
+from hape.hape_config import HapeConfig
 
 class GitService:
     
     def __init__(self):
         self.logger = Logging.get_logger('hape.services.git_service')
         self.dry_run = False
-        self.gitlab_token = Config.get_gitlab_token()
-        gitlab_domain = Config.get_gitlab_domain()
+        self.gitlab_token = HapeConfig.get_gitlab_token()
+        gitlab_domain = HapeConfig.get_gitlab_domain()
         self.gitlab_url = f"https://{gitlab_domain}"
 
     def git_branch_name(self, repo_dir):

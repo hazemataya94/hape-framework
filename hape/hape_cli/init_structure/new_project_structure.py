@@ -1,4 +1,4 @@
-from hape.hape_cli.init_structure.src_structure import BOOTSTRAP_PY, MAIN_PY, PLAYGROUND_PY, CLI_PY, MAIN_ARGUMENT_PARSER, PLAYGROUND_ARGUMENT_PARSER
+from hape.hape_cli.init_structure.src_structure import BOOTSTRAP_PY, MAIN_PY, PLAYGROUND_PY, CLI_PY, MAIN_ARGUMENT_PARSER, PLAYGROUND_ARGUMENT_PARSER, MIGRATION_ENV_PY
 from hape.hape_cli.init_structure.dockerfiles_structure import DOCKERFILE_DEV, DOCKERFILE_PROD, DOCKER_COMPOSE
 from hape.hape_cli.init_structure.hidden_files_structure import DOCKER_IGNORE, ENV_EXAMPLE, GIT_IGNORE
 from hape.hape_cli.init_structure.requirements_structure import REQUIREMENTS_DEV, REQUIREMENTS_CLI
@@ -40,7 +40,7 @@ NEW_PROJECT_STRUCTURE = {
         },
         "migrations": {
             "README": None,
-            "env.py": None,
+            "env.py": MIGRATION_ENV_PY,
             "script.py.mako": None,
             "versions": {
                 ".gitkeep": None

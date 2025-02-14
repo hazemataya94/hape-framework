@@ -5,14 +5,14 @@ from typing import List, Optional
 from datetime import datetime
 from gitlab import Gitlab
 from gitlab.v4.objects import Group, Project, GroupProject, ProjectCommit
-from hape.config import Config
+from hape.hape_config import HapeConfig
 from hape.services.file_service import FileService
 
 class GitlabService:
     def __init__(self):
         self.logger = Logging.get_logger('hape.models.gitlab_model')
-        gitlab_domain = Config.get_gitlab_domain()
-        gitlab_token = Config.get_gitlab_token()
+        gitlab_domain = HapeConfig.get_gitlab_domain()
+        gitlab_token = HapeConfig.get_gitlab_token()
         self.client = Gitlab(f"https://{gitlab_domain}", private_token=gitlab_token)
         self._per_page = 100
     

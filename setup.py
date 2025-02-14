@@ -2,16 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name="hape",
-    version="0.2.62",
-    packages=[
-        "hape.hape_cli",
-        "hape.base",
-    ],
-    py_modules=[
-        "hape.logging",
-        "hape.config",
-        "hape.bootstrap"
-    ], 
+    version="0.2.63",
+    packages=["hape"],
     include_package_data=True,
     install_requires=[
         "python-dotenv==1.0.1"

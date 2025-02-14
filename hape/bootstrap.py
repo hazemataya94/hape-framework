@@ -2,7 +2,6 @@ import json
 import logging.config
 from hape.logging import Logging, CustomJsonFormatter, LOGGING_CONFIG
 from hape.config import Config
-from hape.models.deployment_cost_model import DeploymentCost
 
 def bootstrap():
     log_level = Config.get_log_level()
