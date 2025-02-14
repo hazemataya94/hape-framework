@@ -39,8 +39,8 @@ class {model_name}(Model):
 
 # class DeploymentCostController(ModelController):
     
-    def __init__(self):
-        super().__init__(DeploymentCost)
+    # def __init__(self):
+    #     super().__init__(DeploymentCost)
 
         self.controller_content = """
 from hape.base.model_controller import ModelController
