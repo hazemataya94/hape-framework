@@ -23,7 +23,7 @@ INIT_PROJECT_TEMPLATE = {
         "Dockerfile.prod": DOCKERFILE_PROD,
         "docker-compose.yml": DOCKER_COMPOSE,
     },
-    "{{project_name_underscore}}": {
+    "{{project_name}}": {
         "__init__.py": None,
         "cli.py": CLI_PY,
         "bootstrap.py": BOOTSTRAP_PY,

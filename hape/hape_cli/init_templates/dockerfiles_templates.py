@@ -40,9 +40,9 @@ services:
     restart: always
     environment:
       MARIADB_ROOT_PASSWORD: root
-      MARIADB_DATABASE: {{project_name_underscore}}_db
-      MARIADB_USER: {{project_name_underscore}}_user
-      MARIADB_PASSWORD: {{project_name_underscore}}_password
+      MARIADB_DATABASE: {{project_name_snake_case}}_db
+      MARIADB_USER: {{project_name_snake_case}}_user
+      MARIADB_PASSWORD: {{project_name_snake_case}}_password
     ports:
       - "3306:3306"
     networks:

@@ -5,7 +5,7 @@ def bootstrap():
 
 
 MAIN_PY = """
-from {{project_name_underscore}}.cli import main
+from {{project_name_snake_case}}.cli import main
 
 if __name__ == "__main__":
     main()
@@ -26,8 +26,8 @@ class Playground:
 
 
 CLI_PY = """
-from {{project_name_underscore}}.bootstrap import bootstrap
-from {{project_name_underscore}}.argument_parsers.main_argument_parser import MainArgumentParser
+from {{project_name_snake_case}}.bootstrap import bootstrap
+from {{project_name_snake_case}}.argument_parsers.main_argument_parser import MainArgumentParser
 
 def main():
     bootstrap()
@@ -49,7 +49,7 @@ MAIN_ARGUMENT_PARSER = """
 import argparse
 from importlib.metadata import version
 
-from {{project_name_underscore}}.argument_parsers.playground_argument_parser import PlaygroundArgumentParser
+from {{project_name_snake_case}}.argument_parsers.playground_argument_parser import PlaygroundArgumentParser
 
 class MainArgumentParser:
 
@@ -76,7 +76,7 @@ class MainArgumentParser:
 """.strip()
 
 PLAYGROUND_ARGUMENT_PARSER = """
-from {{project_name_underscore}}.playground import Playground
+from {{project_name_snake_case}}.playground import Playground
 
 class PlaygroundArgumentParser:
     def create_subparser(self, subparsers):    

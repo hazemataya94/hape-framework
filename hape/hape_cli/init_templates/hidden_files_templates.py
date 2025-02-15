@@ -6,10 +6,10 @@ dockerfiles
 """.strip()
 
 ENV_EXAMPLE = """
-{{project_name_capitalized}}_MARIADB_HOST="127.0.0.1"
-{{project_name_capitalized}}_MARIADB_USERNAME="{{project_name_underscore}}_user"
-{{project_name_capitalized}}_MARIADB_PASSWORD="{{project_name_underscore}}_password"
-{{project_name_capitalized}}_MARIADB_DATABASE="{{project_name_underscore}}_db"
+{{project_name_upper}}_MARIADB_HOST="127.0.0.1"
+{{project_name_upper}}_MARIADB_USERNAME="{{project_name_snake_case}}_user"
+{{project_name_upper}}_MARIADB_PASSWORD="{{project_name_snake_case}}_password"
+{{project_name_upper}}_MARIADB_DATABASE="{{project_name_snake_case}}_db"
 """.strip()
 
 GIT_IGNORE = """

@@ -2,6 +2,8 @@ import os
 import json
 from dotenv import load_dotenv
 from hape.logging import Logging
+from hape.enums.log_level_enum import LogLevelEnum
+from hape.enums.environment_variables_enum import EnvironmentVariablesEnum
 
 class Config:
     logger = Logging.get_logger('hape.config')
@@ -9,15 +11,15 @@ class Config:
     required_env_variables = []
 
     _env_var_map = {
-        "HAPE_LOG_FILE": {
+        EnvironmentVariablesEnum.HAPE_LOG_FILE: {
             "key": "HAPE_LOG_FILE",
             "value": "hape.log"
         },
-        "HAPE_LOG_LEVEL": {
+        EnvironmentVariablesEnum.HAPE_LOG_LEVEL: {
             "key": "HAPE_LOG_LEVEL",
             "value": "WARNING"
         },
-        "HAPE_LOG_ROTATE_EVERY_RUN": {
+        EnvironmentVariablesEnum.HAPE_LOG_ROTATE_EVERY_RUN: {
             "key": "HAPE_LOG_ROTATE_EVERY_RUN",
             "value": "0"
         }
@@ -52,12 +54,16 @@ class Config:
     @staticmethod
     def _get_env_value(hape_env_key):
         Config._load_environment()
+        env_key = Config._env_var_map[hape_env_key]["key"]
+        env_value = os.getenv(env_key)
+        if env_value:
+            return env_value
+        
+        env_default_value = Config._env_var_map[hape_env_key]["value"]
         if Config._env_var_map[hape_env_key]["value"]:
             return Config._env_var_map[hape_env_key]["value"]
         
-        env_key = Config._env_var_map[hape_env_key]["key"]
-        env_value = os.getenv(env_key)
-        if not env_value and env_key in Config.required_env_variables:
+        if env_key in Config.required_env_variables:
             Config.logger.error(f"""Environment variable {env_key} is missing.
 
 To set the value of the environment variable run:
@@ -74,19 +80,17 @@ The following environment variables are required:
     @staticmethod
     def get_log_level():
         Config.logger.debug(f"get_log_level()")
-        valid_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
-        log_level = Config._get_env_value("HAPE_LOG_LEVEL")
-        return log_level if log_level and log_level in valid_levels else "WARNING"
-    
+        log_level = Config._get_env_value(EnvironmentVariablesEnum.HAPE_LOG_LEVEL)
+        return log_level if log_level and LogLevelEnum(log_level) else LogLevelEnum.WARNING
 
     @staticmethod
     def get_log_file():
         Config.logger.debug(f"get_log_file()")
-        log_file = Config._get_env_value("HAPE_LOG_FILE")
+        log_file = Config._get_env_value(EnvironmentVariablesEnum.HAPE_LOG_FILE)
         return log_file if log_file else "hape.log"
     
     @staticmethod
     def get_log_rotate_every_run():
         Config.logger.debug(f"get_log_rotate_every_run()")
-        log_file = Config._get_env_value("HAPE_LOG_ROTATE_EVERY_RUN")
-        return log_file if log_file else "0"
+        log_rotate_every_run = Config._get_env_value(EnvironmentVariablesEnum.HAPE_LOG_ROTATE_EVERY_RUN)
+        return log_rotate_every_run if log_rotate_every_run else "0"

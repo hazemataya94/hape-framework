@@ -4,14 +4,14 @@ from setuptools import setup, find_packages
 setup(
     name="{{project_name}}",
     version="0.0.1",
-    packages=find_packages(include=["{{project_name_underscore}}"]),
+    packages=find_packages(include=["{{project_name_snake_case}}"]),
     include_package_data=True,
     install_requires=[
         
     ],
     entry_points={
         "console_scripts": [
-            "{{project_name}}={{project_name_underscore}}.cli:main",
+            "{{project_name}}={{project_name_snake_case}}.cli:main",
         ],
     },
     author="Hazem Ataya",
@@ -31,5 +31,5 @@ setup(
 """.strip()
 
 MANIFEST_IN = """
-include {{project_name_underscore}}/*.py
+include {{project_name_snake_case}}/*.py
 """.strip()

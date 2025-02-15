@@ -5,10 +5,12 @@ class Crud:
     def __init__(self, project_name: str, model_name: str, json_schema: dict):
         self.logger = Logging.get_logger('hape.hape_cli.models.crud_model')
         self.project_name = project_name
-        self.project_name_underscore = project_name.replace("-", "_")
+        self.project_name_snake_case = project_name.replace("-", "_")
         self.project_name_camel_case = project_name.title().replace("-", "")
+        self.project_name_upper = project_name.upper().replace("-", "_")
+        self.project_name_title = project_name.title().replace("-", " ")
         self.model_name = model_name
-        self.model_name_underscore = model_name.replace("-", "_")
+        self.model_name_snake_case = model_name.replace("-", "_")
         self.model_name_camel_case = model_name.title().replace("-", "")
         self.json_schema = json_schema
         self.model_content = ""
@@ -30,7 +32,7 @@ class Crud:
 from hape.base.model import Model
 
 class {model_name}(Model):
-    __tablename__ = '{model_name_underscore}'
+    __tablename__ = '{model_name_snake_case}'
 """.strip()
 
     def _generate_content_controller(self):

@@ -5,6 +5,7 @@ import importlib.util
 from copy import deepcopy
 from hape.logging import Logging
 from hape.services.file_service import FileService
+from hape.utils.naming_utils import NamingUtils
 from hape.hape_cli.init_templates.init_project_template import INIT_PROJECT_TEMPLATE
 
 class Init:
@@ -12,10 +13,6 @@ class Init:
     def __init__(self, name: str):
         self.logger = Logging.get_logger('hape.hape_cli.models.init_model')
         self.name = name
-        self.name_underscore = name.replace("-", "_")
-        self.name_camel_case = name.title().replace("-", "")
-        self.name_capitalized = name.upper().replace("-", "_")
-        self.name_title = name.title().replace("-", " ")
         self.file_service = FileService()
         
         spec = importlib.util.find_spec("hape")
@@ -39,11 +36,11 @@ class Init:
 
         if content:
             new_content = deepcopy(content)
-            new_content = new_content.replace("{{project_name_underscore}}", self.name_underscore)
-            new_content = new_content.replace("{{project_name_capitalized}}", self.name_capitalized)
+            new_content = new_content.replace("{{project_name_snake_case}}", NamingUtils.convert_to_snake_case(self.name))
+            new_content = new_content.replace("{{project_name_upper}}", NamingUtils.convert_to_upper(self.name))
             new_content = new_content.replace("{{project_name}}", self.name)
-            new_content = new_content.replace("{{project_name_camel_case}}", self.name_camel_case)
-            new_content = new_content.replace("{{project_name_title}}", self.name_title)
+            new_content = new_content.replace("{{project_name_camel_case}}", NamingUtils.convert_to_camel_case(self.name))
+            new_content = new_content.replace("{{project_name_title}}", NamingUtils.convert_to_title(self.name))
             content = new_content
 
         self.file_service.write_file(path, content)
@@ -51,8 +48,8 @@ class Init:
     def _init_directory(self, root_path: str, dictionary: dict):
         self.logger.debug(f"_init_directory(root_path: {root_path}, dictionary: {dictionary})")
         for name, content in dictionary.items():
-            if name == 'project_name':
-                name = self.name_underscore
+            if name == '{{project_name}}':
+                name = NamingUtils.convert_to_snake_case(self.name)
             sub_path = os.path.join(root_path, name)
             if content is None:
                 self._init_file(sub_path,"")
@@ -80,7 +77,7 @@ class Init:
 
     def init_project(self):
         self.logger.debug(f"init_project()")
-        self._init_project_templates()
+        self._init_project_template()
         self.logger.info(f'Project {self.name} has been successfully initialized!')
         print(f'Project {self.name} has been successfully initialized!')
 
