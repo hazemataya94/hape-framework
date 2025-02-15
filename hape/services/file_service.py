@@ -43,6 +43,18 @@ class FileService:
         if os.path.exists(source):
             print(f"copying {source} to {destination}")
             shutil.copytree(source, destination, dirs_exist_ok=True)
+    
+    def file_exists(self, path):
+        self.logger.debug(f"path_exists(path: {path})")
+        return os.path.exists(path)
+    
+    def folder_exists(self, path):
+        self.logger.debug(f"path_exists(path: {path})")
+        return os.path.exists(path)
+
+    def directory_exists(self, path):
+        self.logger.debug(f"path_exists(path: {path})")
+        return os.path.exists(path)
         
     def path_exists(self, path):
         self.logger.debug(f"path_exists(path: {path})")
@@ -56,7 +68,7 @@ class FileService:
                 dest.write(content)
 
     def write_file(self, file_path, content):
-        self.logger.debug(f"write_file(file_path: {file_path}, content: {content})")
+        self.logger.debug(f"write_file(file_path: {file_path}, content)")
         with open(file_path, 'w', encoding='utf-8') as file:
             file.write(content)
 

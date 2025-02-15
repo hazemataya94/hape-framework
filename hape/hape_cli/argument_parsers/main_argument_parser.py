@@ -1,9 +1,14 @@
 import argparse
 from importlib.metadata import version
 
+from hape.logging import Logging
 from hape.hape_cli.argument_parsers.init_argument_parser import InitArgumentParser
+from hape.hape_cli.argument_parsers.crud_argument_parser import CrudArgumentParser
 
 class MainArgumentParser:
+    
+    def __init__(self):
+        self.logger = Logging.get_logger('hape.hape_cli.argument_parsers.main_argument_parser')
 
     def create_parser(self):
         parser = argparse.ArgumentParser(description="HAPE Framework CLI")
@@ -16,6 +21,7 @@ class MainArgumentParser:
         subparsers = parser.add_subparsers(dest="command")
         
         InitArgumentParser().create_subparser(subparsers)
+        CrudArgumentParser().create_subparser(subparsers)
 
         return parser
 
@@ -23,6 +29,8 @@ class MainArgumentParser:
 
         if args.command == "init":
             InitArgumentParser().run_action(args)
+        elif args.command == "crud":
+            CrudArgumentParser().run_action(args)
         else:
-            print(f"Error: Invalid command {args.command}")
+            self.logger.error(f"Error: Main Parser Invalid command {args.command}")
             exit(1)

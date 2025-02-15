@@ -7,7 +7,7 @@ class GitArgumentParser:
         logger = Logging.get_logger('hape.argument_parsers.git_argument_parser')
 
     def create_subparser(self, subparsers):    
-        self.logger.debug(f"create_subparser(subparsers: {subparsers})")
+        self.logger.debug(f"create_subparser(subparsers)")
         git_parser = subparsers.add_parser("git", help="Commands related to git")
         git_parser_subparser = git_parser.add_subparsers(dest="action")
 
@@ -25,7 +25,7 @@ class GitArgumentParser:
         pull_parser.add_argument("-p", "--prefix", required=False, help="A prefix for the project names", default='')
 
     def run_action(self, args):
-        self.logger.debug(f"run_action(args: {args})")
+        self.logger.debug(f"run_action(args)")
         if args.command != "git":
             return
         

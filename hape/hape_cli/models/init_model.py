@@ -36,7 +36,7 @@ class Init:
         self.logger.debug(f"_init_file(path: {path}, content: {content})")
 
         if content:
-            content = StringUtils.replace_naming_variables(content, self.name, "project_name")
+            content = StringUtils.replace_name_case_placeholders(content, self.name, "project_name")
 
         self.file_service.write_file(path, content)
 
@@ -60,7 +60,7 @@ class Init:
     def _init_project_template(self):
         self.logger.debug(f"_init_project_template()")
         if self.file_service.path_exists(self.name):
-            self.logger.warning(f"Warning: directory '{self.name}' already exists.")
+            self.logger.warning(f"Directory '{self.name}' already exists.")
             user_input = input(f"ALL DATA IN '{self.name}' WILL BE LOST. Do you want to remove '{self.name}' and initialize a new project? yes/no: ").strip().lower()
             if user_input == 'yes':
                 self.file_service.delete_directory(self.name)
