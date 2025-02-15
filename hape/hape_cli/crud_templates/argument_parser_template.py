@@ -13,4 +13,4 @@ class {{model_name_camel_case}}ArgumentParser(ModelArgumentParser):
     def extend_actions(self):
         pass
 
-"""
+""".strip()

@@ -12,7 +12,6 @@ class CrudArgumentParser:
         crud_parser_subparser = crud_parser.add_subparsers(dest="action")
 
         generate_parser = crud_parser_subparser.add_parser("generate", help="Generates a new CRUD operation")
-        generate_parser.add_argument("-n", "--name", required=True, help="Name of the model")
         schema_group = generate_parser.add_mutually_exclusive_group(required=True)
         schema_group.add_argument("-j", "--schema-json", help="Schema of the model in JSON format")
         schema_group.add_argument("-y", "--schema-yaml", help="Schema of the model in YAML format")
@@ -21,12 +20,11 @@ class CrudArgumentParser:
         delete_parser.add_argument("-n", "--name", required=True, help="Name of the model")
         
     def run_action(self, args):
-        self.logger.debug(f"run_action(args)")
+        self.logger.debug(f"run_action(args.action: {args.action})")
         if args.command != self.COMMAND:
             return
-        self.logger.debug(f"Running action: {args.action}")
         crud_controller = CrudController(
-            args.name,
+            args.name if "name" in args else None,
             args.schema_json if "schema_json" in args else None,
             args.schema_yaml if "schema_yaml" in args else None
         )

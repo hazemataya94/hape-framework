@@ -22,16 +22,26 @@ class FileService:
         self.logger.debug(f"create_directory(path: {path})")
         os.makedirs(path, exist_ok=True)
 
+    def delete_file(self, file_path: str):
+        self.logger.debug(f"delete_file(file_path: {file_path})")
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        self.logger.info(f"File '{file_path}' has been removed.")  
+        
+    def delete_folder(self, folder_path: str):
+        self.logger.debug(f"delete_folder(folder_path: {folder_path})")
+        self.delete_directory(folder_path)
+
     def delete_directory(self, directory_path: str):
         self.logger.debug(f"delete_directory(directory_path: {directory_path})")
         if os.path.exists(directory_path) and os.path.isdir(directory_path):
             try:
                 shutil.rmtree(directory_path)
-                print(f"Directory '{directory_path}' has been removed.")
+                self.logger.info(f"Directory '{directory_path}' has been removed.")
             except Exception as e:
-                print(f"Error: Unable to remove directory '{directory_path}'. {e}")
+                self.logger.error(f"Unable to remove directory '{directory_path}'. {e}")
         else:
-            print(f"Warning: Directory '{directory_path}' does not exist or is not a directory.")
+            self.logger.warning(f"Directory '{directory_path}' does not exist or is not a directory.")
 
     def copy_file(self, source: str, destination: str, overwrite: bool):
         self.logger.debug(f"copy_file(source: {source}, destination: {destination}, overwrite: {overwrite})")
@@ -41,7 +51,7 @@ class FileService:
     def copy_directory(self, source: str, destination: str):
         self.logger.debug(f"copy_directory(source: {source}, destination: {destination})")
         if os.path.exists(source):
-            print(f"copying {source} to {destination}")
+            self.logger.info(f"copying {source} to {destination}")
             shutil.copytree(source, destination, dirs_exist_ok=True)
     
     def file_exists(self, path):
@@ -138,7 +148,7 @@ class FileService:
     def write_csv_file(self, filename, data):
         self.logger.debug(f"write_csv_file(filename: {filename}, data: {data})")
         if not data:
-            print("No data provided to write CSV file.")
+            self.logger.info("No data provided to write CSV file.")
             return
 
         fieldnames = list(data[0].keys())

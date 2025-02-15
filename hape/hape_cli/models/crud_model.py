@@ -12,25 +12,24 @@ from hape.utils.string_utils import StringUtils
 
 class Crud:
     
-    valid_types = ["int", "string", "bool", "float", "date", "datetime", "timestamp"]
+    valid_types = ["string", "int", "boolean", "float", "date", "datetime", "timestamp"]
     valid_properties = ["nullable", "required", "unique", "primary", "autoincrement"]
     
     _model_schema_template = """
 {
     "valid_types": {{valid-types}},
-    "valid_properties": {{valid-properties}}
+    "valid_properties": {{valid-properties}},
     "name": "model-name",
     "schema": {
-        "__column_name": {"valid-type", List["valid-property"]},
-        "_id": {"valid-type", ["valid-property"]},
-        "id": {"int":["primary"]},
-        "_created_at": {"valid-type": null},
-        "created_at": {"datetime": null},
+        "__column_name": {"valid-type": ["valid-property"]},
+        "_id": {"valid-type": ["valid-property"]},
+        "id": {"int": ["primary"]},
         "_updated_at": {"valid-type": []},
         "updated_at": {"timestamp": []},
-        "name": {"valid-type": List[Optional: "valid-property"])},
-        "_name": {"valid-type", Optional(List[Optional: "valid-property"])},
-        "enabled": {"bool", Optional(List[Optional: "valid-property"])}
+        "_name": {"valid-type": ["valid-property"]},
+        "name": {"string": []},
+        "_enabled": {"valid-type": ["valid-property"]},
+        "enabled": {"int": []}  
     }
 }
 """.replace("{{valid-types}}", json.dumps(valid_types)) \
@@ -39,10 +38,6 @@ class Crud:
     
     def __init__(self, project_name: str, model_name: str, schema: dict):
         self.logger = Logging.get_logger('hape.hape_cli.models.crud_model')
-        print(self._model_schema_template)
-        exit(1)
-        self.valid_column_properties = self.valid_types + self.valid_properties
-        
         self.file_service = FileService()
 
         self.project_name = project_name
@@ -90,34 +85,33 @@ class Crud:
         if not isinstance(self.schema, dict):
             self.logger.error(f"Schema must be a dictionary, but got {type(self.schema)}: {self.schema}")
             exit(1)
-        if not "name" in self.schema:
-            self.logger.error(f"Schema must contain a 'name' key, but got {self.schema}")
-            exit(1)
-        if not "columns" in self.schema:
-            self.logger.error(f"Schema must contain a 'columns' key, but got {self.schema}")
-            exit(1)
-        if not isinstance(self.schema["columns"], list):
-            self.logger.error(f"'columns' key must be a list, but got {type(self.schema['columns'])}: {self.schema['columns']}")
-            exit(1)
-        for column_name, column_properties in self.schema["columns"].items():
+        for column_name, column_type_and_properties in self.schema.items():
             if not isinstance(column_name, str):
                 self.logger.error(f"Column name must be a string, but got {type(column_name)}: {column_name}")
                 exit(1)
             if not re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', column_name):
                 self.logger.error(f"Column name '{column_name}' must contain only lowercase letters, numbers, and use '-' as a separator.")
                 exit(1)
-            if not isinstance(column_properties, list):
-                self.logger.error(f"Each column must be a list, but got {type(column_properties)}: {column_properties}")
+            if not isinstance(column_type_and_properties, object):
+                self.logger.error(f"Each column must have be an object, but got {type(column_type_and_properties)}: {column_type_and_properties}")
                 exit(1)
-            if len(column_properties) == 0:
-                self.logger.error("Each column must contain at least one propertys")
+            column_type = list(column_type_and_properties.keys())[0]
+            column_properties = list(column_type_and_properties.values())[0]
+            if not isinstance(column_type, str):
+                self.logger.error(f"Each column must have a type, but got {type(column_type)}: {column_type}")
+                exit(1)
+            if column_type not in self.valid_types:
+                self.logger.error(f"Invalid column type '{column_type}'. Must be one of {self.valid_types}")
+                exit(1)
+            if not isinstance(column_properties, list):
+                self.logger.error(f"Each column must have a list of properties or empty list, but got {type(column_properties)}: {column_properties}")
                 exit(1)
             for column_property in column_properties:
                 if not isinstance(column_property, str):
                     self.logger.error("Each column property must be a string")
                     exit(1)
-                if column_property not in self.valid_column_properties:
-                    self.logger.error(f"Invalid column property '{column_property}'. Must be one of {self.valid_column_properties}")
+                if column_property not in self.valid_properties:
+                    self.logger.error(f"Invalid column property '{column_property}'. Must be one of {self.valid_properties}")
                     exit(1)
     
     def set_schema(self, schema: dict):
@@ -238,23 +232,22 @@ class Crud:
         self._generate_content_model()
         self._run_migrations()
         
-        print(f"CRUD files have been generated successfully!")
         if self.argument_parser_generated:
-            print(f"Argument parser file generated at {self.argument_parser_path}")
+            self.logger.info(f"Generated argument parser at {self.argument_parser_path}")
         if self.controller_generated:
-            print(f"Controller file generated at {self.controller_path}")
+            self.logger.info(f"Generated controller at {self.controller_path}")
         if self.migration_generated:
-            print(f"Migration file generated at {self.migration_path}")
+            self.logger.info(f"Generated migration at {self.migration_path}")
         if self.model_generated:
-            print(f"Model file generated at {self.model_path}")
+            self.logger.info(f"Generated model at {self.model_path}")
         
         if not self.argument_parser_generated and not self.controller_generated and not self.migration_generated and not self.model_generated:
-            print(f"All model files already exist at {self.source_code_path}")
-            print(f"Argument parser file: {self.argument_parser_path}")
-            print(f"Controller file: {self.controller_path}")
-            print(f"Migration file: {self.migration_path}")
-            print(f"Model file: {self.model_path}")
-            print(f"If you want to regenerate the model files, please run `$ hape crud delete --name {self.model_name}` first to delete the model files and run the command again.")
+            self.logger.info(f"All model files already exist at {self.source_code_path}")
+            self.logger.info(f"Argument parser file: {self.argument_parser_path}")
+            self.logger.info(f"Controller file: {self.controller_path}")
+            self.logger.info(f"Migration file: {self.migration_path}")
+            self.logger.info(f"Model file: {self.model_path}")
+            self.logger.info(f"If you want to regenerate the model files, please run `$ hape crud delete --name {self.model_name}` first to delete the model files and run the command again.")
             exit(1)
             
     def delete(self):
@@ -267,6 +260,10 @@ class Crud:
             self.file_service.delete_file(self.migration_path)
         if self.file_service.file_exists(self.model_path):
             self.file_service.delete_file(self.model_path)
-            
-        print(f"All model files have been deleted successfully!")
+        
+        self.logger.debug(f"Deleted: {self.argument_parser_path}")
+        self.logger.debug(f"Deleted: {self.controller_path}")
+        self.logger.debug(f"Deleted: {self.migration_path}")
+        self.logger.debug(f"Deleted: {self.model_path}")
+        self.logger.info(f"All model files have been deleted successfully!")
 

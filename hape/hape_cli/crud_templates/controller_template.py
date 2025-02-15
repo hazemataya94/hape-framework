@@ -7,4 +7,4 @@ class {{model_name_camel_case}}Controller(ModelController):
     def __init__(self):
         super().__init__({{model_name_camel_case}})
 
-"""
+""".strip()
