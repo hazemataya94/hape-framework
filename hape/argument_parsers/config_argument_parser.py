@@ -1,6 +1,5 @@
 from hape.logging import Logging
 from hape.config import Config
-from hape.config_db import ConfigDB
 
 class ConfigArgumentParser:
 
@@ -21,8 +20,7 @@ class ConfigArgumentParser:
         
         if args.action == "check":
             Config.check_variables(Config._required_env_variables)
-            Config.check_variables(ConfigDB._required_env_variables)
-            print("Configurations are set correctly.")
+            self.logger.info("Configurations are set correctly.")
         else:
-            print(f"Error: Invalid {args.comman} action. Use `hape {args.comman} --help` for more details.")
+            self.logger.error(f"Error: Invalid action {args.action} for {args.command}. Use `hape {args.command} --help` for more details.")
             exit(1)

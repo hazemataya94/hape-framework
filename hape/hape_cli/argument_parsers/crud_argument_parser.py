@@ -17,13 +17,24 @@ class CrudArgumentParser:
         schema_group.add_argument("-j", "--schema-json", help="Schema of the model in JSON format")
         schema_group.add_argument("-y", "--schema-yaml", help="Schema of the model in YAML format")
         
+        delete_parser = crud_parser_subparser.add_parser("delete", help="Deletes a CRUD operation")
+        delete_parser.add_argument("-n", "--name", required=True, help="Name of the model")
+        
     def run_action(self, args):
         self.logger.debug(f"run_action(args)")
         if args.command != self.COMMAND:
             return
         self.logger.debug(f"Running action: {args.action}")
+        crud_controller = CrudController(
+            args.name,
+            args.schema_json if "schema_json" in args else None,
+            args.schema_yaml if "schema_yaml" in args else None
+        )
+        
         if args.action == "generate":
-            CrudController(args.name, args.schema_json, args.schema_yaml).generate()
+            crud_controller.generate()
+        elif args.action == "delete":
+            crud_controller.delete()
         else:
-            self.logger.error(f"Error: Invalid {args.command} action. Use `hape {args.command} --help` for more details.")
+            self.logger.error(f"Error: Invalid action {args.action} for {args.command}. Use `hape {args.command} --help` for more details.")
             exit(1)

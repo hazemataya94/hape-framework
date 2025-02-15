@@ -1,24 +1,30 @@
 
 clean: ## Clean up build, cache, playground and zip files.
-	rm -rf build dist hape.egg-info playground/* hape.zip
+	@echo "$$ rm -rf build dist hape.egg-info playground/* hape.zip"
+	@rm -rf build dist hape.egg-info playground/* hape.zip
 
 zip: ## Create a zip archive excluding local files and playground.
+	@echo "$$ zip -r hape.zip . -x '.env' '.venv/*' '.git/*' 'playground/*'"
 	zip -r hape.zip . -x ".env" ".venv/*" ".git/*" "playground/*"
 	open .
 
 .venv: ## Create a virtual environment .venv if not exists.
 	@if [ ! -d ".venv" ]; then \
-		echo "Creating virtual environment"; \
+		echo "$$ python -m venv .venv"; \
 		python -m venv .venv; \
 	fi
 
 init-dev: .venv ## Install development dependencies in .venv, docker-compose up -d, and create .env if not exist.
-	@echo "Installing venv dependencies"
+	@echo "$$ .venv/bin/python -m pip uninstall -y hape"
+	@.venv/bin/python -m pip uninstall -y hape
+	@echo
+	@echo "$$ .venv/bin/python -m pip install -r requirements-dev.txt"
 	@.venv/bin/python -m pip install -r requirements-dev.txt
 	@echo "Dependencies Installed."
 	@echo
-	@echo "Creating .env file"
+	@echo "$$ [ -f .env ] || cp .env.example .env"
 	@[ -f .env ] || cp .env.example .env
+	@echo ".env file created or already exists"
 	@echo
 	@echo "Run the following to start docker-compose services"
 	@echo "\$$ make docker-up"
@@ -27,17 +33,20 @@ init-dev: .venv ## Install development dependencies in .venv, docker-compose up 
 	@echo
 
 init-cli: ## Install CLI dependencies.
-	@echo "Installing `hape` CLI"
+	@echo "pip install -r requirements-cli.txt --break-system-packages"
 	@pip install -r requirements-cli.txt --break-system-packages
 
 freeze-dev: ## Freeze dependencies for development.
+	@echo "$$ pip freeze > requirements-dev.txt"
 	@pip freeze > requirements-dev.txt
 
 freeze-cli: ## Freeze dependencies for CLI.
+	@echo "$$ pip freeze > requirements-cli.txt"
 	@pip freeze > requirements-cli.txt
 
 install: ## Install the package.
-	pip install --upgrade hape
+	@echo "$$ pip install --upgrade hape"
+	@pip install --upgrade hape
 
 bump-version: ## Bump the patch version in setup.py.
 	@echo "🔄 Bumping patch version in setup.py..."
@@ -53,7 +62,9 @@ bump-version: ## Bump the patch version in setup.py.
 	echo "Version updated to $$new_version"
 
 build: bump-version ## Build the package in dist. Runs: bump-version.
+	@echo "$$ rm -rf dist/*"
 	@rm -rf dist/*
+	@echo "$$ python -m build"
 	@python -m build
 
 publish: build ## Publish package to public PyPI, commit, tag, and push the version. Runs: build.
@@ -81,29 +92,38 @@ publish: build ## Publish package to public PyPI, commit, tag, and push the vers
 	)
 
 play: ## Run hape.playground Playground.paly() and print the execution time.
-	time python main.py play
+	@echo "$$ time python main.py play"
+	@time python main.py play
 
 migration-create: ## Create a new database migration.
 	@read -p "Enter migration message: " migration_msg && \
-	 alembic revision --autogenerate -m "$$migration_msg"
+	echo "$$ alembic revision --autogenerate -m \"$$migration_msg\"" && \
+	alembic revision --autogenerate -m "$$migration_msg"
 
 migration-run: ## Apply the latest database migrations.
+	@echo "$$ ALEMBIC_CONFIG=./alembic.ini alembic upgrade head"
 	@ALEMBIC_CONFIG=./alembic.ini alembic upgrade head
 
 docker-restart: ## Restart Docker services.
+	@echo "$$ docker-compose -f dockerfiles/docker-compose.yml down"
 	@docker-compose -f dockerfiles/docker-compose.yml down
+	@echo "$$ docker-compose -f dockerfiles/docker-compose.yml up -d --build"
 	@docker-compose -f dockerfiles/docker-compose.yml up -d --build
 
 docker-up: ## Start Docker services.
+	@echo "$$ docker-compose -f dockerfiles/docker-compose.yml up -d --build"
 	@docker-compose -f dockerfiles/docker-compose.yml up -d --build
 
 docker-down: ## Stop Docker services.
+	@echo "$$ docker-compose -f dockerfiles/docker-compose.yml down"
 	@docker-compose -f dockerfiles/docker-compose.yml down
 
 docker-ps: ## List running Docker services.
+	@echo "$$ docker-compose -f dockerfiles/docker-compose.yml ps"
 	@docker-compose -f dockerfiles/docker-compose.yml ps
 
 docker-exec: ## Execute a shell in the HAPE Docker container.
+	@echo "$$ docker exec -it hape bash"
 	@docker exec -it hape bash
 
 source-env: ## Print export statements for the environment variables from .env file.

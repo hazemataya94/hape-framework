@@ -38,5 +38,5 @@ class GitArgumentParser:
         elif args.action == "pull":
             controller.pull_projects(args.dir, args.prefix)
         else:
-            print(f"Error: Invalid {args.command} action. Use `hape {args.command} --help` for more details.")
+            self.logger.error(f"Error: Invalid action {args.action} for {args.command}. Use `hape {args.command} --help` for more details.")
             exit(1)

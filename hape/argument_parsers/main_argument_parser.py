@@ -37,5 +37,5 @@ class MainArgumentParser:
         elif args.command == "deployment-cost":
             DeploymentCostArgumentParser().run_action(args)
         else:
-            print(f"Error: Invalid command {args.command}")
+            self.logger.error(f"Invalid command {args.command}. Use `hape --help` for more details.")
             exit(1)

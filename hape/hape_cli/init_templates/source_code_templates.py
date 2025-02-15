@@ -71,7 +71,7 @@ class MainArgumentParser:
         if args.command == "play":
             PlaygroundArgumentParser().run_action(args)
         else:
-            print(f"Error: Invalid command {args.command}")
+            self.logger.error(f"Error: Invalid command {args.command}. Use `hape --help` for more details.")
             exit(1)
 """.strip()
 
