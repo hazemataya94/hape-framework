@@ -41,6 +41,33 @@ zip                  Create a zip archive excluding local git, env, venv and pla
 
 ### Publish to public PyPI repository
 ```sh
+$ make publish
+🔄 Bumping patch version in setup.py...
+Version updated to 0.x.x
+* Creating isolated environment: venv+pip...
+* Installing packages in isolated environment:
+  - setuptools >= 40.8.0
+* Getting build dependencies for sdist...
+0.x.x
+.
+Successfully built hape-0.x.x.tar.gz and hape-0.x.x-py3-none-any.whl
+Uploading distributions to https://upload.pypi.org/legacy/
+Uploading hape-0.x.x-py3-none-any.whl
+100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 63.6/63.6 kB • 00:00 • 55.1 MB/s
+Uploading hape-0.x.x.tar.gz
+100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 54.3/54.3 kB • 00:00 • 35.6 MB/s
+.
+View at:
+https://pypi.org/project/hape/0.x.x/
+.
+Pushing commits
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+.
+Pushing tags
+Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
+To github.com:hazemataya94/hape-framework.git
+ * [new tag]         0.x.x -> 0.x.x
 $ pip install --upgrade hape
 $ hape --version
 0.x.x
@@ -182,7 +209,6 @@ $ make publish
 $ hape changelog generate # generate CHANGELOG.md from scratch
 $ hape changelog update # append missing versions to CHANGELOG.md
 ```
-
 
 ### Support Scalable Secure RESTful API
 ```sh
