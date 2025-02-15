@@ -12,7 +12,7 @@ from hape.utils.string_utils import StringUtils
 
 class Crud:
     
-    valid_types = ["string", "int", "boolean", "float", "date", "datetime", "timestamp"]
+    valid_types = ["string", "int", "bool", "float", "date", "datetime", "timestamp"]
     valid_properties = ["nullable", "required", "unique", "primary", "autoincrement"]
     
     _model_schema_template = """
@@ -92,11 +92,13 @@ class Crud:
             if not re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', column_name):
                 self.logger.error(f"Column name '{column_name}' must contain only lowercase letters, numbers, and use '-' as a separator.")
                 exit(1)
-            if not isinstance(column_type_and_properties, object):
-                self.logger.error(f"Each column must have be an object, but got {type(column_type_and_properties)}: {column_type_and_properties}")
+            if not isinstance(column_type_and_properties, dict):
+                self.logger.error(f"Each column must have be a dictionary, but got {type(column_type_and_properties)}: {column_type_and_properties}")
                 exit(1)
+            
             column_type = list(column_type_and_properties.keys())[0]
             column_properties = list(column_type_and_properties.values())[0]
+            
             if not isinstance(column_type, str):
                 self.logger.error(f"Each column must have a type, but got {type(column_type)}: {column_type}")
                 exit(1)
