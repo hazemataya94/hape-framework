@@ -55,15 +55,16 @@ class Config:
     def _get_env_value(hape_env_key):
         Config._load_environment()
         env_key = Config._env_var_map[hape_env_key]["key"]
+        
         env_value = os.getenv(env_key)
-        if env_value:
-            return env_value
-        
         env_default_value = Config._env_var_map[hape_env_key]["value"]
-        if Config._env_var_map[hape_env_key]["value"]:
-            return Config._env_var_map[hape_env_key]["value"]
         
-        if env_key in Config.required_env_variables:
+        if env_value:
+            Config._env_var_map[hape_env_key]["value"] = env_value
+            return env_value
+        elif env_default_value:
+            return env_default_value
+        elif env_key in Config.required_env_variables:
             Config.logger.error(f"""Environment variable {env_key} is missing.
 
 To set the value of the environment variable run:
@@ -72,10 +73,8 @@ $ export {env_key}="value"
 The following environment variables are required:
 {json.dumps(Config.required_env_variables, indent=4)}
 """)
-            exit(1)
-
-        Config._env_var_map[hape_env_key]["value"] = env_value
-        return env_value
+            exit(1)    
+        return None
     
     @staticmethod
     def get_log_level():

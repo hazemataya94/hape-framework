@@ -7,6 +7,7 @@ from hape.logging import Logging
 from hape.services.file_service import FileService
 from hape.utils.naming_utils import NamingUtils
 from hape.hape_cli.init_templates.init_project_template import INIT_PROJECT_TEMPLATE
+from hape.utils.string_utils import StringUtils
 
 class Init:
 
@@ -35,13 +36,7 @@ class Init:
         self.logger.debug(f"_init_file(path: {path}, content: {content})")
 
         if content:
-            new_content = deepcopy(content)
-            new_content = new_content.replace("{{project_name_snake_case}}", NamingUtils.convert_to_snake_case(self.name))
-            new_content = new_content.replace("{{project_name_upper}}", NamingUtils.convert_to_upper(self.name))
-            new_content = new_content.replace("{{project_name}}", self.name)
-            new_content = new_content.replace("{{project_name_camel_case}}", NamingUtils.convert_to_camel_case(self.name))
-            new_content = new_content.replace("{{project_name_title}}", NamingUtils.convert_to_title(self.name))
-            content = new_content
+            content = StringUtils.replace_naming_variables(content, self.name, "project_name")
 
         self.file_service.write_file(path, content)
 
