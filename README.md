@@ -123,7 +123,7 @@ hello-world/
 |-- main.py
 |-- requirements-cli.txt
 |-- requirements-dev.txt
-`-- setup.py
+-- setup.py
 ```
 
 ### Generate CRUD JSON Schema
