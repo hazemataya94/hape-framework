@@ -1,8 +1,9 @@
 services:
   hape:
+    image: hape:dev
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ../
+      dockerfile: ./dockerfiles/Dockerfile.dev
     container_name: hape
     restart: always
     env_file:

@@ -126,6 +126,12 @@ docker-exec: ## Execute a shell in the HAPE Docker container.
 	@echo "$$ docker exec -it hape bash"
 	@docker exec -it hape bash
 
+docker-python: ## Runs a Python container in playground directory.
+	@echo "$$ docker-compose -f dockerfiles/docker-compose.yml up -d mariadb phpmyadmin"
+	@docker-compose -f dockerfiles/docker-compose.yml up -d mariadb phpmyadmin
+	@echo "$$ docker run -itd --name hape-python-dev --workdir /workspace -v $(shell pwd)/playground:/workspace/playground -v $(shell pwd)/tests:/workspace/tests python:3.13-bookworm /bin/bash -c 'sleep infinity' || docker start hape-python-dev && docker exec -it hape-python-dev /bin/bash -c 'clear && bash'"
+	@docker run -itd --name hape-python-dev --workdir /workspace -v $(shell pwd)/playground:/workspace/playground -v $(shell pwd)/tests:/workspace/tests python:3.13-bookworm /bin/bash -c 'sleep infinity' || docker start hape-python-dev && docker exec -it hape-python-dev /bin/bash -c 'clear && bash'
+
 source-env: ## Print export statements for the environment variables from .env file.
 	@echo "Run the following command to export environment variables:"
 	@grep -v '^#' .env | xargs -I {} echo export {}

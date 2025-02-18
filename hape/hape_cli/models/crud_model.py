@@ -235,37 +235,39 @@ class Crud:
         self._run_migrations()
         
         if self.argument_parser_generated:
-            self.logger.info(f"Generated argument parser at {self.argument_parser_path}")
+            print(f"Generated: {self.argument_parser_path}")
         if self.controller_generated:
-            self.logger.info(f"Generated controller at {self.controller_path}")
+            print(f"Generated: {self.controller_path}")
         if self.migration_generated:
-            self.logger.info(f"Generated migration at {self.migration_path}")
+            print(f"Generated: {self.migration_path}")
         if self.model_generated:
-            self.logger.info(f"Generated model at {self.model_path}")
+            print(f"Generated: {self.model_path}")
+            
+        print(f"All model files have been generated successfully!")
         
         if not self.argument_parser_generated and not self.controller_generated and not self.migration_generated and not self.model_generated:
-            self.logger.info(f"All model files already exist at {self.source_code_path}")
-            self.logger.info(f"Argument parser file: {self.argument_parser_path}")
-            self.logger.info(f"Controller file: {self.controller_path}")
-            self.logger.info(f"Migration file: {self.migration_path}")
-            self.logger.info(f"Model file: {self.model_path}")
-            self.logger.info(f"If you want to regenerate the model files, please run `$ hape crud delete --name {self.model_name}` first to delete the model files and run the command again.")
+            print(f"All model files already exist at {self.source_code_path}")
+            print(f"Argument parser file: {self.argument_parser_path}")
+            print(f"Controller file: {self.controller_path}")
+            print(f"Migration file: {self.migration_path}")
+            print(f"Model file: {self.model_path}")
+            print(f"If you want to regenerate the model files, please run `$ hape crud delete --name {self.model_name}` first to delete the model files and run the command again.")
             exit(1)
             
     def delete(self):
         self.logger.debug(f"delete()")
         if self.file_service.file_exists(self.argument_parser_path):
             self.file_service.delete_file(self.argument_parser_path)
+            print(f"Deleted: {self.argument_parser_path}")
         if self.file_service.file_exists(self.controller_path):
             self.file_service.delete_file(self.controller_path)
+            print(f"Deleted: {self.controller_path}")
         if self.file_service.file_exists(self.migration_path):
             self.file_service.delete_file(self.migration_path)
+            print(f"Deleted: {self.migration_path}")
         if self.file_service.file_exists(self.model_path):
             self.file_service.delete_file(self.model_path)
+            print(f"Deleted: {self.model_path}")
         
-        self.logger.debug(f"Deleted: {self.argument_parser_path}")
-        self.logger.debug(f"Deleted: {self.controller_path}")
-        self.logger.debug(f"Deleted: {self.migration_path}")
-        self.logger.debug(f"Deleted: {self.model_path}")
-        self.logger.info(f"All model files have been deleted successfully!")
+        print(f"All model files have been deleted successfully!")
 
