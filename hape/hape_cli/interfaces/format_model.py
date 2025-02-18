@@ -5,7 +5,7 @@ from typing import Any
 class FormatModel:
     
     @abstractmethod
-    def __init__(self, model_schema_template: bool):
+    def __init__(self, model_schema: bool):
         pass
     
     @abstractmethod

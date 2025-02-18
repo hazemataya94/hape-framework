@@ -14,22 +14,24 @@ class Crud:
     
     valid_types = ["string", "int", "bool", "float", "date", "datetime", "timestamp"]
     valid_properties = ["nullable", "required", "unique", "primary", "autoincrement"]
-    
-    _model_schema_template = """
+    _model_schema_yaml = "empty"
+    _model_schema_json = """
 {
     "valid_types": {{valid-types}},
     "valid_properties": {{valid-properties}},
     "name": "model-name",
     "schema": {
-        "__column_name": {"valid-type": ["valid-property"]},
-        "_id": {"valid-type": ["valid-property"]},
+        "column_name": {"valid-type": ["valid-property"]},
+        "id": {"valid-type": ["valid-property"]},
+        "updated_at": {"valid-type": []},
+        "name": {"valid-type": ["valid-property", "valid-property"]},
+        "enabled": {"valid-type": []},
+    }
+    "example_schema": {
         "id": {"int": ["primary"]},
-        "_updated_at": {"valid-type": []},
         "updated_at": {"timestamp": []},
-        "_name": {"valid-type": ["valid-property"]},
-        "name": {"string": []},
-        "_enabled": {"valid-type": ["valid-property"]},
-        "enabled": {"int": []}  
+        "name": {"string": ["required", "unique"]},
+        "enabled": {"bool": []}
     }
 }
 """.replace("{{valid-types}}", json.dumps(valid_types)) \

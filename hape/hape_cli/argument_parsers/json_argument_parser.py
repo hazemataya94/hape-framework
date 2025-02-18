@@ -12,14 +12,14 @@ class JsonArgumentParser:
         json_parser_subparser = json_parser.add_subparsers(dest="action")
 
         json_parser = json_parser_subparser.add_parser("get", help="Get JSON templates and data related to the project")
-        json_parser.add_argument("-mst", "--model-schema-template", action="store_true", help="Template JSON schema of the model")
+        json_parser.add_argument("-m", "--model-schema", action="store_true", help="Template JSON schema of the model")
 
     def run_action(self, args):
         self.logger.debug(f"run_action(args)")
         if args.command != self.COMMAND:
             return
         if args.action == "get":
-            JsonController(args.model_schema_template).get()
+            JsonController(args.model_schema).get()
         else:
             self.logger.error(f"Error: Invalid action {args.action} for {args.command}. Use `hape {args.command} --help` for more details.")
             exit(1)

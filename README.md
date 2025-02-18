@@ -24,21 +24,21 @@ clean                Clean up build, cache, playground and zip files.
 docker-down          Stop Docker services.
 docker-exec          Execute a shell in the HAPE Docker container.
 docker-ps            List running Docker services.
+docker-python        Runs a Python container in playground directory.
 docker-restart       Restart Docker services.
 docker-up            Start Docker services.
 freeze-cli           Freeze dependencies for CLI.
 freeze-dev           Freeze dependencies for development.
 init-cli             Install CLI dependencies.
-init-dev             Install development dependencies in .venv, start docker services, and create .env if not exist.
+init-dev             Install development dependencies in .venv, docker-compose up -d, and create .env if not exist.
 install              Install the package.
-list                 List available commands and description.
+list                 Show available commands.
 migration-create     Create a new database migration.
 migration-run        Apply the latest database migrations.
-play                 Run hape.playground Playground.paly() and print execution time.
-publish              Publish package to public PyPI, commit, tag, and push version. Runs: build.
-publish-aws          Publish package to AWS CodeArtifact. Runs: build.
-source-env           Print export statements for all environment variables from .env file.
-zip                  Create a zip archive excluding local git, env, venv and playground.
+play                 Run hape.playground Playground.paly() and print the execution time.
+publish              Publish package to public PyPI, commit, tag, and push the version. Runs: build.
+source-env           Print export statements for the environment variables from .env file.
+zip                  Create a zip archive excluding local files and playground.
 ```
 
 ### Publish to public PyPI repository
@@ -75,58 +75,84 @@ $ hape --version
 0.x.x
 ```
 
+### Install latest `hape` CLI
+```sh
+$ make install
+```
+or
+```sh
+$ pip install --upgrade hape
+```
+
 ### Support Initializing Project
 ```sh
-$ hape init project --help
-usage: hape init project [-h] -n NAME
-
-options:
-  -h, --help       show this help message and exit
-  -n, --name NAME  Name of the project
-$ pip install --upgrade hape > /dev/null 2>&1
 $ hape init project --name hello-world
 Project hello-world has been successfully initialized!
 $ tree hello-world 
-hello-world
-├── Makefile
-├── README.md
-├── alembic.ini
-├── dockerfiles
-│   ├── Dockerfile.dev
-│   ├── Dockerfile.prod
-│   └── docker-compose.yml
-├── hello_world
-│   ├── __init__.py
-│   ├── argument_parsers
-│   │   ├── __init__.py
-│   │   ├── main_argument_parser.py
-│   │   └── playground_argument_parser.py
-│   ├── bootstrap.py
-│   ├── cli.py
-│   ├── controllers
-│   │   └── __init__.py
-│   ├── enums
-│   │   └── __init__.py
-│   ├── migrations
-│   │   ├── README
-│   │   ├── env.py
-│   │   ├── script.py.mako
-│   │   └── versions
-│   ├── models
-│   │   └── __init__.py
-│   ├── playground.py
-│   └── services
-│       └── __init__.py
-├── main.py
-├── requirements-cli.txt
-├── requirements-dev.txt
-└── setup.py
+hello-world/
+|-- MANIFEST.in
+|-- Makefile
+|-- README.md
+|-- alembic.ini
+|-- dockerfiles
+|   |-- Dockerfile.dev
+|   |-- Dockerfile.prod
+|   `-- docker-compose.yml
+|-- hello_world
+|   |-- __init__.py
+|   |-- argument_parsers
+|   |   |-- __init__.py
+|   |   |-- main_argument_parser.py
+|   |   `-- playground_argument_parser.py
+|   |-- bootstrap.py
+|   |-- cli.py
+|   |-- controllers
+|   |   `-- __init__.py
+|   |-- enums
+|   |   `-- __init__.py
+|   |-- migrations
+|   |   |-- README
+|   |   |-- env.py
+|   |   |-- script.py.mako
+|   |   `-- versions
+|   |-- models
+|   |   `-- __init__.py
+|   |-- playground.py
+|   `-- services
+|       `-- __init__.py
+|-- main.py
+|-- requirements-cli.txt
+|-- requirements-dev.txt
+`-- setup.py
+```
+
+### Generate CRUD JSON Schema
+```sh
+$ hape json get --model-schema
+{
+    "valid_types": ["string", "int", "bool", "float", "date", "datetime", "timestamp"],
+    "valid_properties": ["nullable", "required", "unique", "primary", "autoincrement"],
+    "name": "model-name",
+    "schema": {
+        "column_name": {"valid-type": ["valid-property"]},
+        "id": {"valid-type": ["valid-property"]},
+        "updated_at": {"valid-type": []},
+        "name": {"valid-type": ["valid-property", "valid-property"]},
+        "enabled": {"valid-type": []},
+    }
+    "example_schema": {
+        "id": {"int": ["primary"]},
+        "updated_at": {"timestamp": []},
+        "name": {"string": ["required", "unique"]},
+        "enabled": {"bool": []}
+    }
+}
 ```
 
 ## In Progress Features
 ### Support CRUD Generate and Create migrations/json/model_name.json 
 ```sh
-$ hape crud generate --json """
+$ hape crud generate --json '
 {
     "name": "deployment-cost"
     "schema": {
@@ -144,7 +170,7 @@ $ hape crud generate --json """
         "cost-unit": ["string"]
     }
 }
-"""
+"'
 $ hape deployment-cost --help
 usage: myawesomeplatform deployment-cost [-h] {save,get,get-all,delete,delete-all} ...
 
