@@ -1,3 +1,5 @@
+![HAPE Framework](docs/logo.png)
+
 # HAPE Framework: Overview & Features
 
 ## What is HAPE Framework?
