@@ -97,29 +97,29 @@ hello-world/
 |-- dockerfiles
 |   |-- Dockerfile.dev
 |   |-- Dockerfile.prod
-|   `-- docker-compose.yml
+|   -- docker-compose.yml
 |-- hello_world
 |   |-- __init__.py
 |   |-- argument_parsers
 |   |   |-- __init__.py
 |   |   |-- main_argument_parser.py
-|   |   `-- playground_argument_parser.py
+|   |   -- playground_argument_parser.py
 |   |-- bootstrap.py
 |   |-- cli.py
 |   |-- controllers
-|   |   `-- __init__.py
+|   |   -- __init__.py
 |   |-- enums
-|   |   `-- __init__.py
+|   |   -- __init__.py
 |   |-- migrations
 |   |   |-- README
 |   |   |-- env.py
 |   |   |-- script.py.mako
-|   |   `-- versions
+|   |   -- versions
 |   |-- models
-|   |   `-- __init__.py
+|   |   -- __init__.py
 |   |-- playground.py
-|   `-- services
-|       `-- __init__.py
+|   -- services
+|       -- __init__.py
 |-- main.py
 |-- requirements-cli.txt
 |-- requirements-dev.txt
