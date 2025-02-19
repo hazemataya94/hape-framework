@@ -40,9 +40,7 @@ class Crud:
     _model_schema_yaml = """
 valid_types: {{valid-types}}
 valid_properties: {{valid-properties}}
-
 name: model-name
-
 schema:
   column_name:
     valid-type: 
@@ -58,7 +56,6 @@ schema:
       - valid-property
   enabled:
     valid-type: []
-
 example_schema:
   id:
     int: 

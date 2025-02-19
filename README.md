@@ -154,9 +154,7 @@ $ hape json get --model-schema
 $ hape yaml get --model-schema
 valid_types: ["string", "int", "bool", "float", "date", "datetime", "timestamp"]
 valid_properties: ["nullable", "required", "unique", "primary", "autoincrement"]
-
 name: model-name
-
 schema:
   column_name:
     valid-type: 
@@ -172,7 +170,6 @@ schema:
       - valid-property
   enabled:
     valid-type: []
-
 example_schema:
   id:
     int: 
