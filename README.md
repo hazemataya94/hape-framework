@@ -29,7 +29,7 @@ docker-restart       Restart Docker services.
 docker-up            Start Docker services.
 freeze-cli           Freeze dependencies for CLI.
 freeze-dev           Freeze dependencies for development.
-git-hooks            Install git hooks to .git/hooks/.
+git-hooks            Install hooks in .git-hooks/ to .git/hooks/.
 init-cli             Install CLI dependencies.
 init-dev             Install development dependencies in .venv, docker-compose up -d, and create .env if not exist.
 install              Install the package.
