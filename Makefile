@@ -67,7 +67,7 @@ build: bump-version ## Build the package in dist. Runs: bump-version.
 	@echo "$$ python -m build"
 	@python -m build
 
-publish: build ## Publish package to public PyPI, commit, tag, and push the version. Runs: build.
+publish: test-code build ## Publish package to public PyPI, commit, tag, and push the version. Runs: build.
 	@twine upload -u __token__ -p "$$(cat ../pypi.token)" dist/* \
 	&& \
 	( \
