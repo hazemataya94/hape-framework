@@ -52,7 +52,7 @@ class Playground:
         DeploymentCost.delete_all(id=["1", "4"], service_name="Test Service")
 
     def generate_gitlab_changes_report(self):
-        gitlab = GitlaService()
+        gitlab = GitlabService()
         start_date = datetime(2025, 2, 3)
         end_date = datetime(2025, 2, 5)
         gitlab.generate_csv_changes_in_cicd_repos(

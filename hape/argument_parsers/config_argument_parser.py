@@ -4,7 +4,7 @@ from hape.config import Config
 class ConfigArgumentParser:
 
     def __init__(self):
-        logger = Logging.get_logger('hape.argument_parsers.config_argument_parser')
+        self.logger = Logging.get_logger('hape.argument_parsers.config_argument_parser')
 
     def create_subparser(self, subparsers):    
         self.logger.debug(f"create_subparser(subparsers)")

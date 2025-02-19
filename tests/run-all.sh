@@ -10,7 +10,7 @@ if [ -z "$1" ]; then
 fi
 
 if [ "$1" == "code" ]; then
-    COMMAND="python /workspace/main.py"
+    COMMAND="python /workspace/main_cli.py"
     test_scripts=(
         "init-project.sh"
         "crud-generate.sh"

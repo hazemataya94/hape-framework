@@ -92,8 +92,8 @@ publish: test-code build ## Publish package to public PyPI, commit, tag, and pus
 	)
 
 play: ## Run hape.playground Playground.paly() and print the execution time.
-	@echo "$$ time python main.py play"
-	@time python main.py play
+	@echo "$$ time python main_code.py play"
+	@time python main_code.py play
 
 migration-create: ## Create a new database migration.
 	@read -p "Enter migration message: " migration_msg && \
