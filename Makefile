@@ -132,7 +132,6 @@ docker-python: ## Runs a Python container in playground directory.
 	@echo "$$ docker run -itd --name hape-python-dev --workdir /workspace -v $(shell pwd)/playground:/workspace/playground -v $(shell pwd)/tests:/workspace/tests python:3.13-bookworm /bin/bash -c 'sleep infinity' || docker start hape-python-dev && docker exec -it hape-python-dev /bin/bash -c 'clear && bash'"
 	@docker run -itd --name hape-python-dev --workdir /workspace -v $(shell pwd)/playground:/workspace/playground -v $(shell pwd)/tests:/workspace/tests python:3.13-bookworm /bin/bash -c 'sleep infinity' || docker start hape-python-dev && docker exec -it hape-python-dev /bin/bash -c 'clear && bash'
 	
-
 source-env: ## Print export statements for the environment variables from .env file.
 	@echo "Run the following command to export environment variables:"
 	@grep -v '^#' .env | xargs -I {} echo export {}
@@ -141,3 +140,22 @@ list: ## Show available commands.
 	@grep -E '^[a-zA-Z_-]+:.*?## ' Makefile | \
 	awk -F ':.*?## ' '{printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' | \
 	sort
+
+git-hooks: ## Install git hooks.
+	@echo "Installing git hooks..."
+	@cp -r .git-hooks/* .git/hooks/
+	@chmod +x .git/hooks/*
+	@echo "Git hooks installed."
+
+test-cli: ## Run installs hape and runs all tests.
+	@echo "Running all tests in a fresh python:3.13-bookworm container..."
+	@docker run -it --rm --workdir /workspace -v $(shell pwd)/tests:/workspace/tests python:3.13-bookworm /bin/bash -c 'mkdir playground && ./tests/run-all.sh cli'
+	@echo "All tests finished successfully!"
+
+test-code: ## Run installs hape and runs all tests.
+	@echo "Making sure hape container is running"
+	@docker-compose -f dockerfiles/docker-compose.yml ps | grep hape || make docker-up
+	@echo "Running all tests in hape container defined in dockerfiles/docker-compose.yml"
+	@echo "$$ docker exec -it --workdir /workspace hape ./tests/run-all.sh code"
+	@docker exec -it --workdir /workspace hape ./tests/run-all.sh code
+	@echo "All tests finished successfully!"
