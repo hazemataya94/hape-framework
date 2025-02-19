@@ -3,8 +3,7 @@
 # Check if any staged .py files exist
 if git diff --cached --name-only | grep -E '\.py$' > /dev/null; then
     echo "Python files detected, running code tests..."
-    # Run your pre-commit logic here
-    pre-commit run --files $(git diff --cached --name-only | grep -E '\.py$')
+    make test-code 
 else
     echo "No Python files detected, skipping pre-commit."
 fi
