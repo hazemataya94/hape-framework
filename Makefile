@@ -67,7 +67,7 @@ build: bump-version ## Build the package in dist. Runs: bump-version.
 	@echo "$$ python -m build"
 	@python -m build
 
-publish: test-code build ## Publish package to public PyPI, commit, tag, and push the version. Runs: build.
+publish: test-code build ## Publish package to public PyPI, commit, tag, and push the version. Runs: test-code,build.
 	@twine upload -u __token__ -p "$$(cat ../pypi.token)" dist/* \
 	&& \
 	( \
@@ -141,13 +141,13 @@ list: ## Show available commands.
 	awk -F ':.*?## ' '{printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' | \
 	sort
 
-git-hooks: ## Install git hooks.
+git-hooks: ## Install git hooks to .git/hooks/.
 	@echo "Installing git hooks..."
 	@cp -r .git-hooks/* .git/hooks/
 	@chmod +x .git/hooks/*
 	@echo "Git hooks installed."
 
-test-cli: ## Run a new python container, installs hape cli and runs all tests against it.
+test-cli: ## Run a new python container, installs hape cli and runs all tests inside it.
 	@echo "Running all tests in a fresh python:3.13-bookworm container..."
 	@docker run -it --rm --workdir /workspace -v $(shell pwd)/tests:/workspace/tests python:3.13-bookworm /bin/bash -c 'mkdir playground && ./tests/run-all.sh cli'
 	@echo "All tests finished successfully!"

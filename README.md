@@ -29,6 +29,7 @@ docker-restart       Restart Docker services.
 docker-up            Start Docker services.
 freeze-cli           Freeze dependencies for CLI.
 freeze-dev           Freeze dependencies for development.
+git-hooks            Install git hooks to .git/hooks/.
 init-cli             Install CLI dependencies.
 init-dev             Install development dependencies in .venv, docker-compose up -d, and create .env if not exist.
 install              Install the package.
@@ -36,8 +37,10 @@ list                 Show available commands.
 migration-create     Create a new database migration.
 migration-run        Apply the latest database migrations.
 play                 Run hape.playground Playground.paly() and print the execution time.
-publish              Publish package to public PyPI, commit, tag, and push the version. Runs: build.
+publish              Publish package to public PyPI, commit, tag, and push the version. Runs: test-code,build.
 source-env           Print export statements for the environment variables from .env file.
+test-cli             Run a new python container, installs hape cli and runs all tests inside it.
+test-code            Runs containers in dockerfiles/docker-compose.yml and runs all tests for the code.
 zip                  Create a zip archive excluding local files and playground.
 ```
 
