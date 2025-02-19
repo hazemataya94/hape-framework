@@ -14,7 +14,6 @@ class Crud:
     
     valid_types = ["string", "int", "bool", "float", "date", "datetime", "timestamp"]
     valid_properties = ["nullable", "required", "unique", "primary", "autoincrement"]
-    _model_schema_yaml = "empty"
     _model_schema_json = """
 {
     "valid_types": {{valid-types}},
@@ -34,6 +33,44 @@ class Crud:
         "enabled": {"bool": []}
     }
 }
+""".replace("{{valid-types}}", json.dumps(valid_types)) \
+    .replace("{{valid-properties}}", json.dumps(valid_properties)) \
+    .strip()
+
+    _model_schema_yaml = """
+valid_types: {{valid-types}}
+valid_properties: {{valid-properties}}
+
+name: model-name
+
+schema:
+  column_name:
+    valid-type: 
+      - valid-property
+  id:
+    valid-type: 
+      - valid-property
+  updated_at:
+    valid-type: []
+  name:
+    valid-type: 
+      - valid-property
+      - valid-property
+  enabled:
+    valid-type: []
+
+example_schema:
+  id:
+    int: 
+      - primary
+  updated_at:
+    timestamp: []
+  name:
+    string: 
+      - required
+      - unique
+  enabled:
+    bool: []
 """.replace("{{valid-types}}", json.dumps(valid_types)) \
     .replace("{{valid-properties}}", json.dumps(valid_properties)) \
     .strip()

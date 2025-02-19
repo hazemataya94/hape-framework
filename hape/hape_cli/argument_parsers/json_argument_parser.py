@@ -12,7 +12,7 @@ class JsonArgumentParser:
         json_parser_subparser = json_parser.add_subparsers(dest="action")
 
         json_parser = json_parser_subparser.add_parser("get", help="Get JSON templates and data related to the project")
-        json_parser.add_argument("-m", "--model-schema", action="store_true", help="Template JSON schema of the model")
+        json_parser.add_argument("-m", "--model-schema", required=True, action="store_true", help="Template JSON schema of the model")
 
     def run_action(self, args):
         self.logger.debug(f"run_action(args)")

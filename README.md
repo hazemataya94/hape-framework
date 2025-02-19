@@ -149,7 +149,47 @@ $ hape json get --model-schema
 }
 ```
 
+### Generate CRUD YAML Schema
+```sh
+$ hape yaml get --model-schema
+valid_types: ["string", "int", "bool", "float", "date", "datetime", "timestamp"]
+valid_properties: ["nullable", "required", "unique", "primary", "autoincrement"]
+
+name: model-name
+
+schema:
+  column_name:
+    valid-type: 
+      - valid-property
+  id:
+    valid-type: 
+      - valid-property
+  updated_at:
+    valid-type: []
+  name:
+    valid-type: 
+      - valid-property
+      - valid-property
+  enabled:
+    valid-type: []
+
+example_schema:
+  id:
+    int: 
+      - primary
+  updated_at:
+    timestamp: []
+  name:
+    string: 
+      - required
+      - unique
+  enabled:
+    bool: []
+```
+
 ## In Progress Features
+### Create GitHub Project to Manage issues, tasks and future workfr
+
 ### Support CRUD Generate and Create migrations/json/model_name.json 
 ```sh
 $ hape crud generate --json '

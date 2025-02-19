@@ -14,16 +14,9 @@ class Yaml(FormatModel):
         self.schema = yaml.safe_load(schema)
     
     def get(self):
-        self.logger.debug(f"Getting YAML {{'self.model_schema': {self.model_schema}'}}")
-        self.generate()
-            
-    def generate(self):
-        self.logger.debug(f"Generating YAML {{'self.model_schema': {self.model_schema}'}}")
+        self.logger.debug(f"get()")
         if self.model_schema:
             print(Crud._model_schema_yaml)
         else:
             self.logger.error("Nothing to generate.")
             exit(1)
-    
-    
-

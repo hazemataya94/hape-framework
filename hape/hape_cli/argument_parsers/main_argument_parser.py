@@ -1,10 +1,11 @@
 import argparse
 from importlib.metadata import version
-
 from hape.logging import Logging
 from hape.hape_cli.argument_parsers.init_argument_parser import InitArgumentParser
 from hape.hape_cli.argument_parsers.crud_argument_parser import CrudArgumentParser
 from hape.hape_cli.argument_parsers.json_argument_parser import JsonArgumentParser
+from hape.hape_cli.argument_parsers.yaml_argument_parser import YamlArgumentParser
+
 class MainArgumentParser:
     
     def __init__(self):
@@ -23,6 +24,8 @@ class MainArgumentParser:
         InitArgumentParser().create_subparser(subparsers)
         CrudArgumentParser().create_subparser(subparsers)
         JsonArgumentParser().create_subparser(subparsers)
+        YamlArgumentParser().create_subparser(subparsers)
+        
         return parser
 
     def run_action(self, args):
@@ -33,6 +36,8 @@ class MainArgumentParser:
             CrudArgumentParser().run_action(args)
         elif args.command == "json":
             JsonArgumentParser().run_action(args)
+        elif args.command == "yaml":
+            YamlArgumentParser().run_action(args)
         else:
             self.logger.error(f"Error: Main Parser Invalid command {args.command}")
             exit(1)
