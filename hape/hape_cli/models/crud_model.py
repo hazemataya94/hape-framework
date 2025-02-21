@@ -2,6 +2,9 @@ import re
 import os
 import json
 from typing import List
+from alembic import command
+from alembic.config import Config
+from alembic.script import ScriptDirectory
 from hape.logging import Logging
 from hape.services.file_service import FileService
 from hape.hape_cli.crud_templates.argument_parser_template import ARGUMENT_PARSER_TEMPLATE
@@ -109,6 +112,7 @@ example-model:
         self.migration_counter = "000001"
         self.migration_counter = self._get_migration_counter_and_path()
         self.migration_columns = ""
+        self.alembic_config_path = os.path.join( os.getcwd(), "alembic.ini")
         
         self.argument_parser_path = os.path.join(self.source_code_path, "argument_parsers", f"{self.model_name_snake_case}_argument_parser.py")
         self.controller_path = os.path.join(self.source_code_path, "controllers", f"{self.model_name_snake_case}_controller.py")
@@ -208,21 +212,27 @@ example-model:
         if not self.schema:
             self.logger.error("Schema is required")
             exit(1)
+        if len(self.schema) > 1:
+            self.logger.error("Schema must have only one model")
+            exit(1)
+            
         self._validat_schema_structure()
     
     def _get_orm_columns(self):
         self.logger.debug(f"_get_orm_columns()")
         parsed_orm_columns = ""
+        splitter = ",\n    "
         for crud_column_parser in self.crud_column_parsers:
-            parsed_orm_columns += crud_column_parser.parsed_orm_column + "\n    "
-        return parsed_orm_columns.rstrip("\n    ")
+            parsed_orm_columns += crud_column_parser.parsed_orm_column + splitter
+        return parsed_orm_columns.rstrip(splitter)
     
     def _get_orm_relationships(self):
         self.logger.debug(f"_get_orm_relationships()")
         parsed_orm_relationships = ""
+        splitter = ",\n    "
         for crud_column_parser in self.crud_column_parsers:
-            parsed_orm_relationships += crud_column_parser.orm_relationships + "\n    "
-        return parsed_orm_relationships.rstrip("\n    ")
+            parsed_orm_relationships += crud_column_parser.orm_relationships + splitter
+        return parsed_orm_relationships.rstrip(splitter)
     
     def _generate_content_model(self):
         self.logger.debug(f"_generate_content_model()")
@@ -288,7 +298,11 @@ example-model:
     
     def _get_migration_columns(self):
         self.logger.debug(f"_get_migration_columns()")
-        return ""
+        migration_columns = ""
+        splitter = ",\n        "
+        for crud_column_parser in self.crud_column_parsers:
+            migration_columns += crud_column_parser.parsed_migration_column + splitter
+        return migration_columns.rstrip(splitter)
     
     def _generate_content_migration(self):
         self.logger.debug(f"_generate_content_migration()")
@@ -296,7 +310,8 @@ example-model:
             self.logger.warning(f"Migration file already exists at {self.migration_path}")
             return
 
-        self.migration_counter = self._increase_migration_counter()
+        if not self.is_default_migration_counter:
+            self.migration_counter = self._increase_migration_counter()
         self.migration_columns = self._get_migration_columns()
         
         content = StringUtils.replace_name_case_placeholders(MIGRATION_TEMPLATE, self.source_code_path, "project_name")
@@ -312,6 +327,20 @@ example-model:
 
     def _run_migrations(self):
         self.logger.debug(f"_run_migrations()")
+        alembic_config = Config(self.alembic_config_path)
+        script = ScriptDirectory.from_config(alembic_config)
+
+        heads = script.get_heads()
+        if len(heads) > 1:
+            self.logger.warning(f"Multiple heads detected: {heads}")
+            
+            merge_message = "Auto-merge multiple Alembic heads"
+            command.revision(alembic_config, message=merge_message, head=heads, branch_label="merge_heads")
+            
+            self.logger.info("Merged multiple heads. Now running upgrade...")
+        
+        command.upgrade(alembic_config, "head")
+
         
     def _generate_content_controller(self):
         self.logger.debug(f"_generate_content_controller()")

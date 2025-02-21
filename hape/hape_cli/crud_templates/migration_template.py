@@ -2,8 +2,8 @@ MIGRATION_TEMPLATE = """
 from alembic import op
 import sqlalchemy as sa
 
-revision = '{{migration_counter}}_create_{{model_name_snake_case}}_table'
-down_revision = '{{migration_down_counter}}_create_{{migration_down_model_name_snake_case}}_table'
+revision = '{{migration_counter}}_{{model_name_snake_case}}'
+down_revision = None
 branch_labels = None
 depends_on = None
 

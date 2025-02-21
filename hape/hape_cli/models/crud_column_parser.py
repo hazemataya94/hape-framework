@@ -19,13 +19,18 @@ class CrudColumnParser:
         self.orm_relationships = "" # set in _parse_orm_column_properties()
         self.orm_column_properties = self._parse_orm_column_properties()
         
-        self.parsed_orm_column_template = "{{model_column_name_snake_case}} = Column({{orm_column_type_snake_case}}, {{orm_column_properties}})"
-        
+        self.parsed_orm_column_template = "{{model_column_name_snake_case}} = Column({{orm_column_type_camel_case}}, {{orm_column_properties}})"
         self.parsed_orm_column = self.parsed_orm_column_template.replace("{{model_column_name_snake_case}}", self.orm_column_name)
-        self.parsed_orm_column = self.parsed_orm_column.replace("{{orm_column_type_snake_case}}", self.orm_column_type)
+        self.parsed_orm_column = self.parsed_orm_column.replace("{{orm_column_type_camel_case}}", self.orm_column_type)
         self.parsed_orm_column = self.parsed_orm_column.replace("{{orm_column_properties}}", self.orm_column_properties)
-        
         self.parsed_orm_column = self.parsed_orm_column.replace(", )", ")")
+
+        self.parsed_migration_column_template = "sa.Column('{{model_column_name_snake_case}}', sa.{{orm_column_type_snake_case}}, {{orm_column_properties}})"
+        self.parsed_migration_column = self.parsed_migration_column_template.replace("{{model_column_name_snake_case}}", self.orm_column_name)
+        self.parsed_migration_column = self.parsed_migration_column.replace("{{orm_column_type_snake_case}}", self.orm_column_type)
+        self.parsed_migration_column = self.parsed_migration_column.replace("{{orm_column_properties}}", self.orm_column_properties)
+        self.parsed_migration_column = self.parsed_migration_column.replace(", )", ")")
+        self.parsed_migration_column = self.parsed_migration_column.replace("ForeignKey", "sa.ForeignKey")
         
     def _parse_orm_column_type(self):
         self.logger.debug(f"_parse_orm_column_type()")
@@ -47,7 +52,7 @@ class CrudColumnParser:
         elif self.crud_column.type == CrudColumnValidTypesEnum.TEXT:
             orm_column_type = "Text"
         elif self.crud_column.type == CrudColumnValidTypesEnum.STRING:
-            orm_column_type = "String"
+            orm_column_type = "String(255)"
         else:
             self.logger.error(f"Invalid column type: {self.crud_column.type}")
             exit(1)
