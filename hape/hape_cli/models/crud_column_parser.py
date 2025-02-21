@@ -13,10 +13,11 @@ class CrudColumnParser:
         self.logger = Logging.get_logger('hape.hape_cli.models.crud_column_parser')
         self.crud_column = crud_column
         
+        
         self.orm_column_name = NamingUtils.convert_to_snake_case(self.crud_column.name)
         self.orm_column_type = self._parse_orm_column_type()
+        self.orm_relationships = "" # set in _parse_orm_column_properties()
         self.orm_column_properties = self._parse_orm_column_properties()
-        self.orm_relationships = ""
         
         self.parsed_orm_column_template = "{{model_column_name_snake_case}} = Column({{orm_column_type_snake_case}}, {{orm_column_properties}})"
         
@@ -55,9 +56,8 @@ class CrudColumnParser:
                 
     def _parse_orm_column_properties(self):
         self.logger.debug(f"_parse_orm_column_properties()")
-        
         orm_column_properties = ""
-        
+        orm_column_relationships = ""
         for property in self.crud_column.crud_column_properties:
             if property.property == CrudColumnValidPropertiesEnum.PRIMARY:
                 orm_column_properties += "primary_key=True, "
@@ -69,8 +69,15 @@ class CrudColumnParser:
                 orm_column_properties += "index=True, "
             elif property.property == CrudColumnValidPropertiesEnum.FOREIGN_KEY:
                 orm_column_properties += f"ForeignKey('{property.foreign_key.foreign_key_table}.{property.foreign_key.foreign_key_column}', ondelete='{property.foreign_key.foreign_key_on_delete}'), "
+                
+                foreign_key_model_camel_case = NamingUtils.convert_to_camel_case(property.foreign_key.foreign_key_table)
+                
+                orm_column_relationships += f"relationship('{foreign_key_model_camel_case}', back_populates='{self.orm_column_name.rstrip('_id').rstrip('s')}s')\n    "
+                
+        self.orm_relationships = orm_column_relationships.strip()
         
         for property in self.crud_column.crud_column_properties:
+            
             if property.property == CrudColumnValidPropertiesEnum.NULLABLE:
                 orm_column_properties += "nullable=True"
             elif property.property == CrudColumnValidPropertiesEnum.REQUIRED:

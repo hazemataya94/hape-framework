@@ -123,6 +123,25 @@ example-model:
         self.migration_generated = False
         self.model_generated = False
         
+        if self.schema:
+            for model_name, columns in schema.items():
+                self.logger.debug(f"columns: {columns}")
+                self.model_name = model_name
+                self.logger.debug(f"model_name: {self.model_name}")
+                for column_name, column_type_and_properties in columns.items():
+                    crud_column_name = column_name
+                    crud_column_type = list(column_type_and_properties.keys())[0]
+                    crud_column_properties = list(column_type_and_properties.values())[0]
+                    
+                    crud_column = CrudColumn(
+                        crud_column_name,
+                        crud_column_type,
+                        crud_column_properties
+                    )
+                    
+                    self.crud_column_parsers.append(CrudColumnParser(crud_column))
+        
+        
     def validate(self):
         self.logger.debug(f"validate()")
         if not self.model_name:
@@ -181,27 +200,6 @@ example-model:
                         self.logger.error(f"Invalid column property '{column_property}'. Must be one of {self.valid_properties}")
                         exit(1)
     
-    def set_schema(self, schema: dict):
-        self.logger.debug(f"set_schema()")
-        self.schema = schema
-        for model_name, columns in schema.items():
-            self.logger.debug(f"columns: {columns}")
-            self.model_name = model_name
-            self.logger.debug(f"model_name: {self.model_name}")
-            for column_name, column_type_and_properties in columns.items():
-                crud_column_name = column_name
-                crud_column_type = list(column_type_and_properties.keys())[0]
-                crud_column_properties = list(column_type_and_properties.values())[0]
-                
-                crud_column = CrudColumn(
-                    crud_column_name,
-                    crud_column_type,
-                    crud_column_properties
-                )
-                print(crud_column)
-                
-                self.crud_column_parsers.append(CrudColumnParser(crud_column))
-    
     def validate_schema(self):
         self.logger.debug(f"validate_schema()")
         self.logger.debug(f"self.schema: {self.schema}")
@@ -233,14 +231,17 @@ example-model:
     
     def _get_orm_columns(self):
         self.logger.debug(f"_get_orm_columns()")
-        return self._parse_model_schema()
-    
-    def _parse_model_schema(self):
-        self.logger.debug(f"parse_model_schema()")
         parsed_orm_columns = ""
         for crud_column_parser in self.crud_column_parsers:
             parsed_orm_columns += crud_column_parser.parsed_orm_column + "\n    "
         return parsed_orm_columns.rstrip("\n    ")
+    
+    def _get_orm_relationships(self):
+        self.logger.debug(f"_get_orm_relationships()")
+        parsed_orm_relationships = ""
+        for crud_column_parser in self.crud_column_parsers:
+            parsed_orm_relationships += crud_column_parser.orm_relationships + "\n    "
+        return parsed_orm_relationships.rstrip("\n    ")
 
     def _generate_content_argument_parser(self):
         self.logger.debug(f"_generate_content_argument_parser()")
@@ -305,7 +306,7 @@ example-model:
         content = StringUtils.replace_name_case_placeholders(MODEL_TEMPLATE, self.source_code_path, "project_name")
         content = StringUtils.replace_name_case_placeholders(content, self.model_name, "model_name")
         content = content.replace("{{model_columns}}", self._get_orm_columns())
-        
+        content = content.replace("{{model_relationships}}", self._get_orm_relationships())
         self.model_content = content
         
         self.logger.info(f"Generating: {self.model_path}")

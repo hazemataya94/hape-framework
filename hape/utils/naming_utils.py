@@ -7,7 +7,11 @@ class NamingUtils:
         return name.upper()
     
     def convert_to_camel_case(name: str) -> str:
-        return name.title().replace("-", "")
+        name = name.title().replace("_", "")
+        name = name.replace("-", "")
+        return name
     
     def convert_to_title_case(name: str) -> str:
-        return name.title().replace("-", " ")
+        name = name.title().replace("_", " ")
+        name = name.replace("-", " ")
+        return name

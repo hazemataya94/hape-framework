@@ -21,15 +21,15 @@ class CrudColumnForeignKey:
         foreign_key_on_delete = foreign_key_parts[1].split("=")[1]
         
         if foreign_key_on_delete == CrudColumnFkOnDeleteEnum.CASCADE.value:
-            self.foreign_key_on_delete = "on_delete=CASCADE"
+            self.foreign_key_on_delete = "CASCADE"
         elif foreign_key_on_delete == CrudColumnFkOnDeleteEnum.SET_NULL.value:
-            self.foreign_key_on_delete = "on_delete=SET_NULL"
+            self.foreign_key_on_delete = "SET_NULL"
         elif foreign_key_on_delete == CrudColumnFkOnDeleteEnum.SET_DEFAULT.value:
-            self.foreign_key_on_delete = "on_delete=SET_DEFAULT"
+            self.foreign_key_on_delete = "SET_DEFAULT"
         elif foreign_key_on_delete == CrudColumnFkOnDeleteEnum.RESTRICT.value:
-            self.foreign_key_on_delete = "on_delete=RESTRICT"
+            self.foreign_key_on_delete = "RESTRICT"
         elif foreign_key_on_delete == CrudColumnFkOnDeleteEnum.NO_ACTION.value:
-            self.foreign_key_on_delete = "on_delete=NO_ACTION"
+            self.foreign_key_on_delete = "NO_ACTION"
         else:
             self.logger.error(f"Invalid on_delete value: {foreign_key_on_delete}")
             exit(1)

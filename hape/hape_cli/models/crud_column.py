@@ -15,6 +15,14 @@ class CrudColumn:
         
         self.crud_column_properties: List[CrudColumnProperty] = self._parse_properties(properties)
         
+        self.is_id = name == 'id'
+        self.is_primary = CrudColumnValidPropertiesEnum.PRIMARY.value in properties
+        self.is_autoincrement = CrudColumnValidPropertiesEnum.AUTOINCREMENT.value in properties
+        self.is_unique = CrudColumnValidPropertiesEnum.UNIQUE.value in properties
+        self.is_index = CrudColumnValidPropertiesEnum.INDEX.value in properties
+        self.is_nullable = CrudColumnValidPropertiesEnum.NULLABLE.value in properties
+        self.is_required = CrudColumnValidPropertiesEnum.REQUIRED.value in properties
+         
     def _parse_properties(self, properties: List[str]) -> List[CrudColumnProperty]:
         self.logger.debug(f"_parse_properties()")
         
@@ -35,12 +43,9 @@ class CrudColumn:
         
         if not crud_column_properties or (
             CrudColumnValidPropertiesEnum.NULLABLE.value not in properties 
-            and
-            CrudColumnValidPropertiesEnum.REQUIRED.value not in properties
+            and CrudColumnValidPropertiesEnum.REQUIRED.value not in properties
+            and CrudColumnValidPropertiesEnum.PRIMARY.value not in properties
         ):
             crud_column_properties.append(CrudColumnProperty(CrudColumnValidPropertiesEnum.NULLABLE.value))
         
         return crud_column_properties
-    
-        
-    
