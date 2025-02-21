@@ -90,6 +90,7 @@ publish: test-code build ## Publish package to public PyPI, commit, tag, and pus
 	) || ( \
 		echo "Upload failed. Not committing version bump."; \
 	)
+	make test-cli
 
 play: ## Run hape.playground Playground.paly() and print the execution time.
 	@echo "$$ time python main_code.py play"
