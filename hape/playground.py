@@ -4,7 +4,9 @@ from hape.models.deployment_cost_model import DeploymentCost
 from hape.controllers.deployment_cost_controller import DeploymentCostController
 from hape.services.gitlab_service import GitlabService
 from hape.services.file_service import FileService
-
+from hape.hape_cli.models.crud_model import Crud
+from hape.hape_cli.models.json_model import Json
+from hape.hape_cli.models.yaml_model import Yaml
 class Playground:
 
     deployment_cost_controller = DeploymentCostController()
@@ -64,8 +66,38 @@ class Playground:
         )
 
     def play(self):
-        Playground().save_deployment_cost()
-        Playground().get_all_deployment_costs()
-        Playground().delete_deployment_cost()
-        Playground().delete_all_deployment_cost()
-        Playground().generate_gitlab_changes_report()
+        
+        # json_model = Json(model_schema=True)
+        # # json_model.load(Crud._model_schema_json)
+        # yaml_model = Yaml(model_schema=True)
+        
+        # json_model.get()
+        # print()
+        # yaml_model.get()
+        
+        # valid_types = ["string", "int", "bool", "float", "date", "datetime", "timestamp"]
+        # valid_properties = ["nullable", "required", "unique", "primary", "autoincrement", "foreign-key", "index"]
+        
+        crud = Crud(
+            project_name="hape",
+            schema={
+                "k8s-deployment-cost": {
+                    "id": {"int": ["primary", "autoincrement"]},
+                    "k8s-deployment-id": {"int": ["required", "foreign-key(k8s-deployment.id, on-delete=cascade)"]},
+                    "pod-cpu": {"int": ["required"]},
+                    "pod-ram": {"bool": ["index"]},
+                    "autoscaling": {"float": []},
+                    "min-replicas": {"date": ["nullable"]},
+                    "max-replicas": {"datetime": ["nullable"]},
+                    "current-replicas": {"timestamp": []},
+                }
+            }
+        )
+        
+        crud._generate_content_model()
+        
+        # Playground().save_deployment_cost()
+        # Playground().get_all_deployment_costs()
+        # Playground().delete_deployment_cost()
+        # Playground().delete_all_deployment_cost()
+        # Playground().generate_gitlab_changes_report()

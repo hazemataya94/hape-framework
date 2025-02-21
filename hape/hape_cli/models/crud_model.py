@@ -1,6 +1,7 @@
 import re
 import os
 import json
+from typing import List
 from hape.logging import Logging
 from hape.services.file_service import FileService
 from hape.hape_cli.crud_templates.argument_parser_template import ARGUMENT_PARSER_TEMPLATE
@@ -9,24 +10,35 @@ from hape.hape_cli.crud_templates.migration_template import MIGRATION_TEMPLATE
 from hape.hape_cli.crud_templates.model_template import MODEL_TEMPLATE
 from hape.utils.naming_utils import NamingUtils
 from hape.utils.string_utils import StringUtils
+from hape.hape_cli.models.crud_column_parser import CrudColumnParser
+from hape.hape_cli.enums.crud_column_valid_types import CrudColumnValidTypesEnum
+from hape.hape_cli.enums.crud_column_valid_properties import CrudColumnValidPropertiesEnum
+from hape.hape_cli.enums.crud_column_fk_on_delete import CrudColumnFkOnDeleteEnum
+from hape.hape_cli.models.crud_column import CrudColumn
 
 class Crud:
     
-    valid_types = ["string", "int", "bool", "float", "date", "datetime", "timestamp"]
-    valid_properties = ["nullable", "required", "unique", "primary", "autoincrement"]
+    valid_types = [valid_type.value for valid_type in CrudColumnValidTypesEnum]
+    valid_properties = [valid_property.value for valid_property in CrudColumnValidPropertiesEnum]
+    valid_foreign_key_on_delete = [valid_foreign_key_on_delete.value for valid_foreign_key_on_delete in CrudColumnFkOnDeleteEnum]
+    
     _model_schema_json = """
 {
     "valid_types": {{valid-types}},
     "valid_properties": {{valid-properties}},
-    "name": "model-name",
-    "schema": {
+    "valid_foreign_key_on_delete": {{valid-foreign-key-on-delete}},
+    "foreign_key_syntax": "foreign-key(foreign-key-model.foreign-key-attribute, on-delete=foreign-key-on-delete)",
+    
+    
+    "model-name": {
         "column_name": {"valid-type": ["valid-property"]},
         "id": {"valid-type": ["valid-property"]},
         "updated_at": {"valid-type": []},
         "name": {"valid-type": ["valid-property", "valid-property"]},
         "enabled": {"valid-type": []},
     }
-    "example_schema": {
+    
+    "example-model": {
         "id": {"int": ["primary"]},
         "updated_at": {"timestamp": []},
         "name": {"string": ["required", "unique"]},
@@ -35,13 +47,16 @@ class Crud:
 }
 """.replace("{{valid-types}}", json.dumps(valid_types)) \
     .replace("{{valid-properties}}", json.dumps(valid_properties)) \
+    .replace("{{valid-foreign-key-on-delete}}", json.dumps(valid_foreign_key_on_delete)) \
     .strip()
 
     _model_schema_yaml = """
 valid_types: {{valid-types}}
 valid_properties: {{valid-properties}}
-name: model-name
-schema:
+valid_foreign_key_on_delete: {{valid-foreign-key-on-delete}}
+foreign_key_syntax: "foreign-key(foreign-key-model.foreign-key-attribute, on-delete=foreign-key-on-delete)"
+
+model-name:
   column_name:
     valid-type: 
       - valid-property
@@ -56,7 +71,8 @@ schema:
       - valid-property
   enabled:
     valid-type: []
-example_schema:
+
+example-model:
   id:
     int: 
       - primary
@@ -70,29 +86,53 @@ example_schema:
     bool: []
 """.replace("{{valid-types}}", json.dumps(valid_types)) \
     .replace("{{valid-properties}}", json.dumps(valid_properties)) \
+    .replace("{{valid-foreign-key-on-delete}}", json.dumps(valid_foreign_key_on_delete)) \
     .strip()
     
-    def __init__(self, project_name: str, model_name: str, schema: dict):
+    def __init__(self, project_name: str, schema: dict):
         self.logger = Logging.get_logger('hape.hape_cli.models.crud_model')
         self.file_service = FileService()
 
         self.project_name = project_name
-        self.model_name = model_name
-        self.schema = schema
         self.source_code_path = NamingUtils.convert_to_snake_case(project_name)
         if self.source_code_path == "hape_framework":
             self.source_code_path = "hape"
             
+        self.crud_columns: List[CrudColumn] = []
+        self.crud_column_parsers: List[CrudColumnParser] = []
+        
+        for model_name, columns in schema.items():
+            self.logger.debug(f"columns: {columns}")
+            self.model_name = model_name
+            self.logger.debug(f"model_name: {self.model_name}")
+            for column_name, column_type_and_properties in columns.items():
+                crud_column_name = column_name
+                crud_column_type = list(column_type_and_properties.keys())[0]
+                crud_column_properties = list(column_type_and_properties.values())[0]
+                
+                crud_column = CrudColumn(
+                    crud_column_name,
+                    crud_column_type,
+                    crud_column_properties
+                )
+                print(crud_column)
+                
+                self.crud_column_parsers.append(CrudColumnParser(crud_column))
+                
+            # for crum_column_parser in self.crud_column_parsers:
+            #     print(crum_column_parser.parsed_orm_column)
+            #     exit(100)
+                
         self.migration_counter_digits = 6
         self.migration_counter = "000001"
         self.migration_columns = ""
-        self.model_columns = ""
-
-        model_name_snake_case = NamingUtils.convert_to_snake_case(model_name)
+        
+        model_name_snake_case = NamingUtils.convert_to_snake_case(self.model_name)
         self.argument_parser_path = os.path.join(self.source_code_path, "argument_parsers", f"{model_name_snake_case}_argument_parser.py")
         self.controller_path = os.path.join(self.source_code_path, "controllers", f"{model_name_snake_case}_controller.py")
         self.migration_path = os.path.join(self.source_code_path, "migrations", "versions", f"{self.migration_counter}_{model_name_snake_case}_migration.py")
         self.model_path = os.path.join(self.source_code_path, "models", f"{model_name_snake_case}_model.py")
+            
             
         self.argument_parser_content = ""
         self.controller_content = ""
@@ -120,6 +160,16 @@ example_schema:
             exit(1)
         if not isinstance(self.schema, dict):
             self.logger.error(f"Schema must be a dictionary, but got {type(self.schema)}: {self.schema}")
+            exit(1)
+        if not self.schema.keys():
+            self.logger.error("Schema must be a dictionary have at least one key")
+            exit(1)
+        model_name = list(self.schema.keys())[0]
+        if not isinstance(model_name, str):
+            self.logger.error(f"Model name must be a string, but got {type(model_name)}: {model_name}")
+            exit(1)
+        if not re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', model_name):
+            self.logger.error(f"Model name '{model_name}' must contain only lowercase letters, numbers, and use '-' as a separator.")
             exit(1)
         for column_name, column_type_and_properties in self.schema.items():
             if not isinstance(column_name, str):
@@ -185,9 +235,16 @@ example_schema:
         self.logger.debug(f"_get_migration_columns()")
         return ""
     
-    def _get_model_columns(self):
-        self.logger.debug(f"_get_model_columns()")
-        return ""
+    def _get_orm_columns(self):
+        self.logger.debug(f"_get_orm_columns()")
+        return self._parse_model_schema()
+    
+    def _parse_model_schema(self):
+        self.logger.debug(f"parse_model_schema()")
+        parsed_orm_columns = ""
+        for crud_column_parser in self.crud_column_parsers:
+            parsed_orm_columns += crud_column_parser.parsed_orm_column + "\n    "
+        return parsed_orm_columns.rstrip("\n    ")
 
     def _generate_content_argument_parser(self):
         self.logger.debug(f"_generate_content_argument_parser()")
@@ -251,7 +308,8 @@ example_schema:
         
         content = StringUtils.replace_name_case_placeholders(MODEL_TEMPLATE, self.source_code_path, "project_name")
         content = StringUtils.replace_name_case_placeholders(content, self.model_name, "model_name")
-        content = content.replace("{{model_columns}}", self._get_model_columns())
+        content = content.replace("{{model_columns}}", self._get_orm_columns())
+        
         self.model_content = content
         
         self.logger.info(f"Generating: {self.model_path}")
