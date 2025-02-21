@@ -95,7 +95,7 @@ class Playground:
             }
         )
         
-        crud._generate_content_model()
+        crud.generate()
         
         # Playground().save_deployment_cost()
         # Playground().get_all_deployment_costs()

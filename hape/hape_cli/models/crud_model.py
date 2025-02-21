@@ -95,7 +95,7 @@ example-model:
         
         self.schema = schema
         self.model_name = model_name if model_name else list(self.schema.keys())[0]
-        model_name_snake_case = NamingUtils.convert_to_snake_case(self.model_name) if self.model_name else ""
+        self.model_name_snake_case = NamingUtils.convert_to_snake_case(self.model_name) if self.model_name else ""
         self.project_name = project_name
         self.source_code_path = NamingUtils.convert_to_snake_case(project_name)
         if self.source_code_path == "hape_framework":
@@ -104,14 +104,16 @@ example-model:
         self.crud_columns: List[CrudColumn] = []
         self.crud_column_parsers: List[CrudColumnParser] = []
                 
+        self.is_default_migration_counter = False
         self.migration_counter_digits = 6
         self.migration_counter = "000001"
+        self.migration_counter = self._get_migration_counter_and_path()
         self.migration_columns = ""
         
-        self.argument_parser_path = os.path.join(self.source_code_path, "argument_parsers", f"{model_name_snake_case}_argument_parser.py")
-        self.controller_path = os.path.join(self.source_code_path, "controllers", f"{model_name_snake_case}_controller.py")
-        self.migration_path = os.path.join(self.source_code_path, "migrations", "versions", f"{self.migration_counter}_{model_name_snake_case}_migration.py")
-        self.model_path = os.path.join(self.source_code_path, "models", f"{model_name_snake_case}_model.py")
+        self.argument_parser_path = os.path.join(self.source_code_path, "argument_parsers", f"{self.model_name_snake_case}_argument_parser.py")
+        self.controller_path = os.path.join(self.source_code_path, "controllers", f"{self.model_name_snake_case}_controller.py")
+        self.migration_path = os.path.join(self.source_code_path, "migrations", "versions", f"{self.migration_counter}_{self.model_name_snake_case}_migration.py")
+        self.model_path = os.path.join(self.source_code_path, "models", f"{self.model_name_snake_case}_model.py")
             
         self.argument_parser_content = ""
         self.controller_content = ""
@@ -207,27 +209,6 @@ example-model:
             self.logger.error("Schema is required")
             exit(1)
         self._validat_schema_structure()
-            
-    def _get_migration_counter(self):
-        self.logger.debug(f"_get_migration_counter()")
-        versions_folder = os.path.join(self.source_code_path, "migrations", "versions")
-        if not os.path.exists(versions_folder):
-            self.logger.error(f"Error: Migrations folder not found at {versions_folder}")
-            exit(1)
-        migration_files = os.listdir(versions_folder)
-        if not migration_files:
-            return
-        migration_files.sort()
-        self.migration_counter = migration_files[-1].split("_")[0]
-    
-    def _increase_migration_counter(self):
-        self.logger.debug(f"migration_counter: {self.migration_counter}")
-        self.logger.debug(f"_increase_migration_counter()")
-        self.migration_counter = str(int(self.migration_counter) + 1).zfill(self.migration_counter_digits)
-    
-    def _get_migration_columns(self):
-        self.logger.debug(f"_get_migration_columns()")
-        return ""
     
     def _get_orm_columns(self):
         self.logger.debug(f"_get_orm_columns()")
@@ -242,7 +223,111 @@ example-model:
         for crud_column_parser in self.crud_column_parsers:
             parsed_orm_relationships += crud_column_parser.orm_relationships + "\n    "
         return parsed_orm_relationships.rstrip("\n    ")
+    
+    def _generate_content_model(self):
+        self.logger.debug(f"_generate_content_model()")
+        if self.file_service.file_exists(self.model_path):
+            self.logger.warning(f"Model file already exists at {self.model_path}")
+            return
+        
+        content = StringUtils.replace_name_case_placeholders(MODEL_TEMPLATE, self.source_code_path, "project_name")
+        content = StringUtils.replace_name_case_placeholders(content, self.model_name, "model_name")
+        content = content.replace("{{model_columns}}", self._get_orm_columns())
+        content = content.replace("{{model_relationships}}", self._get_orm_relationships())
+        self.model_content = content
+        
+        self.logger.info(f"Generating: {self.model_path}")
+        self.file_service.write_file(self.model_path, self.model_content)
+        
+        self.model_generated = True
+    
+    def _get_migration_counter_and_path(self):
+        self.logger.debug(f"_get_migration_counter_and_path()")
+        versions_folder = os.path.join(self.source_code_path, "migrations", "versions")
+        
+        if not os.path.exists(versions_folder):
+            self.logger.error(f"Error: Migrations folder not found at {versions_folder}")
+            exit(1)
+        
+        migration_files = os.listdir(versions_folder)
+        if not migration_files:
+            self.migration_counter = "000001"
+            self.is_default_migration_counter = True
+            return self.migration_counter
+        
+        migration_files_counters = []
+        for migration_file in migration_files:
+            migration_file_counter = migration_file.split("_")[0]
+            if migration_file.endswith(f"{self.model_name_snake_case}_migration.py"):
+                self.migration_path = os.path.join(versions_folder, migration_file)
+                self.migration_counter = migration_file_counter
+                return self.migration_counter
+            
+            if not migration_file_counter.startswith("0"):
+                continue
+            
+            migration_files_counters.append(migration_file_counter)
+        
+        if not migration_files_counters:
+            self.migration_counter = "000001"
+            self.is_default_migration_counter = True
+            return self.migration_counter
+        
+        migration_files_counters.sort(reverse=True)
+        self.migration_counter = migration_files_counters[0]
+        return self.migration_counter
+    
+    def _increase_migration_counter(self):
+        self.logger.debug(f"migration_counter: {self.migration_counter}")
+        self.logger.debug(f"_increase_migration_counter()")
+        new_migration_counter = str(int(self.migration_counter) + 1).zfill(self.migration_counter_digits)
+        self.logger.debug(f"new_migration_counter: {new_migration_counter}")
+        self.migration_path = os.path.join(self.source_code_path, "migrations", "versions", f"{new_migration_counter}_{self.model_name_snake_case}_migration.py")
+        self.migration_counter = new_migration_counter
+        return new_migration_counter
+    
+    def _get_migration_columns(self):
+        self.logger.debug(f"_get_migration_columns()")
+        return ""
+    
+    def _generate_content_migration(self):
+        self.logger.debug(f"_generate_content_migration()")
+        if self.file_service.file_exists(self.migration_path):
+            self.logger.warning(f"Migration file already exists at {self.migration_path}")
+            return
 
+        self.migration_counter = self._increase_migration_counter()
+        self.migration_columns = self._get_migration_columns()
+        
+        content = StringUtils.replace_name_case_placeholders(MIGRATION_TEMPLATE, self.source_code_path, "project_name")
+        content = StringUtils.replace_name_case_placeholders(content, self.model_name, "model_name")
+        content = content.replace("{{migration_counter}}", self.migration_counter)
+        content = content.replace("{{migration_columns}}", self.migration_columns)
+        self.migration_content = content
+        
+        self.logger.info(f"Generating: {self.migration_path}")  
+        self.file_service.write_file(self.migration_path, self.migration_content)
+        
+        self.migration_generated = True
+
+    def _run_migrations(self):
+        self.logger.debug(f"_run_migrations()")
+        
+    def _generate_content_controller(self):
+        self.logger.debug(f"_generate_content_controller()")
+        if self.file_service.file_exists(self.controller_path):
+            self.logger.warning(f"Controller file already exists at {self.controller_path}")
+            return
+        
+        content = StringUtils.replace_name_case_placeholders(CONTROLLER_TEMPLATE, self.source_code_path, "project_name")
+        content = StringUtils.replace_name_case_placeholders(content, self.model_name, "model_name")
+        self.controller_content = content
+        
+        self.logger.info(f"Generating: {self.controller_path}")
+        self.file_service.write_file(self.controller_path, self.controller_content)
+        
+        self.controller_generated = True
+    
     def _generate_content_argument_parser(self):
         self.logger.debug(f"_generate_content_argument_parser()")
         if self.file_service.file_exists(self.argument_parser_path):
@@ -260,63 +345,7 @@ example-model:
         self.file_service.write_file(self.argument_parser_path, self.argument_parser_content)
         
         self.argument_parser_generated = True
-        
-    def _generate_content_controller(self):
-        self.logger.debug(f"_generate_content_controller()")
-        if self.file_service.file_exists(self.controller_path):
-            self.logger.warning(f"Controller file already exists at {self.controller_path}")
-            return
-        
-        content = StringUtils.replace_name_case_placeholders(CONTROLLER_TEMPLATE, self.source_code_path, "project_name")
-        content = StringUtils.replace_name_case_placeholders(content, self.model_name, "model_name")
-        self.controller_content = content
-        
-        self.logger.info(f"Generating: {self.controller_path}")
-        self.file_service.write_file(self.controller_path, self.controller_content)
-        
-        self.controller_generated = True
     
-    def _generate_content_migration(self):
-        self.logger.debug(f"_generate_content_migration()")
-        if self.file_service.file_exists(self.migration_path):
-            self.logger.warning(f"Migration file already exists at {self.migration_path}")
-            return
-        
-        # self._set_migration_counter()
-        # self._increase_migration_counter()
-        # self._get_migration_columns()
-        
-        content = StringUtils.replace_name_case_placeholders(MIGRATION_TEMPLATE, self.source_code_path, "project_name")
-        content = StringUtils.replace_name_case_placeholders(content, self.model_name, "model_name")
-        content = content.replace("{{migration_counter}}", self.migration_counter)
-        content = content.replace("{{migration_columns}}", self.migration_columns)
-        self.migration_content = content
-        
-        self.logger.info(f"Generating: {self.migration_path}")  
-        self.file_service.write_file(self.migration_path, self.migration_content)
-        
-        self.migration_generated = True
-
-    def _generate_content_model(self):
-        self.logger.debug(f"_generate_content_model()")
-        if self.file_service.file_exists(self.model_path):
-            self.logger.warning(f"Model file already exists at {self.model_path}")
-            return
-        
-        content = StringUtils.replace_name_case_placeholders(MODEL_TEMPLATE, self.source_code_path, "project_name")
-        content = StringUtils.replace_name_case_placeholders(content, self.model_name, "model_name")
-        content = content.replace("{{model_columns}}", self._get_orm_columns())
-        content = content.replace("{{model_relationships}}", self._get_orm_relationships())
-        self.model_content = content
-        
-        self.logger.info(f"Generating: {self.model_path}")
-        self.file_service.write_file(self.model_path, self.model_content)
-        
-        self.model_generated = True
-
-    def _run_migrations(self):
-        self.logger.debug(f"_run_migrations()")
-        
     def generate(self):
         self.logger.debug(f"generate()")
         self._generate_content_argument_parser()

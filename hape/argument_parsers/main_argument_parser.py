@@ -4,7 +4,6 @@ from importlib.metadata import version
 from hape.argument_parsers.playground_argument_parser import PlaygroundArgumentParser
 from hape.argument_parsers.config_argument_parser import ConfigArgumentParser
 from hape.argument_parsers.git_argument_parser import GitArgumentParser
-from hape.argument_parsers.deployment_cost_argument_parser import DeploymentCostArgumentParser
 
 class MainArgumentParser:
 
@@ -22,7 +21,6 @@ class MainArgumentParser:
         PlaygroundArgumentParser().create_subparser(subparsers)
         ConfigArgumentParser().create_subparser(subparsers)
         GitArgumentParser().create_subparser(subparsers)
-        DeploymentCostArgumentParser().create_subparser(subparsers)
 
         return parser
     
@@ -34,8 +32,6 @@ class MainArgumentParser:
             ConfigArgumentParser().run_action(args)
         elif args.command == "git":
             GitArgumentParser().run_action(args)
-        elif args.command == "deployment-cost":
-            DeploymentCostArgumentParser().run_action(args)
         else:
             self.logger.error(f"Invalid command {args.command}. Use `hape --help` for more details.")
             exit(1)
