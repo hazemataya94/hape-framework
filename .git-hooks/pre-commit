@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 # Check if any staged .py files exist
 if git diff --cached --name-only | grep -E '\.py$' > /dev/null; then
     echo "Python files detected, running code tests..."

@@ -80,6 +80,7 @@ class Playground:
         
         crud = Crud(
             project_name="hape",
+            model_name="k8s-deployment-cost",
             schema={
                 "k8s-deployment-cost": {
                     "id": {"int": ["primary", "autoincrement"]},

@@ -89,10 +89,13 @@ example-model:
     .replace("{{valid-foreign-key-on-delete}}", json.dumps(valid_foreign_key_on_delete)) \
     .strip()
     
-    def __init__(self, project_name: str, schema: dict):
+    def __init__(self, project_name: str, model_name: str, schema: dict):
         self.logger = Logging.get_logger('hape.hape_cli.models.crud_model')
         self.file_service = FileService()
-
+        
+        self.schema = schema
+        self.model_name = model_name if model_name else list(self.schema.keys())[0]
+        model_name_snake_case = NamingUtils.convert_to_snake_case(self.model_name) if self.model_name else ""
         self.project_name = project_name
         self.source_code_path = NamingUtils.convert_to_snake_case(project_name)
         if self.source_code_path == "hape_framework":
@@ -100,39 +103,15 @@ example-model:
             
         self.crud_columns: List[CrudColumn] = []
         self.crud_column_parsers: List[CrudColumnParser] = []
-        
-        for model_name, columns in schema.items():
-            self.logger.debug(f"columns: {columns}")
-            self.model_name = model_name
-            self.logger.debug(f"model_name: {self.model_name}")
-            for column_name, column_type_and_properties in columns.items():
-                crud_column_name = column_name
-                crud_column_type = list(column_type_and_properties.keys())[0]
-                crud_column_properties = list(column_type_and_properties.values())[0]
-                
-                crud_column = CrudColumn(
-                    crud_column_name,
-                    crud_column_type,
-                    crud_column_properties
-                )
-                print(crud_column)
-                
-                self.crud_column_parsers.append(CrudColumnParser(crud_column))
-                
-            # for crum_column_parser in self.crud_column_parsers:
-            #     print(crum_column_parser.parsed_orm_column)
-            #     exit(100)
                 
         self.migration_counter_digits = 6
         self.migration_counter = "000001"
         self.migration_columns = ""
         
-        model_name_snake_case = NamingUtils.convert_to_snake_case(self.model_name)
         self.argument_parser_path = os.path.join(self.source_code_path, "argument_parsers", f"{model_name_snake_case}_argument_parser.py")
         self.controller_path = os.path.join(self.source_code_path, "controllers", f"{model_name_snake_case}_controller.py")
         self.migration_path = os.path.join(self.source_code_path, "migrations", "versions", f"{self.migration_counter}_{model_name_snake_case}_migration.py")
         self.model_path = os.path.join(self.source_code_path, "models", f"{model_name_snake_case}_model.py")
-            
             
         self.argument_parser_content = ""
         self.controller_content = ""
@@ -164,47 +143,64 @@ example-model:
         if not self.schema.keys():
             self.logger.error("Schema must be a dictionary have at least one key")
             exit(1)
-        model_name = list(self.schema.keys())[0]
-        if not isinstance(model_name, str):
-            self.logger.error(f"Model name must be a string, but got {type(model_name)}: {model_name}")
-            exit(1)
-        if not re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', model_name):
-            self.logger.error(f"Model name '{model_name}' must contain only lowercase letters, numbers, and use '-' as a separator.")
-            exit(1)
-        for column_name, column_type_and_properties in self.schema.items():
-            if not isinstance(column_name, str):
-                self.logger.error(f"Column name must be a string, but got {type(column_name)}: {column_name}")
+        for model_name, columns in self.schema.items():
+            if not isinstance(model_name, str):
+                self.logger.error(f"Model name must be a string, but got {type(model_name)}: {model_name}")
                 exit(1)
-            if not re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', column_name):
-                self.logger.error(f"Column name '{column_name}' must contain only lowercase letters, numbers, and use '-' as a separator.")
+            if not re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', model_name):
+                self.logger.error(f"Model name '{model_name}' must contain only lowercase letters, numbers, and use '-' as a separator.")
                 exit(1)
-            if not isinstance(column_type_and_properties, dict):
-                self.logger.error(f"Each column must have be a dictionary, but got {type(column_type_and_properties)}: {column_type_and_properties}")
-                exit(1)
-            
-            column_type = list(column_type_and_properties.keys())[0]
-            column_properties = list(column_type_and_properties.values())[0]
-            
-            if not isinstance(column_type, str):
-                self.logger.error(f"Each column must have a type, but got {type(column_type)}: {column_type}")
-                exit(1)
-            if column_type not in self.valid_types:
-                self.logger.error(f"Invalid column type '{column_type}'. Must be one of {self.valid_types}")
-                exit(1)
-            if not isinstance(column_properties, list):
-                self.logger.error(f"Each column must have a list of properties or empty list, but got {type(column_properties)}: {column_properties}")
-                exit(1)
-            for column_property in column_properties:
-                if not isinstance(column_property, str):
-                    self.logger.error("Each column property must be a string")
+            for column_name, column_type_and_properties in columns.items():
+                if not isinstance(column_name, str):
+                    self.logger.error(f"Column name must be a string, but got {type(column_name)}: {column_name}")
                     exit(1)
-                if column_property not in self.valid_properties:
-                    self.logger.error(f"Invalid column property '{column_property}'. Must be one of {self.valid_properties}")
+                if not re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', column_name):
+                    self.logger.error(f"Column name '{column_name}' must contain only lowercase letters, numbers, and use '-' as a separator.")
                     exit(1)
+                if not isinstance(column_type_and_properties, dict):
+                    self.logger.error(f"Each column must have be a dictionary, but got {type(column_type_and_properties)}: {column_type_and_properties}")
+                    exit(1)
+                
+                column_type = list(column_type_and_properties.keys())[0]
+                column_properties = list(column_type_and_properties.values())[0]
+            
+                if not isinstance(column_type, str):
+                    self.logger.error(f"Each column must have a type, but got {type(column_type)}: {column_type}")
+                    exit(1)
+                if column_type not in self.valid_types:
+                    self.logger.error(f"Invalid column type '{column_type}'. Must be one of {self.valid_types}")
+                    exit(1)
+                if not isinstance(column_properties, list):
+                    self.logger.error(f"Each column must have a list of properties or empty list, but got {type(column_properties)}: {column_properties}")
+                    exit(1)
+                for column_property in column_properties:
+                    if not isinstance(column_property, str):
+                        self.logger.error("Each column property must be a string")
+                        exit(1)
+                    if column_property not in self.valid_properties:
+                        self.logger.error(f"Invalid column property '{column_property}'. Must be one of {self.valid_properties}")
+                        exit(1)
     
     def set_schema(self, schema: dict):
         self.logger.debug(f"set_schema()")
         self.schema = schema
+        for model_name, columns in schema.items():
+            self.logger.debug(f"columns: {columns}")
+            self.model_name = model_name
+            self.logger.debug(f"model_name: {self.model_name}")
+            for column_name, column_type_and_properties in columns.items():
+                crud_column_name = column_name
+                crud_column_type = list(column_type_and_properties.keys())[0]
+                crud_column_properties = list(column_type_and_properties.values())[0]
+                
+                crud_column = CrudColumn(
+                    crud_column_name,
+                    crud_column_type,
+                    crud_column_properties
+                )
+                print(crud_column)
+                
+                self.crud_column_parsers.append(CrudColumnParser(crud_column))
     
     def validate_schema(self):
         self.logger.debug(f"validate_schema()")

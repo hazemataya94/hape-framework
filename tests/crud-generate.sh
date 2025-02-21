@@ -7,20 +7,15 @@ cd ${PROJECT_NAME}
 
 echo "Generating ${TEST_MODEL} CRUD"
 MODEL_JSON_SCHEMA='{
-    "name": "{{model_name}}",
-    "schema": {
-        "id": {"int": ["autoincrement"]},
+    "{{model_name}}": {
+        "id": {"int": ["primary", "autoincrement"]},
         "service-name": {"string": []},
         "pod-cpu": {"string": []},
         "pod-ram": {"string": []},
         "autoscaling": {"bool": []},
         "min-replicas": {"int": ["nullable"]},
         "max-replicas": {"int": ["nullable"]},
-        "current-replicas": {"int": []},
-        "pod-cost": {"string": []},
-        "number-of-pods": {"int": []},
-        "total-cost": {"float": []},
-        "cost-unit": {"string": []}
+        "current-replicas": {"int": []}
     }
 }'
 MODEL_JSON_SCHEMA=$(echo "$MODEL_JSON_SCHEMA" | sed "s/{{model_name}}/${TEST_MODEL}/g")

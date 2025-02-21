@@ -23,7 +23,7 @@ class CrudController:
             except yaml.YAMLError as e:
                 self.logger.error(f"Invalid YAML schema: {schema_yaml}")
         
-        self.crud = Crud(os.path.basename(os.getcwd()), schema)
+        self.crud = Crud(os.path.basename(os.getcwd()), name, schema)
         self.crud.validate()
     
     def generate(self):

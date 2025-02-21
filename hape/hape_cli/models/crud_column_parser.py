@@ -45,6 +45,8 @@ class CrudColumnParser:
             orm_column_type = "TIMESTAMP"
         elif self.crud_column.type == CrudColumnValidTypesEnum.TEXT:
             orm_column_type = "Text"
+        elif self.crud_column.type == CrudColumnValidTypesEnum.STRING:
+            orm_column_type = "String"
         else:
             self.logger.error(f"Invalid column type: {self.crud_column.type}")
             exit(1)
