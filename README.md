@@ -1,4 +1,5 @@
-![HAPE Framework](docs/logo.png)
+
+<img src="https://github.com/hazemataya94/hape-framework/blob/main/docs/logo.png">
 
 # HAPE Framework: Overview & Features
 
