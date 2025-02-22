@@ -4,7 +4,7 @@ ALEMBIC_INI = """
 [alembic]
 # path to migration scripts
 # Use forward slashes (/) also on windows to provide an os agnostic path
-script_location = {{project_name}}/migrations
+script_location = {{project_name_snake_case}}/migrations
 
 # template used to generate migration file names; The default value is %%(rev)s_%%(slug)s
 # Uncomment the line below if you want the files to be prepended with date and time
@@ -63,7 +63,7 @@ version_path_separator = os
 # the output encoding used when revision files
 # are written from script.py.mako
 # output_encoding = utf-8
-sqlalchemy.url = mysql+pymysql://{{project_name_snake_case}}_user:{{project_name_snake_case}}_password@127.0.0.1/{{project_name_snake_case}}_db
+sqlalchemy.url = {{db_url}}
 
 
 [post_write_hooks]

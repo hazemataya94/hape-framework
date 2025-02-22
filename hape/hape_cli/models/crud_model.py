@@ -112,7 +112,7 @@ example-model:
         self.migration_counter = "000001"
         self.migration_counter = self._get_migration_counter_and_path()
         self.migration_columns = ""
-        self.alembic_config_path = os.path.join( os.getcwd(), "alembic.ini")
+        self.alembic_config_path = os.path.join(os.getcwd(), "alembic.ini")
         
         self.argument_parser_path = os.path.join(self.source_code_path, "argument_parsers", f"{self.model_name_snake_case}_argument_parser.py")
         self.controller_path = os.path.join(self.source_code_path, "controllers", f"{self.model_name_snake_case}_controller.py")
@@ -333,14 +333,10 @@ example-model:
         heads = script.get_heads()
         if len(heads) > 1:
             self.logger.warning(f"Multiple heads detected: {heads}")
-            
             merge_message = "Auto-merge multiple Alembic heads"
             command.revision(alembic_config, message=merge_message, head=heads, branch_label="merge_heads")
-            
             self.logger.info("Merged multiple heads. Now running upgrade...")
-        
         command.upgrade(alembic_config, "head")
-
         
     def _generate_content_controller(self):
         self.logger.debug(f"_generate_content_controller()")
@@ -381,7 +377,12 @@ example-model:
         self._generate_content_migration()
         self._generate_content_controller()
         self._generate_content_model()
-        self._run_migrations()
+        try:
+            self._run_migrations()
+        except Exception as e:
+            self.logger.error(f"Error: {e}")
+            print(f"Error: {e}")
+            exit(1)
         
         if self.argument_parser_generated:
             print(f"Generated: {self.argument_parser_path}")

@@ -7,6 +7,7 @@ from hape.services.file_service import FileService
 from hape.utils.naming_utils import NamingUtils
 from hape.hape_cli.init_templates.init_project_template import INIT_PROJECT_TEMPLATE
 from hape.utils.string_utils import StringUtils
+from hape.hape_config import HapeConfig
 
 class Init:
 
@@ -36,6 +37,7 @@ class Init:
 
         if content:
             content = StringUtils.replace_name_case_placeholders(content, self.name, "project_name")
+            content = content.replace("{{db_url}}", HapeConfig.get_db_url())
 
         self.file_service.write_file(path, content)
 

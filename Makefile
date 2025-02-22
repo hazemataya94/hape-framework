@@ -156,6 +156,9 @@ test-cli: ## Run a new python container, installs hape cli and runs all tests in
 test-code: ## Runs containers in dockerfiles/docker-compose.yml and runs all tests for the code.
 	@echo "Making sure hape container is running"
 	@docker-compose -f dockerfiles/docker-compose.yml ps | grep hape || make docker-up
+	@echo "Emptying database"
+	@echo "$$ docker exec -it mariadb_dev /bin/bash -c" '"mariadb -u root -p root -e "DROP DATABASE IF EXISTS hape_db; CREATE DATABASE hape_db;""'
+	@docker exec mariadb_dev /bin/bash -c "mariadb --password=root -e 'DROP DATABASE IF EXISTS hape_db; CREATE DATABASE hape_db;'"
 	@echo "Running all tests in hape container defined in dockerfiles/docker-compose.yml"
 	@echo "$$ docker exec --workdir /workspace hape /bin/bash -c './tests/run-all.sh code'"
 	@docker exec --workdir /workspace hape /bin/bash -c './tests/run-all.sh code'

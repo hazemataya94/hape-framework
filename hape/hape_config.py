@@ -6,7 +6,7 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql import text
 from hape.config import Config
 from hape.logging import Logging
-
+from hape.enums.environment_variables_enum import EnvironmentVariablesEnum
 class HapeConfig:
     logger = Logging.get_logger('hape.config_db')
     _env_loaded = False
@@ -52,29 +52,29 @@ class HapeConfig:
     @staticmethod
     def get_gitlab_token():
         Config.logger.debug(f"get_gitlab_token()")
-        return Config._get_env_value("HAPE_GITLAB_TOKEN")
+        return Config._get_env_value(EnvironmentVariablesEnum.HAPE_GITLAB_TOKEN)
     
     @staticmethod
     def get_gitlab_domain():
         Config.logger.debug(f"get_gitlab_domain()")
-        return Config._get_env_value("HAPE_GITLAB_DOMAIN")
+        return Config._get_env_value(EnvironmentVariablesEnum.HAPE_GITLAB_DOMAIN)
     
     @staticmethod
     def get_mariadb_host():
         Config.logger.debug(f"get_mariadb_host()")
-        return Config._get_env_value("HAPE_MARIADB_HOST")
+        return Config._get_env_value(EnvironmentVariablesEnum.HAPE_MARIADB_HOST)
 
     @staticmethod
     def get_mariadb_username():
         Config.logger.debug(f"get_mariadb_username()")
-        return Config._get_env_value("HAPE_MARIADB_USERNAME")
+        return Config._get_env_value(EnvironmentVariablesEnum.HAPE_MARIADB_USERNAME)
 
     @staticmethod
     def get_mariadb_password():
         Config.logger.debug(f"get_mariadb_password()")
-        return Config._get_env_value("HAPE_MARIADB_PASSWORD")
+        return Config._get_env_value(EnvironmentVariablesEnum.HAPE_MARIADB_PASSWORD)
 
     @staticmethod
     def get_mariadb_database():
         Config.logger.debug(f"get_mariadb_database()")
-        return Config._get_env_value("HAPE_MARIADB_DATABASE")
+        return Config._get_env_value(EnvironmentVariablesEnum.HAPE_MARIADB_DATABASE)

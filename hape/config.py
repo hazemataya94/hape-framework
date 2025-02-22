@@ -22,6 +22,30 @@ class Config:
         EnvironmentVariablesEnum.HAPE_LOG_ROTATE_EVERY_RUN: {
             "key": "HAPE_LOG_ROTATE_EVERY_RUN",
             "value": "0"
+        },
+        EnvironmentVariablesEnum.HAPE_MARIADB_HOST: {
+            "key": "HAPE_MARIADB_HOST",
+            "value": "mariadb"
+        },
+        EnvironmentVariablesEnum.HAPE_MARIADB_USERNAME: {
+            "key": "HAPE_MARIADB_USERNAME",
+            "value": "hape_user"
+        },
+        EnvironmentVariablesEnum.HAPE_MARIADB_PASSWORD: {
+            "key": "HAPE_MARIADB_PASSWORD",
+            "value": "hape_password"
+        },
+        EnvironmentVariablesEnum.HAPE_MARIADB_DATABASE: {
+            "key": "HAPE_MARIADB_DATABASE",
+            "value": "hape_db"
+        },
+        EnvironmentVariablesEnum.HAPE_GITLAB_DOMAIN: {
+            "key": "HAPE_GITLAB_DOMAIN",
+            "value": "gitlab.com"
+        },
+        EnvironmentVariablesEnum.HAPE_GITLAB_TOKEN: {
+            "key": "HAPE_GITLAB_TOKEN",
+            "value": "gitlab_token"
         }
     }
 
@@ -33,7 +57,6 @@ class Config:
 
     @staticmethod
     def set_env_var_key(hape_key, new_key):
-        #example: set_env_var_key("HAPE_LOG_FILE", "MYAPP_LOG_FILE")
         for key, _ in Config._env_var_map.items():
             if key == hape_key:
                 Config._env_var_map[hape_key]["key"] = new_key
@@ -55,7 +78,6 @@ class Config:
     def _get_env_value(hape_env_key):
         Config._load_environment()
         env_key = Config._env_var_map[hape_env_key]["key"]
-        
         env_value = os.getenv(env_key)
         env_default_value = Config._env_var_map[hape_env_key]["value"]
         
