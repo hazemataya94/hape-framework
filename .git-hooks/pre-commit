@@ -2,10 +2,10 @@
 set -e
 # Check if any staged .py files exist
 if git diff --cached --name-only | grep -E '\.py$' > /dev/null; then
-    echo "Python files detected, running code tests..."
+    echo "Python files changes detected, running code tests..."
     make test-code
 else
-    echo "No Python files detected, skipping pre-commit."
+    echo "No Python files changes detected, skipping pre-commit."
 fi
 
 exit 0

@@ -50,50 +50,50 @@ zip                  Create a zip archive excluding local files and playground.
 ### Publish to public PyPI repository
 ```sh
 $ make publish
-🔄 Bumping patch version in setup.py...
-Version updated to 0.x.x
-* Creating isolated environment: venv+pip...
-* Installing packages in isolated environment:
-  - setuptools >= 40.8.0
-* Getting build dependencies for sdist...
-0.x.x
-.
-Successfully built hape-0.x.x.tar.gz and hape-0.x.x-py3-none-any.whl
-Uploading distributions to https://upload.pypi.org/legacy/
-Uploading hape-0.x.x-py3-none-any.whl
-100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 63.6/63.6 kB • 00:00 • 55.1 MB/s
-Uploading hape-0.x.x.tar.gz
-100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 54.3/54.3 kB • 00:00 • 35.6 MB/s
-.
-View at:
-https://pypi.org/project/hape/0.x.x/
-.
-Pushing commits
-Enumerating objects: 5, done.
-Counting objects: 100% (5/5), done.
-.
-Pushing tags
-Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
-To github.com:hazemataya94/hape-framework.git
- * [new tag]         0.x.x -> 0.x.x
-Python files detected, running code tests...
 Making sure hape container is running
 hape             hape:dev                "sleep infinity"         hape         9 hours ago   Up 9 hours   
 Removing hello-world project from previous tests
 Dropping and creating database hape_db
-Running all tests in hape container defined in dockerfiles/docker-compose.yml
-=============================================================
+...
 Running all code tests
 =============================================================
 Running ./tests/init-project.sh
 --------------------------------
 Installing tree if not installed
 Deleting project hello-world if exists
-Initializing project hello-world
 ...
-$ hape crud delete --delete test-model
-Deleted: hello_world/models/test_model_model.py
-Deleted: hello_world/controllers/test_model_controller.py
+🔄 Bumping patch version in setup.py...
+Version updated to 0.x.x
+* Creating isolated environment: venv+pip...
+* Installing packages in isolated environment:
+  - setuptools >= 40.8.0
+...
+Successfully built hape-0.x.x.tar.gz and hape-0.x.x-py3-none-any.whl
+Uploading distributions to https://upload.pypi.org/legacy/
+Uploading hape-0.x.x-py3-none-any.whl
+100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 63.6/63.6 kB • 00:00 • 55.1 MB/s
+Uploading hape-0.x.x.tar.gz
+100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 54.3/54.3 kB • 00:00 • 35.6 MB/s
+...
+View at:
+https://pypi.org/project/hape/0.x.x/
+...
+Pushing commits
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+...
+Pushing tags
+Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
+To github.com:hazemataya94/hape-framework.git
+ * [new tag]         0.x.x -> 0.x.x
+...
+Python files changes detected, running code tests...
+Removing hello-world project from previous tests
+Dropping and creating database hape_db
+Running all tests in hape container defined in dockerfiles/docker-compose.yml
+=============================================================
+Running all code tests
+...
 Deleted: hello_world/argument_parsers/test_model_argument_parser.py
 All model files -except the migration file- have been deleted successfully!
 =============================================================
