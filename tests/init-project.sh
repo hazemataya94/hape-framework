@@ -15,4 +15,4 @@ rm -rf ${PROJECT_NAME} || true
 echo "Initializing project ${PROJECT_NAME}"
 echo "\$ ${COMMAND} init project --name ${PROJECT_NAME}"
 ${COMMAND} init project --name ${PROJECT_NAME}
-tree ${PROJECT_NAME} -L 3
+tree ${PROJECT_NAME}

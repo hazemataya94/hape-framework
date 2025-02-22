@@ -39,9 +39,11 @@ migration-create     Create a new database migration.
 migration-run        Apply the latest database migrations.
 play                 Run hape.playground Playground.paly() and print the execution time.
 publish              Publish package to public PyPI, commit, tag, and push the version. Runs: test-code,build.
+reset-data           Deletes hello-world project from previous tests, drops and creates database hape_db.
+reset-local          Deletes hello-world project from previous tests, drops and creates database hape_db, runs migrations, and runs the playground.
 source-env           Print export statements for the environment variables from .env file.
 test-cli             Run a new python container, installs hape cli and runs all tests inside it.
-test-code            Runs containers in dockerfiles/docker-compose.yml and runs all tests for the code.
+test-code            Runs containers in dockerfiles/docker-compose.yml, Deletes hello-world project from previous tests, and run all code automated tests.
 zip                  Create a zip archive excluding local files and playground.
 ```
 
@@ -74,9 +76,28 @@ Pushing tags
 Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
 To github.com:hazemataya94/hape-framework.git
  * [new tag]         0.x.x -> 0.x.x
-$ pip install --upgrade hape
-$ hape --version
-0.x.x
+Python files detected, running code tests...
+Making sure hape container is running
+hape             hape:dev                "sleep infinity"         hape         9 hours ago   Up 9 hours   
+Removing hello-world project from previous tests
+Dropping and creating database hape_db
+Running all tests in hape container defined in dockerfiles/docker-compose.yml
+=============================================================
+Running all code tests
+=============================================================
+Running ./tests/init-project.sh
+--------------------------------
+Installing tree if not installed
+Deleting project hello-world if exists
+Initializing project hello-world
+...
+$ hape crud delete --delete test-model
+Deleted: hello_world/models/test_model_model.py
+Deleted: hello_world/controllers/test_model_controller.py
+Deleted: hello_world/argument_parsers/test_model_argument_parser.py
+All model files -except the migration file- have been deleted successfully!
+=============================================================
+All tests finished successfully!
 ```
 
 ### Install latest `hape` CLI
@@ -93,58 +114,67 @@ $ pip install --upgrade hape
 $ hape init project --name hello-world
 Project hello-world has been successfully initialized!
 $ tree hello-world 
-hello-world/
-|-- MANIFEST.in
-|-- Makefile
-|-- README.md
-|-- alembic.ini
-|-- dockerfiles
-|   |-- Dockerfile.dev
-|   |-- Dockerfile.prod
-|   -- docker-compose.yml
-|-- hello_world
-|   |-- __init__.py
-|   |-- argument_parsers
-|   |   |-- __init__.py
-|   |   |-- main_argument_parser.py
-|   |   -- playground_argument_parser.py
-|   |-- bootstrap.py
-|   |-- cli.py
-|   |-- controllers
-|   |   -- __init__.py
-|   |-- enums
-|   |   -- __init__.py
-|   |-- migrations
-|   |   |-- README
-|   |   |-- env.py
-|   |   |-- script.py.mako
-|   |   -- versions
-|   |-- models
-|   |   -- __init__.py
-|   |-- playground.py
-|   -- services
-|       -- __init__.py
-|-- main.py
-|-- requirements-cli.txt
-|-- requirements-dev.txt
--- setup.py
+hello-world
+├── MANIFEST.in
+├── Makefile
+├── README.md
+├── alembic.ini
+├── dockerfiles
+│   ├── Dockerfile.dev
+│   ├── Dockerfile.prod
+│   └── docker-compose.yml
+├── hello_world
+│   ├── __init__.py
+│   ├── argument_parsers
+│   │   ├── __init__.py
+│   │   ├── main_argument_parser.py
+│   │   └── playground_argument_parser.py
+│   ├── bootstrap.py
+│   ├── cli.py
+│   ├── controllers
+│   │   └── __init__.py
+│   ├── enums
+│   │   └── __init__.py
+│   ├── migrations
+│   │   ├── README
+│   │   ├── env.py
+│   │   ├── json
+│   │   │   └── 000001_migration.json
+│   │   ├── script.py.mako
+│   │   ├── versions
+│   │   │   └── 000001_migration.py
+│   │   └── yaml
+│   │       └── 000001_migration.yaml
+│   ├── models
+│   │   ├── __init__.py
+│   │   └── test_model_cost_model.py
+│   ├── playground.py
+│   └── services
+│       └── __init__.py
+├── main.py
+├── requirements-cli.txt
+├── requirements-dev.txt
+└── setup.py
 ```
 
 ### Generate CRUD JSON Schema
 ```sh
 $ hape json get --model-schema
 {
-    "valid_types": ["string", "int", "bool", "float", "date", "datetime", "timestamp"],
-    "valid_properties": ["nullable", "required", "unique", "primary", "autoincrement"],
-    "name": "model-name",
-    "schema": {
+    "valid_types": ["string", "text", "int", "bool", "float", "date", "datetime", "timestamp"],
+    "valid_properties": ["nullable", "required", "unique", "primary", "autoincrement", "foreign-key", "index"],
+    "valid_foreign_key_on_delete": ["cascade", "set-null", "set-default", "restrict", "no-action"],
+    "foreign_key_syntax": "foreign-key(foreign-key-model.foreign-key-attribute, on-delete=foreign-key-on-delete)",
+    
+    "model-name": {
         "column_name": {"valid-type": ["valid-property"]},
         "id": {"valid-type": ["valid-property"]},
         "updated_at": {"valid-type": []},
         "name": {"valid-type": ["valid-property", "valid-property"]},
         "enabled": {"valid-type": []},
     }
-    "example_schema": {
+    
+    "example-model": {
         "id": {"int": ["primary"]},
         "updated_at": {"timestamp": []},
         "name": {"string": ["required", "unique"]},
@@ -156,10 +186,12 @@ $ hape json get --model-schema
 ### Generate CRUD YAML Schema
 ```sh
 $ hape yaml get --model-schema
-valid_types: ["string", "int", "bool", "float", "date", "datetime", "timestamp"]
-valid_properties: ["nullable", "required", "unique", "primary", "autoincrement"]
-name: model-name
-schema:
+valid_types: ["string", "text", "int", "bool", "float", "date", "datetime", "timestamp"]
+valid_properties: ["nullable", "required", "unique", "primary", "autoincrement", "foreign-key", "index"]
+valid_foreign_key_on_delete: ["cascade", "set-null", "set-default", "restrict", "no-action"]
+foreign_key_syntax: "foreign-key(foreign-key-model.foreign-key-attribute, on-delete=foreign-key-on-delete)"
+
+model-name:
   column_name:
     valid-type: 
       - valid-property
@@ -174,7 +206,40 @@ schema:
       - valid-property
   enabled:
     valid-type: []
-example_schema:
+
+example-model:
+  id:
+    int: 
+      - primary
+  updated_at:
+    timestamp: []
+  name:
+    string: 
+      - required
+      - unique
+  enabled:
+    bool: []valid_types: ["string", "text", "int", "bool", "float", "date", "datetime", "timestamp"]
+valid_properties: ["nullable", "required", "unique", "primary", "autoincrement", "foreign-key", "index"]
+valid_foreign_key_on_delete: ["cascade", "set-null", "set-default", "restrict", "no-action"]
+foreign_key_syntax: "foreign-key(foreign-key-model.foreign-key-attribute, on-delete=foreign-key-on-delete)"
+
+model-name:
+  column_name:
+    valid-type: 
+      - valid-property
+  id:
+    valid-type: 
+      - valid-property
+  updated_at:
+    valid-type: []
+  name:
+    valid-type: 
+      - valid-property
+      - valid-property
+  enabled:
+    valid-type: []
+
+example-model:
   id:
     int: 
       - primary
@@ -191,7 +256,7 @@ example_schema:
 ## In Progress Features
 ### Create GitHub Project to Manage issues, tasks and future workfr
 
-### Support CRUD Generate and Create migrations/json/model_name.json 
+### Support CRUD Generate and Create migrations/json/model_name.json and migrations/yaml/model_name.yaml
 ```sh
 $ hape crud generate --json '
 {

@@ -25,7 +25,7 @@ class FormatArgumentParser:
         if args.command != self.COMMAND:
             return
         if args.action == "get":
-            FormatController(args.model_schema, self.format).get()
+            FormatController(self.format).get()
         else:
             self.logger.error(f"Error: Invalid action {args.action} for {args.command}. Use `hape {args.command} --help` for more details.")
             exit(1)
