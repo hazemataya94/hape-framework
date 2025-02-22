@@ -218,75 +218,57 @@ example-model:
       - required
       - unique
   enabled:
-    bool: []valid_types: ["string", "text", "int", "bool", "float", "date", "datetime", "timestamp"]
-valid_properties: ["nullable", "required", "unique", "primary", "autoincrement", "foreign-key", "index"]
-valid_foreign_key_on_delete: ["cascade", "set-null", "set-default", "restrict", "no-action"]
-foreign_key_syntax: "foreign-key(foreign-key-model.foreign-key-attribute, on-delete=foreign-key-on-delete)"
-
-model-name:
-  column_name:
-    valid-type: 
-      - valid-property
-  id:
-    valid-type: 
-      - valid-property
-  updated_at:
-    valid-type: []
-  name:
-    valid-type: 
-      - valid-property
-      - valid-property
-  enabled:
-    valid-type: []
-
-example-model:
-  id:
-    int: 
-      - primary
-  updated_at:
-    timestamp: []
-  name:
-    string: 
-      - required
-      - unique
-  enabled:
     bool: []
 ```
-
-## In Progress Features
-### Create GitHub Project to Manage issues, tasks and future workfr
 
 ### Support CRUD Generate and Create migrations/json/model_name.json and migrations/yaml/model_name.yaml
 ```sh
 $ hape crud generate --json '
 {
-    "name": "deployment-cost"
-    "schema": {
-        "id": ["int","autoincrement"],
-        "service-name": ["string"],
-        "pod-cpu": ["string"],
-        "pod-ram": ["string"],
-        "autoscaling": ["bool"],
-        "min-replicas": ["int","nullable"],
-        "max-replicas": ["int","nullable"],
-        "current-replicas": ["int"],
-        "pod-cost": ["string"],
-        "number-of-pods": ["int"],
-        "total-cost": ["float"],
-        "cost-unit": ["string"]
+    "k8s-deployment": {
+        "id": {"int": ["primary", "autoincrement"]},
+        "service-name": {"string": []},
+        "pod-cpu": {"string": []},
+        "pod-ram": {"string": []},
+        "autoscaling": {"bool": []},
+        "min-replicas": {"int": ["nullable"]},
+        "max-replicas": {"int": ["nullable"]},
+        "current-replicas": {"int": []}
+    },
+    "test-deployment-cost": {
+        "id": {"int": ["primary", "autoincrement"]},
+        "test-deployment-id": {"int": ["required", "foreign-key(test-deployment.id, on-delete=cascade)"]},
+        "pod-cost": {"string": []},
+        "number-of-pods": {"int": []},
+        "total-cost": {"float": []}
     }
-}
-"'
-$ hape deployment-cost --help
-usage: myawesomeplatform deployment-cost [-h] {save,get,get-all,delete,delete-all} ...
+}'
+Generated: hello_world/argument_parsers/k8s_deployment_argument_parser.py
+Generated: hello_world/controllers/k8s_deployment_controller.py
+Generated: hello_world/models/k8s_deployment_model.py
+Generated: hello_world/argument_parsers/test_deployment_cost_argument_parser.py
+Generated: hello_world/controllers/test_deployment_cost_controller.py
+Generated: hello_world/models/test_deployment_cost_model.py
+Generated: hello_world/migrations/versions/000001_migration.py
+Generated: hello_world/migrations/json/000001_migration.json
+Generated: hello_world/migrations/yaml/000001_migration.yaml
+```
+
+## In Progress Features
+### Create GitHub Project to Manage issues, tasks and future workfr
+
+### Support CRUD CLI for CRUD generated models
+```sh
+$ hape k8s-deployment-cost --help
+usage: hello-world k8s-deployment-cost [-h] {save,get,get-all,delete,delete-all} ...
 
 positional arguments:
   {save,get,get-all,delete,delete-all}
-    save                Save DeploymentCost object based on passed arguments or filters
-    get                 Get DeploymentCost object based on passed arguments or filters
-    get-all             Get-all DeploymentCost objects based on passed arguments or filters
-    delete              Delete DeploymentCost object based on passed arguments or filters
-    delete-all          Delete-all DeploymentCost objects based on passed arguments or filters
+    save                Save K8SDeploymentCost object based on passed arguments or filters
+    get                 Get K8SDeploymentCost object based on passed arguments or filters
+    get-all             Get-all K8SDeploymentCost objects based on passed arguments or filters
+    delete              Delete K8SDeploymentCost object based on passed arguments or filters
+    delete-all          Delete-all K8SDeploymentCost objects based on passed arguments or filters
 
 options:
   -h, --help            show this help message and exit
