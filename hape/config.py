@@ -25,7 +25,7 @@ class Config:
         },
         EnvironmentVariablesEnum.HAPE_MARIADB_HOST: {
             "key": "HAPE_MARIADB_HOST",
-            "value": "mariadb"
+            "value": "host.docker.internal"
         },
         EnvironmentVariablesEnum.HAPE_MARIADB_USERNAME: {
             "key": "HAPE_MARIADB_USERNAME",

@@ -464,7 +464,7 @@ example-model:
         self._generate_content_migration()
         if self.migration_generated:
             print(f"Generated: {self.migration_path}")
-        print(f"self.migration_content: {self.migration_content}")
+        
         try:
             self._run_migrations()
         except Exception as e:
