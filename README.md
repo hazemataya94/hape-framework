@@ -1,5 +1,5 @@
 
-<img src="https://github.com/hazemataya94/hape-framework/blob/main/docs/logo.png">
+<img src="https://github.com/hazemataya94/hape-framework/blob/main/docs/logo.png" width="100%">
 
 # HAPE Framework: Overview & Features
 
