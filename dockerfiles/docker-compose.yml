@@ -9,7 +9,8 @@ services:
     env_file:
       - ../.env
     environment:
-      HAPE_MARIADB_HOST: "mariadb"
+      HAPE_LOG_LEVEL: DEBUG
+      HAPE_MARIADB_HOST: "host.docker.internal"
     volumes:
       - ../:/workspace
     networks:

@@ -27,7 +27,7 @@ class CrudController:
         self.crud.validate()
     
     def generate(self):
-        self.crud.validate_schema()
+        self.crud.validate_schemas()
         self.crud.generate()
         
     def delete(self):

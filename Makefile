@@ -153,13 +153,22 @@ test-cli: ## Run a new python container, installs hape cli and runs all tests in
 	@docker run -it --rm --workdir /workspace -v $(shell pwd)/tests:/workspace/tests python:3.13-bookworm /bin/bash -c 'mkdir playground && ./tests/run-all.sh cli'
 	@echo "All tests finished successfully!"
 
-test-code: ## Runs containers in dockerfiles/docker-compose.yml and runs all tests for the code.
-	@echo "Making sure hape container is running"
-	@docker-compose -f dockerfiles/docker-compose.yml ps | grep hape || make docker-up
-	@echo "Emptying database"
-	@echo "$$ docker exec -it mariadb_dev /bin/bash -c" '"mariadb -u root -p root -e "DROP DATABASE IF EXISTS hape_db; CREATE DATABASE hape_db;""'
-	@docker exec mariadb_dev /bin/bash -c "mariadb --password=root -e 'DROP DATABASE IF EXISTS hape_db; CREATE DATABASE hape_db;'"
+test-code: reset-data ## Runs containers in dockerfiles/docker-compose.yml, Deletes hello-world project from previous tests, and run all code automated tests.
 	@echo "Running all tests in hape container defined in dockerfiles/docker-compose.yml"
 	@echo "$$ docker exec --workdir /workspace hape /bin/bash -c './tests/run-all.sh code'"
 	@docker exec --workdir /workspace hape /bin/bash -c './tests/run-all.sh code'
 	@echo "All tests finished successfully!"
+
+reset-data: ## Deletes hello-world project from previous tests, drops and creates database hape_db.
+	@echo "Making sure hape container is running"
+	@docker-compose -f dockerfiles/docker-compose.yml ps | grep hape || make docker-up
+	@echo "Removing hello-world project from previous tests"
+	@rm -rf playground/hello-world
+	@echo "Dropping and creating database hape_db"
+	@echo "$$ docker exec -it mariadb_dev /bin/bash -c" '"mariadb -u root -p root -e "DROP DATABASE IF EXISTS hape_db; CREATE DATABASE hape_db;""'
+	@docker exec mariadb_dev /bin/bash -c "mariadb --password=root -e 'DROP DATABASE IF EXISTS hape_db; CREATE DATABASE hape_db;'"
+
+reset-local: reset-data ## Deletes hello-world project from previous tests, drops and creates database hape_db, runs migrations, and runs the playground.
+	make migration-run
+	make play
+	

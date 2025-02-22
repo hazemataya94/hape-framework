@@ -30,7 +30,7 @@ services:
     env_file:
       - ../.env
     environment:
-      HAPE_MARIADB_HOST: "mariadb"
+      HAPE_MARIADB_HOST: "host.docker.internal"
     networks:
       - host_network
 

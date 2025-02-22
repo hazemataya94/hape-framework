@@ -13,7 +13,6 @@ class CrudColumnParser:
         self.logger = Logging.get_logger('hape.hape_cli.models.crud_column_parser')
         self.crud_column = crud_column
         
-        
         self.orm_column_name = NamingUtils.convert_to_snake_case(self.crud_column.name)
         self.orm_column_type = self._parse_orm_column_type()
         self.orm_relationships = "" # set in _parse_orm_column_properties()

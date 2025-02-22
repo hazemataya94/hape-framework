@@ -7,7 +7,7 @@ cd ${PROJECT_NAME}
 
 echo "Generating ${TEST_MODEL} CRUD"
 MODEL_JSON_SCHEMA='{
-    "{{model_name}}": {
+    "test-model": {
         "id": {"int": ["primary", "autoincrement"]},
         "service-name": {"string": []},
         "pod-cpu": {"string": []},
@@ -16,6 +16,13 @@ MODEL_JSON_SCHEMA='{
         "min-replicas": {"int": ["nullable"]},
         "max-replicas": {"int": ["nullable"]},
         "current-replicas": {"int": []}
+    },
+    "test-model-cost": {
+        "id": {"int": ["primary", "autoincrement"]},
+        "test-model-id": {"int": ["required", "foreign-key(test-model.id, on-delete=cascade)"]},
+        "pod-cost": {"string": []},
+        "number-of-pods": {"int": []},
+        "total-cost": {"float": []}
     }
 }'
 MODEL_JSON_SCHEMA=$(echo "$MODEL_JSON_SCHEMA" | sed "s/{{model_name}}/${TEST_MODEL}/g")

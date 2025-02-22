@@ -9,7 +9,7 @@ from hape.logging import Logging
 from hape.services.file_service import FileService
 from hape.hape_cli.crud_templates.argument_parser_template import ARGUMENT_PARSER_TEMPLATE
 from hape.hape_cli.crud_templates.controller_template import CONTROLLER_TEMPLATE
-from hape.hape_cli.crud_templates.migration_template import MIGRATION_TEMPLATE
+from hape.hape_cli.crud_templates.migration_template import MIGRATION_TEMPLATE, MIGRATION_MODEL_TABLE_CREATION_TEMPLATE, MIGRATION_MODEL_TABLE_DROP_TEMPLATE
 from hape.hape_cli.crud_templates.model_template import MODEL_TEMPLATE
 from hape.utils.naming_utils import NamingUtils
 from hape.utils.string_utils import StringUtils
@@ -92,83 +92,136 @@ example-model:
     .replace("{{valid-foreign-key-on-delete}}", json.dumps(valid_foreign_key_on_delete)) \
     .strip()
     
-    def __init__(self, project_name: str, model_name: str, schema: dict):
+    def __init__(self, project_name: str, model_name: str, schemas: dict[str, dict]):
         self.logger = Logging.get_logger('hape.hape_cli.models.crud_model')
         self.file_service = FileService()
         
-        self.schema = schema
-        self.model_name = model_name if model_name else list(self.schema.keys())[0]
-        self.model_name_snake_case = NamingUtils.convert_to_snake_case(self.model_name) if self.model_name else ""
+        self.model_count = 0
+        if schemas:
+            self.model_count = len(schemas)
+        elif model_name:
+            self.model_count = 1
+        else:
+            self.logger.error("Model name or schema is required to create a CRUD object.")
+            exit(1)
+        
+        self.schemas: dict[str, dict] = {}
+        self.model_names: list[str] = []
+        self.model_names_snake_case: dict[str, str] = {}
+        if schemas:
+            self.schemas = schemas
+            for model_name, _ in schemas.items():
+                self.model_names.append(model_name)
+                self.model_names_snake_case[model_name] = NamingUtils.convert_to_snake_case(model_name)
+        elif model_name:
+            self.model_names.append(model_name)
+            self.model_names_snake_case[model_name] = NamingUtils.convert_to_snake_case(model_name)
+        else:
+            self.logger.error("Model name or schema is required to create a CRUD object.")
+            exit(1)
+        
         self.project_name = project_name
         self.source_code_path = NamingUtils.convert_to_snake_case(project_name)
         if self.source_code_path == "hape_framework":
             self.source_code_path = "hape"
-            
-        self.crud_columns: List[CrudColumn] = []
-        self.crud_column_parsers: List[CrudColumnParser] = []
                 
-        self.is_default_migration_counter = False
-        self.migration_counter_digits = 6
-        self.migration_counter = "000001"
-        self.migration_counter = self._get_migration_counter_and_path()
-        self.migration_columns = ""
+        self.argument_parser_paths: dict[str, str] = {}
+        for model_name in self.model_names:
+            self.argument_parser_paths[model_name] = os.path.join(self.source_code_path, "argument_parsers", f"{self.model_names_snake_case[model_name]}_argument_parser.py")
+        self.controller_paths: dict[str, str] = {}
+        for model_name in self.model_names:
+            self.controller_paths[model_name] = os.path.join(self.source_code_path, "controllers", f"{self.model_names_snake_case[model_name]}_controller.py")
+        self.model_paths: dict[str, str] = {}
+        for model_name in self.model_names:
+            self.model_paths[model_name] = os.path.join(self.source_code_path, "models", f"{self.model_names_snake_case[model_name]}_model.py")
+            
+        self.argument_parser_contents: dict[str, str] = {}
+        self.controller_contents: dict[str, str] = {}
+        self.model_contents: dict[str, str] = {}
+        self.migration_content: str = ""
+        
+        self.argument_parser_generated: dict[str, bool] = {}
+        self.controller_generated: dict[str, bool] = {}
+        self.model_generated: dict[str, bool] = {}
+        self.migration_generated: bool = False
+        self.should_generate_migration: bool = False
+        
+        self.crud_columns: dict[str, List[CrudColumn]] = {}
+        self.crud_column_parsers: dict[str, List[CrudColumnParser]] = {}
+        
+        self.is_default_migration_counter: bool = False
+        self.migration_counter_digits: int = 6
+        self.migration_counter: str = "000001"
+        self.migration_columns: str = ""
+        self.migration_path = os.path.join(self.source_code_path, "migrations", "versions", f"{self.migration_counter}_migration.py")
         self.alembic_config_path = os.path.join(os.getcwd(), "alembic.ini")
         
-        self.argument_parser_path = os.path.join(self.source_code_path, "argument_parsers", f"{self.model_name_snake_case}_argument_parser.py")
-        self.controller_path = os.path.join(self.source_code_path, "controllers", f"{self.model_name_snake_case}_controller.py")
-        self.migration_path = os.path.join(self.source_code_path, "migrations", "versions", f"{self.migration_counter}_{self.model_name_snake_case}_migration.py")
-        self.model_path = os.path.join(self.source_code_path, "models", f"{self.model_name_snake_case}_model.py")
-            
-        self.argument_parser_content = ""
-        self.controller_content = ""
-        self.migration_content = ""
-        self.model_content = ""
+        self.models_tables_creation_statements: str = ""
+        self.models_tables_drop_statements: str = ""
         
-        self.argument_parser_generated = False
-        self.controller_generated = False
-        self.migration_generated = False
-        self.model_generated = False
+        if self.schemas:
+            self._init_object_model_dictionaries()
         
-        if self.schema:
-            for model_name, columns in schema.items():
-                self.logger.debug(f"columns: {columns}")
-                self.model_name = model_name
-                self.logger.debug(f"model_name: {self.model_name}")
-                for column_name, column_type_and_properties in columns.items():
-                    crud_column_name = column_name
-                    crud_column_type = list(column_type_and_properties.keys())[0]
-                    crud_column_properties = list(column_type_and_properties.values())[0]
-                    
-                    crud_column = CrudColumn(
-                        crud_column_name,
-                        crud_column_type,
-                        crud_column_properties
-                    )
-                    
-                    self.crud_column_parsers.append(CrudColumnParser(crud_column))
+    def _init_object_model_dictionaries(self):
+        self.logger.debug(f"_init_object_model_dictionaries()")
+        if not self.schemas:
+            self.logger.warning("Schema is required")
+            return
         
+        for model_name, _ in self.schemas.items():
+            self.argument_parser_contents[model_name] = ""
+            self.controller_contents[model_name] = ""
+            self.model_contents[model_name] = ""
+            self.argument_parser_generated[model_name] = False
+            self.controller_generated[model_name] = False
+            self.model_generated[model_name] = False
+            self.migration_generated = False
+            self.crud_columns[model_name] = []
+            self.crud_column_parsers[model_name] = []
         
+        for model_name, columns in self.schemas.items():
+            for column_name, column_type_and_properties in columns.items():
+                crud_column_name = column_name
+                crud_column_type = list(column_type_and_properties.keys())[0]
+                crud_column_properties = list(column_type_and_properties.values())[0]
+            crud_column = CrudColumn(
+                crud_column_name,
+                crud_column_type,
+                crud_column_properties
+            )
+            self.crud_column_parsers[model_name].append(CrudColumnParser(crud_column))
+                
     def validate(self):
         self.logger.debug(f"validate()")
-        if not self.model_name:
+        if not self.model_names:
             self.logger.error("Model name is required")
             exit(1)
-        if not re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', self.model_name):
-            self.logger.error(f"Error: Model name '{self.model_name}' must contain only lowercase letters, numbers, and use '-' as a separator.")
-            exit(1)
+        for model_name in self.model_names:
+            if not re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', model_name):
+                self.logger.error(f"Error: Model name '{model_name}' must contain only lowercase letters, numbers, and use '-' as a separator.")
+                exit(1)
     
-    def _validat_schema_structure(self):
-        self.logger.debug(f"_validat_schema_structure()")
-        if not self.schema:
+    def validate_schemas(self):
+        self.logger.debug(f"validate_schemas()")
+        self.logger.debug(f"self.schemas: {self.schemas}")
+        if not self.schemas:
             self.logger.error("Schema is required")
             exit(1)
-        if not isinstance(self.schema, dict):
-            self.logger.error(f"Schema must be a dictionary, but got {type(self.schema)}: {self.schema}")
+            
+        self._validate_schemas_structure()
+        
+    def _validate_schemas_structure(self):
+        self.logger.debug(f"_validate_schemas_structure()")
+        if not self.schemas:
+            self.logger.error("Schema is required")
             exit(1)
-        if not self.schema.keys():
+        if not isinstance(self.schemas, dict):
+            self.logger.error(f"Schema must be a dictionary, but got {type(self.schemas)}: {self.schemas}")
+            exit(1)
+        if not self.schemas.keys():
             self.logger.error("Schema must be a dictionary have at least one key")
             exit(1)
-        for model_name, columns in self.schema.items():
+        for model_name, columns in self.schemas.items():
             if not isinstance(model_name, str):
                 self.logger.error(f"Model name must be a string, but got {type(model_name)}: {model_name}")
                 exit(1)
@@ -202,54 +255,54 @@ example-model:
                     if not isinstance(column_property, str):
                         self.logger.error("Each column property must be a string")
                         exit(1)
-                    if column_property not in self.valid_properties:
+                    if column_property not in self.valid_properties and not column_property.startswith("foreign-key"):
                         self.logger.error(f"Invalid column property '{column_property}'. Must be one of {self.valid_properties}")
                         exit(1)
     
-    def validate_schema(self):
-        self.logger.debug(f"validate_schema()")
-        self.logger.debug(f"self.schema: {self.schema}")
-        if not self.schema:
-            self.logger.error("Schema is required")
-            exit(1)
-        if len(self.schema) > 1:
-            self.logger.error("Schema must have only one model")
-            exit(1)
-            
-        self._validat_schema_structure()
-    
     def _get_orm_columns(self):
         self.logger.debug(f"_get_orm_columns()")
+        if not self.schemas:
+            self.logger.warning(f"Schema is required")
+            return ""
+
         parsed_orm_columns = ""
         splitter = ",\n    "
-        for crud_column_parser in self.crud_column_parsers:
-            parsed_orm_columns += crud_column_parser.parsed_orm_column + splitter
+        for model_name in self.model_names:
+            for crud_column_parser in self.crud_column_parsers[model_name]:
+                parsed_orm_columns += crud_column_parser.parsed_orm_column + splitter
+
         return parsed_orm_columns.rstrip(splitter)
     
     def _get_orm_relationships(self):
         self.logger.debug(f"_get_orm_relationships()")
+        if not self.schemas:
+            self.logger.warning("Schema is required")
+            return ""
+        
         parsed_orm_relationships = ""
         splitter = ",\n    "
-        for crud_column_parser in self.crud_column_parsers:
-            parsed_orm_relationships += crud_column_parser.orm_relationships + splitter
+        for model_name in self.model_names:
+            for crud_column_parser in self.crud_column_parsers[model_name]:
+                parsed_orm_relationships += crud_column_parser.orm_relationships + splitter
+                
         return parsed_orm_relationships.rstrip(splitter)
     
-    def _generate_content_model(self):
-        self.logger.debug(f"_generate_content_model()")
-        if self.file_service.file_exists(self.model_path):
-            self.logger.warning(f"Model file already exists at {self.model_path}")
+    def _generate_content_model(self, model_name):
+        self.logger.debug(f"_generate_content_model(model_name: {model_name})")
+        if self.file_service.file_exists(self.model_paths[model_name]):
+            self.logger.warning(f"Model file already exists at {self.model_paths[model_name]}")
             return
-        
+    
         content = StringUtils.replace_name_case_placeholders(MODEL_TEMPLATE, self.source_code_path, "project_name")
-        content = StringUtils.replace_name_case_placeholders(content, self.model_name, "model_name")
+        content = StringUtils.replace_name_case_placeholders(content, model_name, "model_name")
         content = content.replace("{{model_columns}}", self._get_orm_columns())
         content = content.replace("{{model_relationships}}", self._get_orm_relationships())
         self.model_content = content
+    
+        self.logger.info(f"Generating: {self.model_paths[model_name]}")
+        self.file_service.write_file(self.model_paths[model_name], self.model_content)
         
-        self.logger.info(f"Generating: {self.model_path}")
-        self.file_service.write_file(self.model_path, self.model_content)
-        
-        self.model_generated = True
+        self.model_generated[model_name] = True
     
     def _get_migration_counter_and_path(self):
         self.logger.debug(f"_get_migration_counter_and_path()")
@@ -268,10 +321,6 @@ example-model:
         migration_files_counters = []
         for migration_file in migration_files:
             migration_file_counter = migration_file.split("_")[0]
-            if migration_file.endswith(f"{self.model_name_snake_case}_migration.py"):
-                self.migration_path = os.path.join(versions_folder, migration_file)
-                self.migration_counter = migration_file_counter
-                return self.migration_counter
             
             if not migration_file_counter.startswith("0"):
                 continue
@@ -292,35 +341,62 @@ example-model:
         self.logger.debug(f"_increase_migration_counter()")
         new_migration_counter = str(int(self.migration_counter) + 1).zfill(self.migration_counter_digits)
         self.logger.debug(f"new_migration_counter: {new_migration_counter}")
-        self.migration_path = os.path.join(self.source_code_path, "migrations", "versions", f"{new_migration_counter}_{self.model_name_snake_case}_migration.py")
+        self.migration_path = os.path.join(self.source_code_path, "migrations", "versions", f"{new_migration_counter}_migration.py")
         self.migration_counter = new_migration_counter
         return new_migration_counter
     
-    def _get_migration_columns(self):
-        self.logger.debug(f"_get_migration_columns()")
+    def _get_migration_columns(self, model_name):
+        self.logger.debug(f"_get_migration_columns(model_name: {model_name})")
+        if not self.crud_column_parsers[model_name]:
+            self.logger.warning(f"No columns to migrate for {model_name}")
+            return ""
+        
         migration_columns = ""
         splitter = ",\n        "
-        for crud_column_parser in self.crud_column_parsers:
+        for crud_column_parser in self.crud_column_parsers[model_name]:
             migration_columns += crud_column_parser.parsed_migration_column + splitter
         return migration_columns.rstrip(splitter)
     
+    def _generate_model_table_creation_statement(self, model_name):
+        self.logger.debug(f"_generate_model_table_creation_statement(model_name: {model_name})")
+        
+        content = StringUtils.replace_name_case_placeholders(MIGRATION_MODEL_TABLE_CREATION_TEMPLATE, model_name, "model_name")
+        content = content.replace("{{migration_columns}}", self._get_migration_columns(model_name))
+        
+        self.models_tables_creation_statements += content + "\n    "
+    
+    def _generate_model_table_drop_statement(self, model_name):
+        self.logger.debug(f"_generate_model_table_drop_statement(model_name: {model_name})")
+        
+        content = StringUtils.replace_name_case_placeholders(MIGRATION_MODEL_TABLE_DROP_TEMPLATE, model_name, "model_name")
+        
+        self.models_tables_drop_statements += content + "\n    "
+        
     def _generate_content_migration(self):
         self.logger.debug(f"_generate_content_migration()")
+        
         if self.file_service.file_exists(self.migration_path):
             self.logger.warning(f"Migration file already exists at {self.migration_path}")
             return
-
-        if not self.is_default_migration_counter:
-            self.migration_counter = self._increase_migration_counter()
-        self.migration_columns = self._get_migration_columns()
+            
+        for model_name in self.model_names: 
+            if not self.model_generated[model_name]:
+                self.logger.warning(f"No database changes to migrate for {model_name}")
+                continue    
+            self._generate_model_table_creation_statement(model_name)
+            self._generate_model_table_drop_statement(model_name)
+            self.should_generate_migration = True
         
-        content = StringUtils.replace_name_case_placeholders(MIGRATION_TEMPLATE, self.source_code_path, "project_name")
-        content = StringUtils.replace_name_case_placeholders(content, self.model_name, "model_name")
-        content = content.replace("{{migration_counter}}", self.migration_counter)
-        content = content.replace("{{migration_columns}}", self.migration_columns)
-        self.migration_content = content
+        if not self.should_generate_migration:
+            self.logger.warning("Migration file will not be generated. No database changes to migrate")
+            return
         
-        self.logger.info(f"Generating: {self.migration_path}")  
+        self.migration_content = StringUtils.replace_name_case_placeholders(MIGRATION_TEMPLATE, self.source_code_path, "project_name")
+        self.migration_content = self.migration_content.replace("{{migration_counter}}", self.migration_counter)
+        self.migration_content = self.migration_content.replace("{{model_table_creation_statements}}", self.models_tables_creation_statements)
+        self.migration_content = self.migration_content.replace("{{model_table_drop_statements}}", self.models_tables_drop_statements)
+        
+        self.logger.info(f"Generating: {self.migration_path}")
         self.file_service.write_file(self.migration_path, self.migration_content)
         
         self.migration_generated = True
@@ -338,86 +414,85 @@ example-model:
             self.logger.info("Merged multiple heads. Now running upgrade...")
         command.upgrade(alembic_config, "head")
         
-    def _generate_content_controller(self):
-        self.logger.debug(f"_generate_content_controller()")
-        if self.file_service.file_exists(self.controller_path):
-            self.logger.warning(f"Controller file already exists at {self.controller_path}")
+    def _generate_content_controller(self, model_name):
+        self.logger.debug(f"_generate_content_controller(model_name: {model_name})")
+        if self.file_service.file_exists(self.controller_paths[model_name]):
+            self.logger.warning(f"Controller file already exists at {self.controller_paths[model_name]}")
             return
         
         content = StringUtils.replace_name_case_placeholders(CONTROLLER_TEMPLATE, self.source_code_path, "project_name")
-        content = StringUtils.replace_name_case_placeholders(content, self.model_name, "model_name")
+        content = StringUtils.replace_name_case_placeholders(content, model_name, "model_name")
         self.controller_content = content
         
-        self.logger.info(f"Generating: {self.controller_path}")
-        self.file_service.write_file(self.controller_path, self.controller_content)
+        self.logger.info(f"Generating: {self.controller_paths[model_name]}")
+        self.file_service.write_file(self.controller_paths[model_name], self.controller_content)
         
-        self.controller_generated = True
+        self.controller_generated[model_name] = True
     
-    def _generate_content_argument_parser(self):
-        self.logger.debug(f"_generate_content_argument_parser()")
-        if self.file_service.file_exists(self.argument_parser_path):
-            self.logger.warning(f"Argument parser file already exists at {self.argument_parser_path}")
+    def _generate_content_argument_parser(self, model_name):
+        self.logger.debug(f"_generate_content_argument_parser(model_name: {model_name})")
+        if self.file_service.file_exists(self.argument_parser_paths[model_name]):
+            self.logger.warning(f"Argument parser file already exists at {self.argument_parser_paths[model_name]}")
             return
         
         content = StringUtils.replace_name_case_placeholders(ARGUMENT_PARSER_TEMPLATE, self.source_code_path, "project_name")
-        content = StringUtils.replace_name_case_placeholders(content, self.model_name, "model_name")
+        content = StringUtils.replace_name_case_placeholders(content, model_name, "model_name")
         self.argument_parser_content = content
         
-        self.argument_parser_contents = StringUtils.replace_name_case_placeholders(content, self.model_name, "model_name")
-        self.argument_parser_contents = StringUtils.replace_name_case_placeholders(self.argument_parser_contents, self.project_name, "project_name")
+        self.argument_parser_contents[model_name] = StringUtils.replace_name_case_placeholders(content, model_name, "model_name")
+        self.argument_parser_contents[model_name] = StringUtils.replace_name_case_placeholders(self.argument_parser_contents[model_name], self.project_name, "project_name")
         
-        self.logger.info(f"Generating: {self.argument_parser_path}")
-        self.file_service.write_file(self.argument_parser_path, self.argument_parser_content)
+        self.logger.info(f"Generating: {self.argument_parser_paths[model_name]}")
+        self.file_service.write_file(self.argument_parser_paths[model_name], self.argument_parser_content)
         
-        self.argument_parser_generated = True
+        self.argument_parser_generated[model_name] = True
     
     def generate(self):
         self.logger.debug(f"generate()")
-        self._generate_content_argument_parser()
+        for model_name in self.model_names:
+            self._generate_content_model(model_name)
+            self._generate_content_controller(model_name)
+            self._generate_content_argument_parser(model_name)
+            
+            if self.argument_parser_generated[model_name]:
+                print(f"Generated: {self.argument_parser_paths[model_name]}")
+            if self.controller_generated[model_name]:
+                print(f"Generated: {self.controller_paths[model_name]}")
+            if self.model_generated[model_name]:
+                print(f"Generated: {self.model_paths[model_name]}")
+        
         self._generate_content_migration()
-        self._generate_content_controller()
-        self._generate_content_model()
+        if self.migration_generated:
+            print(f"Generated: {self.migration_path}")
+        print(f"self.migration_content: {self.migration_content}")
         try:
             self._run_migrations()
         except Exception as e:
             self.logger.error(f"Error: {e}")
             print(f"Error: {e}")
             exit(1)
-        
-        if self.argument_parser_generated:
-            print(f"Generated: {self.argument_parser_path}")
-        if self.controller_generated:
-            print(f"Generated: {self.controller_path}")
-        if self.migration_generated:
-            print(f"Generated: {self.migration_path}")
-        if self.model_generated:
-            print(f"Generated: {self.model_path}")
-            
-        print(f"All model files have been generated successfully!")
-        
-        if not self.argument_parser_generated and not self.controller_generated and not self.migration_generated and not self.model_generated:
-            print(f"All model files already exist at {self.source_code_path}")
-            print(f"Argument parser file: {self.argument_parser_path}")
-            print(f"Controller file: {self.controller_path}")
-            print(f"Migration file: {self.migration_path}")
-            print(f"Model file: {self.model_path}")
-            print(f"If you want to regenerate the model files, please run `$ hape crud delete --name {self.model_name}` first to delete the model files and run the command again.")
-            exit(1)
             
     def delete(self):
         self.logger.debug(f"delete()")
-        if self.file_service.file_exists(self.argument_parser_path):
-            self.file_service.delete_file(self.argument_parser_path)
-            print(f"Deleted: {self.argument_parser_path}")
-        if self.file_service.file_exists(self.controller_path):
-            self.file_service.delete_file(self.controller_path)
-            print(f"Deleted: {self.controller_path}")
+        for model_name in self.model_names:
+            if self.file_service.file_exists(self.model_paths[model_name]):
+                self.file_service.delete_file(self.model_paths[model_name])
+                print(f"Deleted: {self.model_paths[model_name]}")
+            if self.file_service.file_exists(self.controller_paths[model_name]):
+                self.file_service.delete_file(self.controller_paths[model_name])
+                print(f"Deleted: {self.controller_paths[model_name]}")
+            if self.file_service.file_exists(self.argument_parser_paths[model_name]):
+                self.file_service.delete_file(self.argument_parser_paths[model_name])
+                print(f"Deleted: {self.argument_parser_paths[model_name]}")
+        
+        print(f"All model files -except the migration file- have been deleted successfully!")
+        print( "--------------------------------")
+        print(f"Migration file location: {os.path.dirname(self.migration_path)}")
+        print(f"Make sure to modify the migration file to stop the model table creation, or delete the migration file manually if you don't want it anymore.")
+    
+    def delete_migration(self):
+        self.logger.debug(f"delete_migration()")
         if self.file_service.file_exists(self.migration_path):
             self.file_service.delete_file(self.migration_path)
             print(f"Deleted: {self.migration_path}")
-        if self.file_service.file_exists(self.model_path):
-            self.file_service.delete_file(self.model_path)
-            print(f"Deleted: {self.model_path}")
-        
-        print(f"All model files have been deleted successfully!")
 
