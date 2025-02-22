@@ -1,6 +1,5 @@
 import re
 import os
-import json
 from typing import List
 from alembic import command
 from alembic.config import Config
@@ -14,83 +13,10 @@ from hape.hape_cli.crud_templates.model_template import MODEL_TEMPLATE
 from hape.utils.naming_utils import NamingUtils
 from hape.utils.string_utils import StringUtils
 from hape.hape_cli.models.crud_column_parser import CrudColumnParser
-from hape.hape_cli.enums.crud_column_valid_types import CrudColumnValidTypesEnum
-from hape.hape_cli.enums.crud_column_valid_properties import CrudColumnValidPropertiesEnum
-from hape.hape_cli.enums.crud_column_fk_on_delete import CrudColumnFkOnDeleteEnum
 from hape.hape_cli.models.crud_column import CrudColumn
+from hape.hape_cli.models.crud_model_schema import CrudModelSchema
 
 class Crud:
-    
-    valid_types = [valid_type.value for valid_type in CrudColumnValidTypesEnum]
-    valid_properties = [valid_property.value for valid_property in CrudColumnValidPropertiesEnum]
-    valid_foreign_key_on_delete = [valid_foreign_key_on_delete.value for valid_foreign_key_on_delete in CrudColumnFkOnDeleteEnum]
-    
-    _model_schema_json = """
-{
-    "valid_types": {{valid-types}},
-    "valid_properties": {{valid-properties}},
-    "valid_foreign_key_on_delete": {{valid-foreign-key-on-delete}},
-    "foreign_key_syntax": "foreign-key(foreign-key-model.foreign-key-attribute, on-delete=foreign-key-on-delete)",
-    
-    
-    "model-name": {
-        "column_name": {"valid-type": ["valid-property"]},
-        "id": {"valid-type": ["valid-property"]},
-        "updated_at": {"valid-type": []},
-        "name": {"valid-type": ["valid-property", "valid-property"]},
-        "enabled": {"valid-type": []},
-    }
-    
-    "example-model": {
-        "id": {"int": ["primary"]},
-        "updated_at": {"timestamp": []},
-        "name": {"string": ["required", "unique"]},
-        "enabled": {"bool": []}
-    }
-}
-""".replace("{{valid-types}}", json.dumps(valid_types)) \
-    .replace("{{valid-properties}}", json.dumps(valid_properties)) \
-    .replace("{{valid-foreign-key-on-delete}}", json.dumps(valid_foreign_key_on_delete)) \
-    .strip()
-
-    _model_schema_yaml = """
-valid_types: {{valid-types}}
-valid_properties: {{valid-properties}}
-valid_foreign_key_on_delete: {{valid-foreign-key-on-delete}}
-foreign_key_syntax: "foreign-key(foreign-key-model.foreign-key-attribute, on-delete=foreign-key-on-delete)"
-
-model-name:
-  column_name:
-    valid-type: 
-      - valid-property
-  id:
-    valid-type: 
-      - valid-property
-  updated_at:
-    valid-type: []
-  name:
-    valid-type: 
-      - valid-property
-      - valid-property
-  enabled:
-    valid-type: []
-
-example-model:
-  id:
-    int: 
-      - primary
-  updated_at:
-    timestamp: []
-  name:
-    string: 
-      - required
-      - unique
-  enabled:
-    bool: []
-""".replace("{{valid-types}}", json.dumps(valid_types)) \
-    .replace("{{valid-properties}}", json.dumps(valid_properties)) \
-    .replace("{{valid-foreign-key-on-delete}}", json.dumps(valid_foreign_key_on_delete)) \
-    .strip()
     
     def __init__(self, project_name: str, model_name: str, schemas: dict[str, dict]):
         self.logger = Logging.get_logger('hape.hape_cli.models.crud_model')
@@ -154,10 +80,12 @@ example-model:
         self.migration_counter: str = "000001"
         self.migration_columns: str = ""
         self.migration_path = os.path.join(self.source_code_path, "migrations", "versions", f"{self.migration_counter}_migration.py")
+        self.migration_json_directory = os.path.join(self.source_code_path, "migrations", "json", f"{self.migration_counter}_migration.json")
+        self.migration_yaml_directory = os.path.join(self.source_code_path, "migrations", "yaml", f"{self.migration_counter}_migration.yaml")
         self.alembic_config_path = os.path.join(os.getcwd(), "alembic.ini")
         
-        self.models_tables_creation_statements: str = ""
-        self.models_tables_drop_statements: str = ""
+        self.models_tables_creation_statements = ""
+        self.models_tables_drop_statements = ""
         
         if self.schemas:
             self._init_object_model_dictionaries()
@@ -245,8 +173,8 @@ example-model:
                 if not isinstance(column_type, str):
                     self.logger.error(f"Each column must have a type, but got {type(column_type)}: {column_type}")
                     exit(1)
-                if column_type not in self.valid_types:
-                    self.logger.error(f"Invalid column type '{column_type}'. Must be one of {self.valid_types}")
+                if column_type not in CrudModelSchema.valid_types:
+                    self.logger.error(f"Invalid column type '{column_type}'. Must be one of {CrudModelSchema.valid_types}")
                     exit(1)
                 if not isinstance(column_properties, list):
                     self.logger.error(f"Each column must have a list of properties or empty list, but got {type(column_properties)}: {column_properties}")
@@ -255,8 +183,8 @@ example-model:
                     if not isinstance(column_property, str):
                         self.logger.error("Each column property must be a string")
                         exit(1)
-                    if column_property not in self.valid_properties and not column_property.startswith("foreign-key"):
-                        self.logger.error(f"Invalid column property '{column_property}'. Must be one of {self.valid_properties}")
+                    if column_property not in CrudModelSchema.valid_properties and not column_property.startswith("foreign-key"):
+                        self.logger.error(f"Invalid column property '{column_property}'. Must be one of {CrudModelSchema.valid_properties}")
                         exit(1)
     
     def _get_orm_columns(self):
@@ -398,6 +326,8 @@ example-model:
         
         self.logger.info(f"Generating: {self.migration_path}")
         self.file_service.write_file(self.migration_path, self.migration_content)
+        self.file_service.write_json_file(self.migration_json_directory, self.schemas)
+        self.file_service.write_yaml_file(self.migration_yaml_directory, self.schemas)
         
         self.migration_generated = True
 
@@ -464,6 +394,8 @@ example-model:
         self._generate_content_migration()
         if self.migration_generated:
             print(f"Generated: {self.migration_path}")
+            print(f"Generated: {self.migration_json_directory}")
+            print(f"Generated: {self.migration_yaml_directory}")
         
         try:
             self._run_migrations()

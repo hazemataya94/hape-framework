@@ -45,6 +45,12 @@ INIT_PROJECT_TEMPLATE = {
             "script.py.mako": None,
             "versions": {
                 ".gitkeep": None
+            },
+            "json": {
+                ".gitkeep": None
+            },
+            "yaml": {
+                ".gitkeep": None
             }
         },
         "models": {

@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 import csv
+import json
 from ruamel.yaml import YAML
 from hape.logging import Logging
 
@@ -102,6 +103,12 @@ class FileService:
         self.logger.debug(f"write_yaml_file(yaml_path: {yaml_path}, data: {data})")
         with open(yaml_path, 'w') as file:
             self.yaml.dump(data, file)
+
+    def write_json_file(self, json_path, data):
+        self.logger.debug(f"write_json_file(json_path: {json_path}, data: {data})")
+        with open(json_path, 'w') as file:
+            data = json.dumps(data, indent=4)
+            file.write(data)
 
     def append_to_file(self, file_path, content):
         self.logger.debug(f"append_to_file(file_path: {file_path}, content: {content})")
