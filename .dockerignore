@@ -1,0 +1,4 @@
+.venv
+dockerfiles
+**docker-compose.yml**
+*.md

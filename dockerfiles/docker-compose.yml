@@ -1,0 +1,52 @@
+services:
+  hape:
+    image: hape:dev
+    build:
+      context: ../
+      dockerfile: ./dockerfiles/Dockerfile.dev
+    container_name: hape
+    restart: always
+    env_file:
+      - ../.env
+    environment:
+      HAPE_LOG_LEVEL: DEBUG
+      HAPE_MARIADB_HOST: "host.docker.internal"
+    volumes:
+      - ../:/workspace
+    networks:
+      - host_network
+
+  mariadb:
+    image: mariadb:11.4.4
+    container_name: mariadb_dev
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: hape_db
+      MARIADB_USER: hape_user
+      MARIADB_PASSWORD: hape_password
+    ports:
+      - "3306:3306"
+    networks:
+      - host_network
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_dev
+    restart: always
+    environment:
+      PMA_HOST: host.docker.internal
+      PMA_PORT: 3306
+    ports:
+      - "8080:80"
+    networks:
+      - host_network
+
+networks:
+  host_network:
+    driver: bridge
+
+volumes:
+  mariadb_data:
