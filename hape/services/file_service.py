@@ -100,25 +100,25 @@ class FileService:
         return data
 
     def write_yaml_file(self, yaml_path, data):
-        self.logger.debug(f"write_yaml_file(yaml_path: {yaml_path}, data: {data})")
+        self.logger.debug(f"write_yaml_file(yaml_path: {yaml_path}, data)")
         with open(yaml_path, 'w') as file:
             self.yaml.dump(data, file)
 
     def write_json_file(self, json_path, data):
-        self.logger.debug(f"write_json_file(json_path: {json_path}, data: {data})")
+        self.logger.debug(f"write_json_file(json_path: {json_path}, data)")
         with open(json_path, 'w') as file:
             data = json.dumps(data, indent=4)
             file.write(data)
 
     def append_to_file(self, file_path, content):
-        self.logger.debug(f"append_to_file(file_path: {file_path}, content: {content})")
+        self.logger.debug(f"append_to_file(file_path: {file_path}")
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"Error: file {file_path} does not exist")
         with open(file_path, 'a', encoding='utf-8') as destination_file:
             destination_file.write(content)
 
     def prepend_to_file(self, file_path, content):
-        self.logger.debug(f"prepend_to_file(file_path: {file_path}, content: {content})")
+        self.logger.debug(f"prepend_to_file(file_path: {file_path}")
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"Error: file {file_path} does not exist")
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -153,13 +153,11 @@ class FileService:
             return clean_data
 
     def write_csv_file(self, filename, data):
-        self.logger.debug(f"write_csv_file(filename: {filename}, data: {data})")
+        self.logger.debug(f"write_csv_file(filename: {filename}, data)")
         if not data:
             self.logger.info("No data provided to write CSV file.")
             return
-
         fieldnames = list(data[0].keys())
-
         with open(filename, mode="w", newline="", encoding="utf-8") as file:
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()

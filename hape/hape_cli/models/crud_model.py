@@ -18,7 +18,7 @@ from hape.hape_cli.models.crud_model_schema import CrudModelSchema
 
 class Crud:
     
-    def __init__(self, project_name: str, model_name: str, schemas: dict[str, dict]):
+    def __init__(self, project_name: str, model_name: str = None, schemas: dict[str, dict] = None):
         self.logger = Logging.get_logger('hape.hape_cli.models.crud_model')
         self.file_service = FileService()
         
@@ -48,7 +48,7 @@ class Crud:
         
         self.project_name = project_name
         self.source_code_path = NamingUtils.convert_to_snake_case(project_name)
-        if self.source_code_path == "hape_framework":
+        if self.project_name == "hape-framework":
             self.source_code_path = "hape"
                 
         self.argument_parser_paths: dict[str, str] = {}
@@ -383,7 +383,6 @@ class Crud:
             self._generate_content_model(model_name)
             self._generate_content_controller(model_name)
             self._generate_content_argument_parser(model_name)
-            
             if self.argument_parser_generated[model_name]:
                 print(f"Generated: {self.argument_parser_paths[model_name]}")
             if self.controller_generated[model_name]:

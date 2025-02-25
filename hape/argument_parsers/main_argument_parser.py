@@ -9,7 +9,7 @@ class MainArgumentParser:
 
     def create_parser(self):
         parser = argparse.ArgumentParser(
-            description="hapeShortLong used to streamline development operations"
+            description="hape cli - streamline your development operations"
         )
         try:
             parser.add_argument("-v", "--version", action="version", version=version("hape"))

@@ -23,23 +23,27 @@ class Playground:
             output_file="/Users/hazemataya/Desktop/workspace/innodp/playground/test.csv",
             file_regex=r".*values.*.yaml"
         )
+        
+    def play_with_crud(self):
+        try:
+            Crud(
+                project_name="hape",
+                model_name="k8s-deployment"
+            ).delete()
+        except Exception as e:
+            print(f"Error deleting k8s-deployment: {e}")
 
-    def play(self):
-        
-        # json_model = Json(model_schema=True)
-        # # json_model.load(Crud._model_schema_json)
-        # yaml_model = Yaml(model_schema=True)
-        
-        # json_model.get()
-        # print()
-        # yaml_model.get()
-        
-        # valid_types = ["string", "int", "bool", "float", "date", "datetime", "timestamp"]
-        # valid_properties = ["nullable", "required", "unique", "primary", "autoincrement", "foreign-key", "index"]
-        
-        
-        
-        {
+        try:
+            Crud(
+                project_name="hape",
+                model_name="k8s-deployment-cost"
+            ).delete()
+        except Exception as e:
+            print(f"Error deleting k8s-deployment-cost: {e}")
+                    
+        Crud(
+            project_name="hape",
+            schemas={   
             "k8s-deployment": {
                 "id": {"int": ["primary", "autoincrement"]},
                 "service-name": {"string": []},
@@ -55,43 +59,10 @@ class Playground:
                 "k8s-deployment-id": {"int": ["required", "foreign-key(k8s-deployment.id, on-delete=cascade)"]},
                 "pod-cost": {"string": []},
                 "number-of-pods": {"int": []},
-                "total-cost": {"float": []}
-            }
-        }
-        
-        Crud(
-            project_name="hape",
-            model_name="k8s-deployment",
-            schema={
-                "k8s-deployment": {
-                    "id": {"int": ["primary", "autoincrement"]},
-                    "service-name": {"string": []},
-                    "pod-cpu": {"string": []},
-                    "pod-ram": {"string": []},
-                    "autoscaling": {"bool": []},
-                    "min-replicas": {"int": ["nullable"]},
-                    "max-replicas": {"int": ["nullable"]},
-                    "current-replicas": {"int": []},
-                }
-            }
-        ).generate()
-        
-        Crud(
-            project_name="hape",
-            model_name="k8s-deployment-cost",
-            schema={
-                "k8s-deployment-cost": {
-                    "id": {"int": ["primary", "autoincrement"]},
-                    "k8s-deployment-id": {"int": ["required", "foreign-key(k8s-deployment.id, on-delete=cascade)"]},
-                    "pod-cost": {"string": []},
-                    "number-of-pods": {"int": []},
                     "total-cost": {"float": []}
                 }
             }
         ).generate()
-        
-        # Playground().save_deployment_cost()
-        # Playground().get_all_deployment_costs()
-        # Playground().delete_deployment_cost()
-        # Playground().delete_all_deployment_cost()
-        # Playground().generate_gitlab_changes_report()
+
+    def play(self):
+        self.play_with_crud()

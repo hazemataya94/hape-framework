@@ -6,14 +6,8 @@ from hape.base.model import Model
 class K8SDeployment(Model):
     __tablename__ = 'k8s_deployment'
     
-    id = Column(Integer, primary_key=True, autoincrement=True),
-    service_name = Column(String, nullable=True),
-    pod_cpu = Column(String, nullable=True),
-    pod_ram = Column(String, nullable=True),
-    autoscaling = Column(Boolean, nullable=True),
-    min_replicas = Column(Integer, nullable=True),
-    max_replicas = Column(Integer, nullable=True),
-    current_replicas = Column(Integer, nullable=True)
+    current_replicas = Column(Integer, nullable=True),
+    total_cost = Column(Float, nullable=True)
     
 
     def __init__(self, **kwargs):

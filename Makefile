@@ -165,10 +165,29 @@ reset-data: ## Deletes hello-world project from previous tests, drops and create
 	@echo "Removing hello-world project from previous tests"
 	@rm -rf playground/hello-world
 	@echo "Dropping and creating database hape_db"
-	@echo "$$ docker exec -it mariadb_dev /bin/bash -c" '"mariadb -u root -p root -e "DROP DATABASE IF EXISTS hape_db; CREATE DATABASE hape_db;""'
 	@docker exec mariadb_dev /bin/bash -c "mariadb --password=root -e 'DROP DATABASE IF EXISTS hape_db; CREATE DATABASE hape_db;'"
+	@echo "Removing local migrations, do you want to continue? (y/n)"
+	@read -n 1 -p "Enter your choice: " choice && \
+	if [ "$$choice" = "y" ]; then \
+		rm -rf hape/migrations/versions/*.py; \
+		rm -rf hape/migrations/json/*.json; \
+		rm -rf hape/migrations/yaml/*.yaml; \
+		echo "Local migrations removed."; \
+	else \
+		echo "Local migrations not removed."; \
+	fi
 
 reset-local: reset-data ## Deletes hello-world project from previous tests, drops and creates database hape_db, runs migrations, and runs the playground.
-	make migration-run
-	make play
-	
+	@echo "Removing __pycache__ directories"
+	@find . -type d -name "__pycache__" -exec rm -rf {} +
+	@echo "Removing hape.log files"
+	@find . -type f -name "hape.log" -exec rm -f {} +
+	@echo "Removing hape.egg-info directory"
+	@rm -rf hape.egg-info
+	@echo "Removing dist directory"
+	@rm -rf dist
+	@echo "Running migrations"
+	@make migration-run
+	@echo "Running playground"
+	@make play
+	@echo "Done!"
