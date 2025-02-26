@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="hape",
-    version="0.2.99",
+    version="0.2.100",
     packages=["hape"],
     include_package_data=True,
     install_requires=[
