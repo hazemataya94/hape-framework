@@ -132,7 +132,11 @@ docker-python: ## Runs a Python container in playground directory.
 	@docker-compose -f dockerfiles/docker-compose.yml ps | grep mariadb_dev || docker-compose -f dockerfiles/docker-compose.yml up -d mariadb phpmyadmin
 	@echo "$$ docker run -itd --name hape-python-dev --workdir /workspace -v $(shell pwd)/playground:/workspace/playground -v $(shell pwd)/tests:/workspace/tests python:3.13-bookworm /bin/bash -c 'sleep infinity' || docker start hape-python-dev && docker exec -it hape-python-dev /bin/bash -c 'clear && bash'"
 	@docker run -itd --name hape-python-dev --workdir /workspace -v $(shell pwd)/playground:/workspace/playground -v $(shell pwd)/tests:/workspace/tests python:3.13-bookworm /bin/bash -c 'sleep infinity' || docker start hape-python-dev && docker exec -it hape-python-dev /bin/bash -c 'clear && bash'
-	
+
+docker-build-prod: ## Build the production Docker image.
+	@echo "$$ docker build -t hape-production -f dockerfiles/Dockerfile.prod ."
+	@docker build -t hape-production -f dockerfiles/Dockerfile.prod .
+
 source-env: ## Print export statements for the environment variables from .env file.
 	@echo "Run the following command to export environment variables:"
 	@grep -v '^#' .env | xargs -I {} echo export {}
@@ -149,8 +153,10 @@ git-hooks: ## Install hooks in .git-hooks/ to .git/hooks/.
 	@echo "Git hooks installed."
 
 test-cli: ## Run a new python container, installs hape cli and runs all tests inside it.
-	@echo "Running all tests in a fresh python:3.13-bookworm container..."
-	@docker run -it --rm --workdir /workspace -v $(shell pwd)/tests:/workspace/tests python:3.13-bookworm /bin/bash -c 'mkdir playground && ./tests/run-all.sh cli'
+	@echo "!!! Note: make sure to run '$$ make docker-build-prod' at least once before running this command"
+	@sleep 0.5
+	@echo "Running all tests in a fresh hape-production container..."
+	@docker run -it --rm --workdir /workspace -v $(shell pwd)/tests:/workspace/tests --entrypoint /bin/bash hape-production -c 'mkdir playground && ./tests/run-all.sh cli'
 	@echo "All tests finished successfully!"
 
 test-code: reset-data ## Runs containers in dockerfiles/docker-compose.yml, Deletes hello-world project from previous tests, and run all code automated tests.

@@ -6,7 +6,7 @@ dockerfiles
 """.strip()
 
 ENV_EXAMPLE = """
-{{project_name_upper}}_MARIADB_HOST="127.0.0.1"
+{{project_name_upper}}_MARIADB_HOST="host.docker.internal"
 {{project_name_upper}}_MARIADB_USERNAME="{{project_name_snake_case}}_user"
 {{project_name_upper}}_MARIADB_PASSWORD="{{project_name_snake_case}}_password"
 {{project_name_upper}}_MARIADB_DATABASE="{{project_name_snake_case}}_db"
