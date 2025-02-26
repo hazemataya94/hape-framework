@@ -281,6 +281,20 @@ options:
 ```
 
 ## TODO for 0.3.1:
+### Use draft.json and draft.yaml to generate CRUD files
+The model schema is defined in migrations/json/draft.json, or migrations/yaml/draft.yaml, based on the passed flag.
+```sh
+$ hape crud generate --json/-j
+$ hape crud generate --yaml/-y
+```
+
+### Pass file.json or file.yaml which contains the model json or yaml schema to generate CRUD files
+```sh
+$ hape crud generate -j -f path/to/file.json
+$ hape crud generate -y -f path/to/file.yaml
+```
+
+
 ### Publish docker image to public repository
 ```sh
 $ make docker-build-prod
