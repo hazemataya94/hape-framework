@@ -3,15 +3,17 @@
 
 # HAPE Framework: Overview & Features
 
-## What is HAPE Framework?
-HAPE Framework is a lightweight and extensible Python framework designed to help platform engineers build customized CLI and API-driven platforms with minimal effort. It provides a structured way to develop orchestrators for managing infrastructure, CI/CD pipelines, cloud resources, and other platform engineering needs. 
+## Overview
 
-HAPE Framework is built around abstraction and automation, allowing engineers to define and manage resources like AWS, Kubernetes, GitHub, GitLab, ArgoCD, Prometheus, Grafana, HashiCorp Vault, and many others in a unified manner. It eliminates the need to manually integrate multiple packages for each tool, offering a streamlined way to build self-service developer portals and engineering platforms. 
-
-## Idea Origin
 Modern organizations manage hundreds of microservices, each with its own infrastructure, CI/CD, monitoring, and deployment configurations. This complexity increases the cognitive load on developers and slows down platform operations. 
 
 HAPE Framework aims to reduce this complexity by enabling platform engineers to build opinionated, yet flexible automation tools that simplify the work to build a platform. 
+
+HAPE Framework is a lightweight and extensible Python framework designed to help platform engineers build -with minimal effort- customized CLI and API-driven Internal Developer Platform, that is used to manage resources like AWS, Kubernetes, GitHub, GitLab, ArgoCD, Prometheus, Grafana, HashiCorp Vault, and many others, in a unified manner.
+
+HAPE Framework is a Platform Engineering Framework that is used to build Internal Developer Platforms (IDPs).
+
+## Idea Origin
 
 With HAPE, developers can interact with a CLI or API to create, deploy, and manage their services without diving into complex configurations. The framework also supports custom state management via databases, and integration with existing DevOps tools. 
 
