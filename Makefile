@@ -156,13 +156,14 @@ test-cli: ## Run a new python container, installs hape cli and runs all tests in
 	@echo "!!! Note: make sure to run '$$ make docker-build-prod' at least once before running this command"
 	@sleep 0.5
 	@echo "Running all tests in a fresh hape-production container..."
-	@docker run -it --rm --workdir /workspace -v $(shell pwd)/tests:/workspace/tests --entrypoint /bin/bash hape-production -c 'mkdir playground && ./tests/run-all.sh cli'
+	@echo "$$ time docker run -it --rm --workdir /workspace -v $(shell pwd)/tests:/workspace/tests --entrypoint /bin/bash hape-production -c 'mkdir playground && ./tests/run-all.sh cli'"
+	@time docker run -it --rm --workdir /workspace -v $(shell pwd)/tests:/workspace/tests --entrypoint /bin/bash hape-production -c 'mkdir playground && ./tests/run-all.sh cli'
 	@echo "All tests finished successfully!"
 
 test-code: reset-data ## Runs containers in dockerfiles/docker-compose.yml, Deletes hello-world project from previous tests, and run all code automated tests.
 	@echo "Running all tests in hape container defined in dockerfiles/docker-compose.yml"
-	@echo "$$ docker exec --workdir /workspace hape /bin/bash -c './tests/run-all.sh code'"
-	@docker exec --workdir /workspace hape /bin/bash -c './tests/run-all.sh code'
+	@echo "$$ time docker exec --workdir /workspace hape /bin/bash -c './tests/run-all.sh code'"
+	@time docker exec --workdir /workspace hape /bin/bash -c './tests/run-all.sh code'
 	@echo "All tests finished successfully!"
 
 reset-data: ## Deletes hello-world project from previous tests, drops and creates database hape_db.
