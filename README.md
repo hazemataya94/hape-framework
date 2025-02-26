@@ -294,7 +294,6 @@ $ hape crud generate -j -f path/to/file.json
 $ hape crud generate -y -f path/to/file.yaml
 ```
 
-
 ### Publish docker image to public repository
 ```sh
 $ make docker-build-prod
@@ -318,100 +317,12 @@ $ hape changelog generate # generate CHANGELOG.md from scratch
 $ hape changelog update # append missing versions to CHANGELOG.md
 ```
 
-### Create migrations/json/model_name.json and run CRUD Geneartion for file in migrations/schema_json/{*}.json if models/file.py doesn't exist
-```sh
-$ export MY_JSON_FILE="""
-{
-    "name": "deployment-cost"
-    "schema": {
-        "id": ["int","autoincrement"],
-        "service-name": ["string"],
-        "pod-cpu": ["string"],
-        "pod-ram": ["string"],
-        "autoscaling": ["bool"],
-        "min-replicas": ["int","nullable"],
-        "max-replicas": ["int","nullable"],
-        "current-replicas": ["int"],
-        "pod-cost": ["string"],
-        "number-of-pods": ["int"],
-        "total-cost": ["float"],
-        "cost-unit": ["string"]
-    }
-}
-"""
-$ echo "${MY_JSON_FILE}" > migrations/schema_json/deployment_cost.json
-$ hape crud generate
-$ hape deployment-cost --help
-usage: hape deployment-cost [-h] {save,get,get-all,delete,delete-all} ...
-
-positional arguments:
-  {save,get,get-all,delete,delete-all}
-    save                Save DeploymentCost object based on passed arguments or filters
-    get                 Get DeploymentCost object based on passed arguments or filters
-    get-all             Get-all DeploymentCost objects based on passed arguments or filters
-    delete              Delete DeploymentCost object based on passed arguments or filters
-    delete-all          Delete-all DeploymentCost objects based on passed arguments or filters
-
-options:
-  -h, --help            show this help message and exit
-```
-
-### Generate CHANGELOG.md
-```sh
-$ hape changelog generate
-$ echo "empty" > file.txt
-$ git add file.txt
-$ git commit -m "empty"
-$ git push
-$ make publish
-$ hape changelog generate # generate CHANGELOG.md from scratch
-$ hape changelog update # append missing versions to CHANGELOG.md
-```
-
-### Create code documentation in docs/user and docs/contributer directories and markdown files
+### Create code documentation as markdown files in docs/developer and docs/user directories
 ```sh
 $ hape docs generate
 ```
 
 ## Backlog:
-### Support Scalable Secure RESTful API
-```sh
-$ export MY_JSON_FILE="""
-{
-    "name": "deployment-cost"
-    "schema": {
-        "id": ["int","autoincrement"],
-        "service-name": ["string"],
-        "pod-cpu": ["string"],
-        "pod-ram": ["string"],
-        "autoscaling": ["bool"],
-        "min-replicas": ["int","nullable"],
-        "max-replicas": ["int","nullable"],
-        "current-replicas": ["int"],
-        "pod-cost": ["string"],
-        "number-of-pods": ["int"],
-        "total-cost": ["float"],
-        "cost-unit": ["string"]
-    }
-}
-"""
-$ echo "${MY_JSON_FILE}" > migrations/schema_json/deployment_cost.json
-$ hape crud generate
-$ hape deployment-cost --help
-usage: hape deployment-cost [-h] {save,get,get-all,delete,delete-all} ...
-
-positional arguments:
-  {save,get,get-all,delete,delete-all}
-    save                Save DeploymentCost object based on passed arguments or filters
-    get                 Get DeploymentCost object based on passed arguments or filters
-    get-all             Get-all DeploymentCost objects based on passed arguments or filters
-    delete              Delete DeploymentCost object based on passed arguments or filters
-    delete-all          Delete-all DeploymentCost objects based on passed arguments or filters
-
-options:
-  -h, --help            show this help message and exit
-```
-
 ### Support Scalable Secure RESTful API
 ```sh
 $ hape serve http --allow-cidr '0.0.0.0/0,10.0.1.0/24' --deny-cidr '10.200.0.0/24,0,10.0.1.0/24,10.107.0.0/24' --workers 2 --port 80
