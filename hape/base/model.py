@@ -1,4 +1,4 @@
-from hape.config import Config
+from hape.hape_config import HapeConfig
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 import json
@@ -43,7 +43,7 @@ class Model(Base):
 
     @classmethod
     def _get_session(cls) -> Session:
-        return Config.get_db_session()
+        return HapeConfig.get_db_session()
 
     def save(self):
         session = Model._get_session() 

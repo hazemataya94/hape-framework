@@ -33,7 +33,7 @@ class Init:
         self.logger.debug(f'Valid project name.')
 
     def _init_file(self, path: str, content: str):
-        self.logger.debug(f"_init_file(path: {path}, content: {content})")
+        self.logger.debug(f"_init_file(path: {path}, content)")
 
         if content:
             content = StringUtils.replace_name_case_placeholders(content, self.name, "project_name")
@@ -42,7 +42,7 @@ class Init:
         self.file_service.write_file(path, content)
 
     def _init_directory(self, root_path: str, dictionary: dict):
-        self.logger.debug(f"_init_directory(root_path: {root_path}, dictionary: {dictionary})")
+        self.logger.debug(f"_init_directory(root_path: {root_path}, dictionary)")
         for name, content in dictionary.items():
             if name == '{{project_name}}':
                 name = NamingUtils.convert_to_snake_case(self.name)

@@ -30,7 +30,7 @@ services:
     env_file:
       - ../.env
     environment:
-      HAPE_MARIADB_HOST: "host.docker.internal"
+      HAPE_MARIADB_HOST: "mariadb"
     networks:
       - host_network
 
@@ -56,7 +56,6 @@ services:
     container_name: phpmyadmin_dev
     restart: always
     environment:
-      PMA_HOST: host.docker.internal
       PMA_PORT: 3306
     ports:
       - "8080:80"

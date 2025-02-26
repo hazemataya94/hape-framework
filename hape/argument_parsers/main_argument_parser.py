@@ -4,6 +4,8 @@ from importlib.metadata import version
 from hape.argument_parsers.playground_argument_parser import PlaygroundArgumentParser
 from hape.argument_parsers.config_argument_parser import ConfigArgumentParser
 from hape.argument_parsers.git_argument_parser import GitArgumentParser
+from hape.argument_parsers.k8s_deployment_argument_parser import K8SDeploymentArgumentParser
+from hape.argument_parsers.k8s_deployment_cost_argument_parser import K8SDeploymentCostArgumentParser
 
 class MainArgumentParser:
 
@@ -21,7 +23,9 @@ class MainArgumentParser:
         PlaygroundArgumentParser().create_subparser(subparsers)
         ConfigArgumentParser().create_subparser(subparsers)
         GitArgumentParser().create_subparser(subparsers)
-
+        K8SDeploymentArgumentParser().create_subparser(subparsers)
+        K8SDeploymentCostArgumentParser().create_subparser(subparsers)
+        
         return parser
     
     def run_action(self, args):
@@ -32,6 +36,10 @@ class MainArgumentParser:
             ConfigArgumentParser().run_action(args)
         elif args.command == "git":
             GitArgumentParser().run_action(args)
+        elif args.command == "k8s-deployment":
+            K8SDeploymentArgumentParser().run_action(args)
+        elif args.command == "k8s-deployment-cost":
+            K8SDeploymentCostArgumentParser().run_action(args)
         else:
             self.logger.error(f"Invalid command {args.command}. Use `hape --help` for more details.")
             exit(1)

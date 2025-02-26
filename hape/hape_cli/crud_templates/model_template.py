@@ -8,6 +8,7 @@ class {{model_name_camel_case}}(Model):
     __tablename__ = '{{model_name_snake_case}}'
     
     {{model_columns}}
+    
     {{model_relationships}}
 
     def __init__(self, **kwargs):

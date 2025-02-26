@@ -13,7 +13,12 @@ class ModelArgumentParser(ABC):
     def __init__(self, base_model_class, controller_class):
         self._base_model_class = base_model_class
         self._base_model_name = base_model_class.__name__
-        self._base_model_command = ''.join(['-' + char.lower() if char.isupper() else char for char in base_model_class.__name__]).lstrip('-')
+        self._base_model_command = ''
+        for i in range(len(self._base_model_name)):
+            if self._base_model_name[i].isupper() and i != 0 and not self._base_model_name[i-1].isdigit():
+                self._base_model_command += '-' + self._base_model_name[i].lower()
+            else:
+                self._base_model_command += self._base_model_name[i].lower()
         self._base_model_columns = {
             column.name: self._sqlalchemy_type_map.get(type(column.type), str)
             for column in self._base_model_class.__table__.columns
@@ -31,6 +36,7 @@ class ModelArgumentParser(ABC):
         pass
     
     def create_subparser(self, subparsers):  
+        print(f"Creating subparser for {self._base_model_command}")
         base_model_parser = subparsers.add_parser(self._base_model_command, help=f"Commands to manage {self._base_model_name} base_model")
         self.base_model_subparser = base_model_parser.add_subparsers(dest="action")
 

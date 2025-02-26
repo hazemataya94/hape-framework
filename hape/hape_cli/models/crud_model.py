@@ -111,13 +111,13 @@ class Crud:
             for column_name, column_type_and_properties in columns.items():
                 crud_column_name = column_name
                 crud_column_type = list(column_type_and_properties.keys())[0]
-                crud_column_properties = list(column_type_and_properties.values())[0]
-            crud_column = CrudColumn(
-                crud_column_name,
-                crud_column_type,
-                crud_column_properties
-            )
-            self.crud_column_parsers[model_name].append(CrudColumnParser(crud_column))
+                crud_column_properties = list(column_type_and_properties.values())[0]    
+                crud_column = CrudColumn(
+                    crud_column_name,
+                    crud_column_type,
+                    crud_column_properties
+                )
+                self.crud_column_parsers[model_name].append(CrudColumnParser(crud_column))
                 
     def validate(self):
         self.logger.debug(f"validate()")
@@ -131,7 +131,6 @@ class Crud:
     
     def validate_schemas(self):
         self.logger.debug(f"validate_schemas()")
-        self.logger.debug(f"self.schemas: {self.schemas}")
         if not self.schemas:
             self.logger.error("Schema is required")
             exit(1)
@@ -194,7 +193,7 @@ class Crud:
             return ""
 
         parsed_orm_columns = ""
-        splitter = ",\n    "
+        splitter = "\n    "
         for model_name in self.model_names:
             for crud_column_parser in self.crud_column_parsers[model_name]:
                 parsed_orm_columns += crud_column_parser.parsed_orm_column + splitter
@@ -211,8 +210,9 @@ class Crud:
         splitter = ",\n    "
         for model_name in self.model_names:
             for crud_column_parser in self.crud_column_parsers[model_name]:
-                parsed_orm_relationships += crud_column_parser.orm_relationships + splitter
-                
+                if crud_column_parser.orm_relationships:
+                    parsed_orm_relationships += crud_column_parser.orm_relationships + splitter
+        
         return parsed_orm_relationships.rstrip(splitter)
     
     def _generate_content_model(self, model_name):
@@ -377,6 +377,72 @@ class Crud:
         
         self.argument_parser_generated[model_name] = True
     
+    def _update_main_argument_parser(self):
+        self.logger.debug(f"_update_main_argument_parser()")
+        
+        main_argument_parser_path = os.path.join(self.source_code_path, "argument_parsers", "main_argument_parser.py")
+        main_argument_parser_content = self.file_service.read_file(main_argument_parser_path)
+        for model_name in self.model_names:
+            if model_name == "test-delete-model":
+                continue
+            
+            argument_parser_class_name = NamingUtils.convert_to_camel_case(model_name) + "ArgumentParser"
+            
+            added_import_line = f"from {NamingUtils.convert_to_snake_case(self.project_name)}.argument_parsers.{self.model_names_snake_case[model_name]}_argument_parser import {argument_parser_class_name}"
+            
+            added_create_subparser_line = f"        {argument_parser_class_name}().create_subparser(subparsers)"
+            
+            added_run_action_condition_line = f"        elif args.command == \"{model_name}\":"
+            added_run_action_line = f"            {argument_parser_class_name}().run_action(args)"
+            
+            main_argument_parser_lines = main_argument_parser_content.split("\n")
+            last_import_index = None
+            for i, line in enumerate(main_argument_parser_lines):
+                if line.startswith("from") and "import" in line:
+                    last_import_index = i
+                if added_import_line in line:
+                    last_import_index = -1
+                    break
+            if last_import_index is None:
+                self.logger.error(f"Error: No import statement found in {main_argument_parser_path}")
+                exit(1)
+            if last_import_index > 0:
+                main_argument_parser_lines.insert(last_import_index + 1, added_import_line)
+                main_argument_parser_content = "\n".join(main_argument_parser_lines)
+                
+            main_argument_parser_lines = main_argument_parser_content.split("\n")
+            last_create_subparser_index = None
+            for i, line in enumerate(main_argument_parser_lines):
+                if ".create_subparser(subparsers)" in line:
+                    last_create_subparser_index = i
+                if added_create_subparser_line in line:
+                    last_create_subparser_index = -1
+                    break                
+            if last_create_subparser_index is None:
+                self.logger.error(f"Error: No create_subparser method found in {main_argument_parser_path}")
+                exit(1)
+            if last_create_subparser_index > 0:
+                main_argument_parser_lines.insert(last_create_subparser_index + 1, added_create_subparser_line)
+                main_argument_parser_content = "\n".join(main_argument_parser_lines)
+               
+            main_argument_parser_lines = main_argument_parser_content.split("\n") 
+            last_run_action_index = None
+            for i, line in enumerate(main_argument_parser_lines):
+                if ".run_action(args)" in line:
+                    last_run_action_index = i
+                if added_run_action_condition_line in line:
+                    last_run_action_index = -1
+                    break
+            if last_run_action_index is None:
+                self.logger.error(f"Error: No run_action method found in {main_argument_parser_path}")
+                exit(1)
+            if last_run_action_index > 0:
+                main_argument_parser_lines.insert(last_run_action_index + 1, added_run_action_condition_line)
+                main_argument_parser_lines.insert(last_run_action_index + 2, added_run_action_line)
+                main_argument_parser_content = "\n".join(main_argument_parser_lines)
+                
+            self.file_service.write_file(main_argument_parser_path, main_argument_parser_content)
+    
     def generate(self):
         self.logger.debug(f"generate()")
         for model_name in self.model_names:
@@ -398,10 +464,24 @@ class Crud:
         
         try:
             self._run_migrations()
+            self.logger.info("Migrations ran successfully!")
         except Exception as e:
             self.logger.error(f"Error: {e}")
             print(f"Error: {e}")
             exit(1)
+         
+        self.logger.info("CRUD generation completed successfully!")
+        print("---")
+        print(f"Updating main argument parser to add {self.model_names} as arguments")
+        self._update_main_argument_parser()
+        print("Main argument parser has been updated successfully!")
+        print("---")
+        print("CRUD generation completed successfully!")
+        print("---")
+        print("The following commands are now available:")
+        for model_name in self.model_names:    
+            print(f"{self.project_name} {model_name} --help")
+        print("---")
             
     def delete(self):
         self.logger.debug(f"delete()")
@@ -417,10 +497,10 @@ class Crud:
                 print(f"Deleted: {self.argument_parser_paths[model_name]}")
         
         print(f"All model files -except the migration file- have been deleted successfully!")
-        print( "--------------------------------")
+        print( "---")
         print(f"Migration file location: {os.path.dirname(self.migration_path)}")
         print(f"Make sure to modify the migration file to stop the model table creation, or delete the migration file manually if you don't want it anymore.")
-    
+        
     def delete_migration(self):
         self.logger.debug(f"delete_migration()")
         if self.file_service.file_exists(self.migration_path):
