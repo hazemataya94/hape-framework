@@ -13,10 +13,6 @@ HAPE Framework is a lightweight and extensible Python framework designed to help
 
 HAPE Framework is a Platform Engineering Framework that is used to build Internal Developer Platforms (IDPs).
 
-## Idea Origin
-
-With HAPE, developers can interact with a CLI or API to create, deploy, and manage their services without diving into complex configurations. The framework also supports custom state management via databases, and integration with existing DevOps tools. 
-
 ## Done Features
 ### Automate everyday commands
 ```sh
