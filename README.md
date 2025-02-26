@@ -22,6 +22,7 @@ $ make list
 build                Build the package in dist. Runs: bump-version.
 bump-version         Bump the patch version in setup.py.
 clean                Clean up build, cache, playground and zip files.
+docker-build-prod    Build the production Docker image.
 docker-down          Stop Docker services.
 docker-exec          Execute a shell in the HAPE Docker container.
 docker-ps            List running Docker services.
@@ -38,7 +39,7 @@ list                 Show available commands.
 migration-create     Create a new database migration.
 migration-run        Apply the latest database migrations.
 play                 Run hape.playground Playground.paly() and print the execution time.
-publish              Publish package to public PyPI, commit, tag, and push the version. Runs: test-code,build.
+publish              Runs test-code, build, and publish package to public PyPI. Commit, tag, and push the version. Runs test-cli to test the published package and make sure it works.
 reset-data           Deletes hello-world project from previous tests, drops and creates database hape_db.
 reset-local          Deletes hello-world project from previous tests, drops and creates database hape_db, runs migrations, and runs the playground.
 source-env           Print export statements for the environment variables from .env file.
@@ -94,9 +95,14 @@ Running all tests in hape container defined in dockerfiles/docker-compose.yml
 =============================================================
 Running all code tests
 ...
-Deleted: hello_world/argument_parsers/test_model_argument_parser.py
+Deleted: hello_world/controllers/test_delete_model_controller.py
+Deleted: hello_world/argument_parsers/test_delete_model_argument_parser.py
 All model files -except the migration file- have been deleted successfully!
+---
+Migration file location: hello_world/migrations/versions
+Make sure to modify the migration file to stop the model table creation, or delete the migration file manually if you don't want it anymore.
 =============================================================
+       14.58 real         0.04 user         0.03 sys
 All tests finished successfully!
 ```
 
