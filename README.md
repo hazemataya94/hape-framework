@@ -287,7 +287,8 @@ $ make docker-build-prod
 $ make docker-push
 ```
 
-### Add publish-pre-actions, publish-post-actions, and publish-cli to Makefile and modify publish command to run publish-pre-actions, publish-cli, publish-docker, and publish-post-actions
+### Create a Publish Workflow using Makefile Actions
+Add publish-pre-actions, publish-post-actions, publish-cli actions to Makefile and modify publish workflow.
 ```sh
 $ make publish
 Running:
@@ -297,7 +298,7 @@ Running:
 - publish-post-actions
 ```
 
-### 
+### Generate CHANGELOG.md
 ```sh
 $ hape changelog generate # generate CHANGELOG.md from scratch
 $ hape changelog update # append missing versions to CHANGELOG.md
