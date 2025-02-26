@@ -7,11 +7,9 @@
 
 Modern organizations manage hundreds of microservices, each with its own infrastructure, CI/CD, monitoring, and deployment configurations. This complexity increases the cognitive load on developers and slows down development operations. 
 
-HAPE Framework aims to reduce this complexity by enabling platform engineers to build opinionated, yet flexible automation tools that simplify the work to build a platform. 
+HAPE Framework aims to reduce this complexity by enabling platform engineers to build automation tools that simplify the work. These automation tools are reffered to as Internal Developer Platforms (IDPs).
 
-HAPE Framework is a lightweight and extensible Python framework designed to help platform engineers build -with minimal effort- customized CLI and API-driven Internal Developer Platform, that is used to manage resources like AWS, Kubernetes, GitHub, GitLab, ArgoCD, Prometheus, Grafana, HashiCorp Vault, and many others, in a unified manner.
-
-HAPE Framework is a Platform Engineering Framework that is used to build Internal Developer Platforms (IDPs).
+HAPE Framework is a lightweight Python framework designed to help platform engineers to build customized CLI and API-driven Internal Developer Platforms (IDPs), that are used to manage resources like AWS, Kubernetes, GitHub, GitLab, ArgoCD, Prometheus, Grafana, HashiCorp Vault, and many others, in a centralized and unified manner.
 
 ## Done Features
 ### Automate everyday commands
