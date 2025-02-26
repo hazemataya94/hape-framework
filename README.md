@@ -7,7 +7,9 @@
 
 Modern organizations manage hundreds of microservices, each with its own infrastructure, CI/CD, monitoring, and deployment configurations. This complexity increases the cognitive load on developers and slows down development operations. 
 
-HAPE Framework aims to reduce this complexity by enabling platform engineers to build automation tools to simplify the work. These automation tools are reffered to as Internal Developer Platforms (IDPs).
+HAPE Framework aims to reduce this complexity by enabling platform engineers to build automation tools to simplify the work, and to manage resources like AWS, Kubernetes, GitHub, GitLab, ArgoCD, Prometheus, Grafana, HashiCorp Vault, and many others, in a centralized and unified manner.
+
+These automation tools are reffered to as Internal Developer Platforms (IDPs).
 
 ## Done Features
 ### Automate everyday commands
