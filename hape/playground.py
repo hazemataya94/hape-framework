@@ -7,9 +7,6 @@ from hape.services.file_service import FileService
 from hape.hape_cli.models.crud_model import Crud
 from hape.hape_cli.models.json_model import Json
 from hape.hape_cli.models.yaml_model import Yaml
-from hape.models.k8s_deployment_model import K8SDeployment
-from hape.models.k8s_deployment_cost_model import K8SDeploymentCost
-
 
 class Playground:
 
@@ -52,49 +49,51 @@ class Playground:
             schemas={   
             "k8s-deployment": {
                 "id": {"int": ["primary", "autoincrement"]},
-                "service-name": {"string": []},
-                "pod-cpu": {"string": []},
-                "pod-ram": {"string": []},
-                "autoscaling": {"bool": []},
+                "service-name": {"string": ["required"]},
+                "pod-cpu": {"string": ["required"]},
+                "pod-ram": {"string": ["required"]},
+                "autoscaling": {"bool": ["required"]},
                 "min-replicas": {"int": ["nullable"]},
                 "max-replicas": {"int": ["nullable"]},
-                "current-replicas": {"int": []},
+                "current-replicas": {"int": ["required"]},
             },
             "k8s-deployment-cost": {
                 "id": {"int": ["primary", "autoincrement"]},
                 "k8s-deployment-id": {"int": ["required", "foreign-key(k8s-deployment.id, on-delete=cascade)"]},
-                "pod-cost": {"string": []},
-                "number-of-pods": {"int": []},
-                "total-cost": {"float": []}
+                "pod-cost": {"string": ["required"]},
+                "number-of-pods": {"int": ["required"]},
+                "total-cost": {"float": ["required"]}
                 }
             }
         ).generate()
 
-    def play_with_k8s_deployment(self):
-        k8s_deployment = K8SDeployment(
-            service_name="test",
-            pod_cpu="1",
-            pod_ram="1",
-            autoscaling=True,
-            min_replicas=1,
-            max_replicas=10,
-            current_replicas=1
-        )
-        print(k8s_deployment.json())
-        print(k8s_deployment.validate())
-        exit()
-        k8s_deployment.save()
-        
-        k8s_deployment_cost = K8SDeploymentCost(
-            k8s_deployment_id=k8s_deployment.id,
-            pod_cost="100",
-            number_of_pods=1,
-            total_cost=100
-        )
-        k8s_deployment_cost.save()
-        
-        print(K8SDeployment.list_to_json(K8SDeployment.get_all()))
-        print(K8SDeploymentCost.list_to_json(K8SDeploymentCost.get_all()))
+        # def play_with_k8s_deployment(self):
+        #     k8s_deployment = K8SDeployment(
+        #         service_name="test",
+        #         pod_cpu="1",
+        #         pod_ram="1",
+        #         autoscaling=True,
+        #         min_replicas=1,
+        #         max_replicas=10,
+        #         current_replicas=1
+        #     )
+        #     print(k8s_deployment.json())
+        #     print(k8s_deployment.validate())
+        #     exit()
+        #     k8s_deployment.save()
+            
+        #     k8s_deployment_cost = K8SDeploymentCost(
+        #         k8s_deployment_id=k8s_deployment.id,
+        #         pod_cost="100",
+        #         number_of_pods=1,
+        #         total_cost=100
+        #     )
+        #     k8s_deployment_cost.save()
+            
+        #     print(K8SDeployment.list_to_json(K8SDeployment.get_all()))
+        #     print(K8SDeploymentCost.list_to_json(K8SDeploymentCost.get_all()))
+
 
     def play(self):
-        self.play_with_k8s_deployment()
+        HapeConfig.reset_db()
+        self.play_with_crud()

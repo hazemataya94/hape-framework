@@ -27,16 +27,20 @@ class HapeConfig:
             Config._get_env_value(variable)
 
     @staticmethod
-    def get_db_url():
-        Config.logger.debug(f"get_db_url()")
-        return f"mysql+pymysql://{HapeConfig.get_mariadb_username()}:{HapeConfig.get_mariadb_password()}@{HapeConfig.get_mariadb_host()}/{HapeConfig.get_mariadb_database()}"
+    def get_db_url(with_database=True):
+        Config.logger.debug(f"get_db_url(with_database={with_database})")
+        db_url = f"mysql+pymysql://{HapeConfig.get_mariadb_username()}:{HapeConfig.get_mariadb_password()}@{HapeConfig.get_mariadb_host()}"
+        if with_database:
+            db_url += f"/{HapeConfig.get_mariadb_database()}"
+        return db_url
+    
 
     @staticmethod
-    def get_db_session() -> sessionmaker:
+    def get_db_session(with_database=True) -> sessionmaker:
         Config.logger.debug(f"get_db_url()")
         if not HapeConfig._db_session:
             try:
-                DATABASE_URL = HapeConfig.get_db_url()
+                DATABASE_URL = HapeConfig.get_db_url(with_database)
                 engine = create_engine(DATABASE_URL, echo=True)
                 with engine.connect() as connection:
                     connection.execute(text("SELECT 1"))
@@ -48,7 +52,27 @@ class HapeConfig:
                 raise
 
         return HapeConfig._db_session()
+    
+    @staticmethod
+    def drop_db():
+        Config.logger.debug(f"drop_db()")
+        engine = create_engine(HapeConfig.get_db_url(with_database=False), echo=True)
+        with engine.connect() as connection:
+            connection.execute(text(f"DROP DATABASE IF EXISTS {HapeConfig.get_mariadb_database()}"))
 
+    @staticmethod
+    def create_db():
+        Config.logger.debug(f"create_db()")
+        engine = create_engine(HapeConfig.get_db_url(with_database=False), echo=True)
+        with engine.connect() as connection:
+            connection.execute(text(f"CREATE DATABASE IF NOT EXISTS {HapeConfig.get_mariadb_database()}"))
+
+    @staticmethod
+    def reset_db():
+        Config.logger.debug(f"reset_db()")
+        HapeConfig.drop_db()
+        HapeConfig.create_db()
+            
     @staticmethod
     def get_gitlab_token():
         Config.logger.debug(f"get_gitlab_token()")

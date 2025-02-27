@@ -186,32 +186,30 @@ class Crud:
                         self.logger.error(f"Invalid column property '{column_property}'. Must be one of {CrudModelSchema.valid_properties}")
                         exit(1)
     
-    def _get_orm_columns(self):
-        self.logger.debug(f"_get_orm_columns()")
+    def _get_orm_columns(self, model_name):
+        self.logger.debug(f"_get_orm_columns(model_name: {model_name})")
         if not self.schemas:
             self.logger.warning(f"Schema is required")
             return ""
 
         parsed_orm_columns = ""
         splitter = "\n    "
-        for model_name in self.model_names:
-            for crud_column_parser in self.crud_column_parsers[model_name]:
-                parsed_orm_columns += crud_column_parser.parsed_orm_column + splitter
+        for crud_column_parser in self.crud_column_parsers[model_name]:
+            parsed_orm_columns += crud_column_parser.parsed_orm_column + splitter
 
         return parsed_orm_columns.rstrip(splitter)
     
-    def _get_orm_relationships(self):
-        self.logger.debug(f"_get_orm_relationships()")
+    def _get_orm_relationships(self, model_name):
+        self.logger.debug(f"_get_orm_relationships(model_name: {model_name})")
         if not self.schemas:
             self.logger.warning("Schema is required")
             return ""
         
         parsed_orm_relationships = ""
         splitter = ",\n    "
-        for model_name in self.model_names:
-            for crud_column_parser in self.crud_column_parsers[model_name]:
-                if crud_column_parser.orm_relationships:
-                    parsed_orm_relationships += crud_column_parser.orm_relationships + splitter
+        for crud_column_parser in self.crud_column_parsers[model_name]:
+            if crud_column_parser.orm_relationships:
+                parsed_orm_relationships += crud_column_parser.orm_relationships + splitter
         
         return parsed_orm_relationships.rstrip(splitter)
     
@@ -220,11 +218,20 @@ class Crud:
         if self.file_service.file_exists(self.model_paths[model_name]):
             self.logger.warning(f"Model file already exists at {self.model_paths[model_name]}")
             return
-    
+
+        orm_columns = self._get_orm_columns(model_name)
+        orm_relationships = self._get_orm_relationships(model_name)
+        if orm_relationships:
+            orm_columns = orm_columns + "\n"
+
         content = StringUtils.replace_name_case_placeholders(MODEL_TEMPLATE, self.source_code_path, "project_name")
         content = StringUtils.replace_name_case_placeholders(content, model_name, "model_name")
-        content = content.replace("{{model_columns}}", self._get_orm_columns())
-        content = content.replace("{{model_relationships}}", self._get_orm_relationships())
+        content = content.replace("{{model_columns}}", orm_columns)
+        if orm_relationships:
+            content = content.replace("{{model_relationships}}", orm_relationships + "\n")
+        else:
+            content = content.replace("{{model_relationships}}", "")
+        
         self.model_content = content
     
         self.logger.info(f"Generating: {self.model_paths[model_name]}")
@@ -480,7 +487,7 @@ class Crud:
         print("---")
         print("The following commands are now available:")
         for model_name in self.model_names:    
-            print(f"{self.project_name} {model_name} --help")
+            print(f"{self.project_name} {model_name} --help | python main_code.py {model_name} --help")
         print("---")
             
     def delete(self):

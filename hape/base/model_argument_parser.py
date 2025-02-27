@@ -1,16 +1,23 @@
+from hape.logging import Logging
 from abc import ABC, abstractmethod
-from sqlalchemy import Integer, String, Float, Boolean
+from datetime import datetime
+from sqlalchemy import Integer, String, Float, Boolean, Date, DateTime, TIMESTAMP, Text
 
 class ModelArgumentParser(ABC):
 
     _sqlalchemy_type_map = {
-        Integer: int,
-        String: str,
-        Float: float,
-        Boolean: lambda x: x.lower() in ('true', '1', 'yes')
+        Integer: 'int',
+        String: 'str',
+        Float: 'float',
+        Boolean: 'boolean [0, 1]',
+        Date: 'date [YYYY-MM-DD]',
+        DateTime: 'datetime [YYYY-MM-DD HH:MM:SS]',
+        TIMESTAMP: 'timestamp [YYYY-MM-DD HH:MM:SS]',
+        Text: 'text'
     }
 
     def __init__(self, base_model_class, controller_class):
+        self.logger = Logging.get_logger('hape.base.model_argument_parser')
         self._base_model_class = base_model_class
         self._base_model_name = base_model_class.__name__
         self._base_model_command = ''
@@ -20,8 +27,10 @@ class ModelArgumentParser(ABC):
             else:
                 self._base_model_command += self._base_model_name[i].lower()
         self._base_model_columns = {
-            column.name: self._sqlalchemy_type_map.get(type(column.type), str)
-            for column in self._base_model_class.__table__.columns
+            column.name: {
+                "type": self._sqlalchemy_type_map.get(type(column.type), str),
+                "nullable": column.nullable
+            } for column in self._base_model_class.__table__.columns
         }
         self._controller = controller_class()
         self.base_model_subparser = None
@@ -35,23 +44,30 @@ class ModelArgumentParser(ABC):
     def extend_actions(self):
         pass
     
-    def create_subparser(self, subparsers):  
-        print(f"Creating subparser for {self._base_model_command}")
+    def create_subparser(self, subparsers):
+        self.logger.info(f"Creating subparser for {self._base_model_command}")
         base_model_parser = subparsers.add_parser(self._base_model_command, help=f"Commands to manage {self._base_model_name} base_model")
         self.base_model_subparser = base_model_parser.add_subparsers(dest="action")
 
         for action in ["save", "get", "get-all", "delete", "delete-all"]:
             object_word = "objects" if "-all" in action else "object"
-            parser = self.base_model_subparser.add_parser(action, help=f"{action.capitalize()} {self._base_model_name} {object_word} based on passed arguments or filters")
+            action_parser = self.base_model_subparser.add_parser(action, help=f"{action.capitalize()} {self._base_model_name} {object_word} based on passed arguments or filters")
             
-            for column_name, column_type in self._base_model_columns.items():
+            for column_name, column_type_and_nullable in self._base_model_columns.items():
+                if action == "save" and column_name == "id":
+                    continue
                 column_name_dashes = column_name.replace('_', '-')
-                parser.add_argument(f"--{column_name_dashes}", required=False, help=f"Value for {column_name_dashes} type {column_type.__name__}")
+
+                required_value = not column_type_and_nullable["nullable"]
+                required_text = "[REQUIRED] " if required_value else ""
+                
+                help_text = f"{required_text}Value for {column_name_dashes} type {column_type_and_nullable['type']}"
+
+                action_parser.add_argument(f"--{column_name_dashes}", required=required_value, help=help_text)
 
         self.extend_subparser()
     
     def run_action(self, args):
-        
         self.args = args
         if args.command != self._base_model_command:
             return

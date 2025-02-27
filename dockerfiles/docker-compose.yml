@@ -38,6 +38,7 @@ services:
     restart: always
     environment:
       PMA_PORT: 3306
+      PMA_HOST: mariadb
     ports:
       - "8080:80"
     networks:
