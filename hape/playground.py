@@ -80,6 +80,9 @@ class Playground:
             max_replicas=10,
             current_replicas=1
         )
+        print(k8s_deployment.json())
+        print(k8s_deployment.validate())
+        exit()
         k8s_deployment.save()
         
         k8s_deployment_cost = K8SDeploymentCost(
