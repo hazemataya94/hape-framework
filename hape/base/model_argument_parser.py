@@ -6,14 +6,14 @@ from sqlalchemy import Integer, String, Float, Boolean, Date, DateTime, TIMESTAM
 class ModelArgumentParser(ABC):
 
     _sqlalchemy_type_map = {
-        Integer: 'int',
-        String: 'str',
-        Float: 'float',
-        Boolean: 'boolean [0, 1]',
-        Date: 'date [YYYY-MM-DD]',
-        DateTime: 'datetime [YYYY-MM-DD HH:MM:SS]',
-        TIMESTAMP: 'timestamp [YYYY-MM-DD HH:MM:SS]',
-        Text: 'text'
+        Integer: int,
+        String: str,
+        Float: float,
+        Boolean: bool,
+        Date: datetime.date,
+        DateTime: datetime,
+        TIMESTAMP: datetime,
+        Text: str
     }
 
     def __init__(self, base_model_class, controller_class):
@@ -54,12 +54,15 @@ class ModelArgumentParser(ABC):
             action_parser = self.base_model_subparser.add_parser(action, help=f"{action.capitalize()} {self._base_model_name} {object_word} based on passed arguments or filters")
             
             for column_name, column_type_and_nullable in self._base_model_columns.items():
-                if action == "save" and column_name == "id":
-                    continue
                 column_name_dashes = column_name.replace('_', '-')
-
-                required_value = not column_type_and_nullable["nullable"]
-                required_text = "[REQUIRED] " if required_value else ""
+                if action == "save":
+                    if column_name == "id":
+                        continue
+                    required_value = not column_type_and_nullable["nullable"]
+                    required_text = "[REQUIRED] " if required_value else ""
+                else:
+                    required_value = False
+                    required_text = ""
                 
                 help_text = f"{required_text}Value for {column_name_dashes} type {column_type_and_nullable['type']}"
 
@@ -73,8 +76,9 @@ class ModelArgumentParser(ABC):
             return
         
         filters = {}
-        for column_name, column_type in self._base_model_columns.items():
+        for column_name, column_type_and_nullable in self._base_model_columns.items():
             if hasattr(args, column_name) and getattr(args, column_name):
+                column_type = column_type_and_nullable["type"]
                 try:
                     filters[column_name] = column_type(getattr(args, column_name))
                 except ValueError as e:
