@@ -98,7 +98,7 @@ All model files -except the migration file- have been deleted successfully!
 Migration file location: hello_world/migrations/versions
 Make sure to modify the migration file to stop the model table creation, or delete the migration file manually if you don't want it anymore.
 =============================================================
-       14.58 real         0.04 user         0.03 sys
+        6.62 real         0.01 user         0.02 sys
 All tests finished successfully!
 ```
 
