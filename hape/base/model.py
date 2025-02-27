@@ -1,4 +1,5 @@
 from hape.hape_config import HapeConfig
+from hape.logging import Logging
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 import json
@@ -11,8 +12,14 @@ class Model(Base):
     __required_fields = {}
     __field_types = {}
 
+    logger = Logging.get_logger('hape.base.model')
+
+    def __init__(self, **kwargs):
+        self.logger = Logging.get_logger('hape.base.model')
+
     @classmethod
     def initialize_from_sqlalchemy(cls, sqlalchemy_base_model):
+        cls.logger.debug(f"initialize_from_sqlalchemy({sqlalchemy_base_model})")
         cls.__required_fields = {
             column.name: not column.nullable for column in sqlalchemy_base_model.__table__.columns
         }
@@ -21,6 +28,7 @@ class Model(Base):
         }
     
     def validate(self):
+        self.logger.debug(f"validate()")
         for field, is_required in self.__required_fields.items():
             if is_required and field not in self.__dict__ or self.__dict__[field] is None:
                 if field not in ['id', 'created_at']:
@@ -31,21 +39,22 @@ class Model(Base):
                 return False
         return True
     
-    def to_dict(self):
+    def dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
-    def json(self):
-        return json.dumps(self.to_dict(), indent=4)
+    def json(self, pretty=True):
+        return json.dumps(self.dict(), indent=4) if pretty else json.dumps(self.dict())
     
     @classmethod
-    def list_to_json(cls, objects):
-        return json.dumps([obj.to_dict() for obj in objects], indent=4)
+    def list_to_json(cls, objects, pretty=True):
+        return json.dumps([obj.dict() for obj in objects], indent=4) if pretty else json.dumps([obj.dict() for obj in objects])
 
     @classmethod
     def _get_session(cls) -> Session:
         return HapeConfig.get_db_session()
 
     def save(self):
+        self.logger.debug(f"save({self.json(pretty=False)})")
         session = Model._get_session() 
         exit_status = True
         try:
@@ -63,6 +72,7 @@ class Model(Base):
 
     @classmethod
     def get(cls, **filters):
+        cls.logger.debug(f"get({filters})")
         session = cls._get_session()
         try:
             query = session.query(cls)
@@ -79,6 +89,7 @@ class Model(Base):
 
     @classmethod
     def get_all(cls, **filters):
+        cls.logger.debug(f"get_all({filters})")
         session = cls._get_session()
         try:
             query = session.query(cls)
@@ -94,6 +105,7 @@ class Model(Base):
             session.close()
 
     def delete(self):
+        self.logger.debug(f"delete()")
         session = Model._get_session()
         try:
             session.delete(self)
@@ -105,6 +117,7 @@ class Model(Base):
 
     @classmethod
     def delete_all(cls, **filters):
+        cls.logger.debug(f"delete_all({filters})")
         session = cls._get_session()
         try:
             query = session.query(cls)

@@ -45,7 +45,7 @@ class ModelArgumentParser(ABC):
         pass
     
     def create_subparser(self, subparsers):
-        self.logger.info(f"Creating subparser for {self._base_model_command}")
+        self.logger.debug(f"create_subparser(subparsers)")
         base_model_parser = subparsers.add_parser(self._base_model_command, help=f"Commands to manage {self._base_model_name} base_model")
         self.base_model_subparser = base_model_parser.add_subparsers(dest="action")
 
@@ -71,6 +71,7 @@ class ModelArgumentParser(ABC):
         self.extend_subparser()
     
     def run_action(self, args):
+        self.logger.debug(f"run_action(args)")
         self.args = args
         if args.command != self._base_model_command:
             return
@@ -86,8 +87,6 @@ class ModelArgumentParser(ABC):
         
         if args.action == "save":
             base_model = self._base_model_class(**filters)
-            if not base_model.validate():
-                raise ValueError("Model validation failed.")
             self._controller.save(base_model)
             print(base_model.json())
         

@@ -5,6 +5,7 @@ from hape.base.model import Model
 
 class K8SDeployment(Model):
     __tablename__ = 'k8s_deployment'
+    logger = Logging.get_logger('hape.models.k8s_deployment')
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     service_name = Column(String(255), nullable=False)
@@ -16,8 +17,8 @@ class K8SDeployment(Model):
     current_replicas = Column(Integer, nullable=False)
     
     def __init__(self, **kwargs):
-        self.logger = Logging.get_logger('{{project_name}}.k8s_deployment.K8SDeployment')
         filtered_kwargs = {key: kwargs[key] for key in self.__table__.columns.keys() if key in kwargs}
         super().__init__(**filtered_kwargs)
         for key, value in filtered_kwargs.items():
             setattr(self, key, value)
+        self.logger = Logging.get_logger('hape.models.k8s_deployment')
