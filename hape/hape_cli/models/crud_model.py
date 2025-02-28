@@ -1,11 +1,12 @@
 import re
 import os
-from typing import List
+from typing import List, Literal
 from alembic import command
 from alembic.config import Config
 from alembic.script import ScriptDirectory
 from hape.logging import Logging
 from hape.services.file_service import FileService
+from hape.hape_cli.enums.crud_actions import CrudActionsEnum
 from hape.hape_cli.crud_templates.argument_parser_template import ARGUMENT_PARSER_TEMPLATE
 from hape.hape_cli.crud_templates.controller_template import CONTROLLER_TEMPLATE
 from hape.hape_cli.crud_templates.migration_template import MIGRATION_TEMPLATE, MIGRATION_MODEL_TABLE_CREATION_TEMPLATE, MIGRATION_MODEL_TABLE_DROP_TEMPLATE
@@ -21,6 +22,7 @@ class Crud:
     def __init__(self, project_name: str, model_name: str = None, schemas: dict[str, dict] = None):
         self.logger = Logging.get_logger('hape.hape_cli.models.crud_model')
         self.file_service = FileService()
+        self.action = CrudActionsEnum.GENERATE
         
         self.model_count = 0
         if schemas:
@@ -383,70 +385,78 @@ class Crud:
         self.file_service.write_file(self.argument_parser_paths[model_name], self.argument_parser_content)
         
         self.argument_parser_generated[model_name] = True
-    
+
     def _update_main_argument_parser(self, model_name):
         self.logger.debug(f"_update_main_argument_parser(model_name: {model_name})")
         if model_name == "test-delete-model":
             return
         
+        print(f"model_name: {model_name}")
+        print(f"self.action: {self.action}")
+
         main_argument_parser_path = os.path.join(self.source_code_path, "argument_parsers", "main_argument_parser.py")
         main_argument_parser_content = self.file_service.read_file(main_argument_parser_path)
         
         argument_parser_class_name = NamingUtils.convert_to_camel_case(model_name) + "ArgumentParser"
-        
         added_import_line = f"from {NamingUtils.convert_to_snake_case(self.project_name)}.argument_parsers.{self.model_names_snake_case[model_name]}_argument_parser import {argument_parser_class_name}"
-        
-        added_create_subparser_line = f"        {argument_parser_class_name}().create_subparser(subparsers)"
-        
+        added_create_subparser_line = f"        {argument_parser_class_name}().create_subparser(subparsers)"        
         added_run_action_condition_line = f"        elif args.command == \"{model_name}\":"
         added_run_action_line = f"            {argument_parser_class_name}().run_action(args)"
         
+        #### Logic starts: Go through the lines of the main_argument_parser.py file, and modify the lines based on the action
         main_argument_parser_lines = main_argument_parser_content.split("\n")
+        
+        added_import_index = None
+        added_create_subparser_index = None
+        added_run_action_index = None
         last_import_index = None
+        last_create_subparser_index = None
+        last_run_action_index = None
         for i, line in enumerate(main_argument_parser_lines):
             if line.startswith("from") and "import" in line:
                 last_import_index = i
             if added_import_line in line:
-                last_import_index = -1
-                break
-        if last_import_index is None:
-            self.logger.error(f"Error: No import statement found in {main_argument_parser_path}")
-            exit(1)
-        if last_import_index > 0:
-            main_argument_parser_lines.insert(last_import_index + 1, added_import_line)
-            main_argument_parser_content = "\n".join(main_argument_parser_lines)
-            
-        main_argument_parser_lines = main_argument_parser_content.split("\n")
-        last_create_subparser_index = None
-        for i, line in enumerate(main_argument_parser_lines):
-            if ".create_subparser(subparsers)" in line:
-                last_create_subparser_index = i
-            if added_create_subparser_line in line:
-                last_create_subparser_index = -1
-                break                
-        if last_create_subparser_index is None:
-            self.logger.error(f"Error: No create_subparser method found in {main_argument_parser_path}")
-            exit(1)
-        if last_create_subparser_index > 0:
-            main_argument_parser_lines.insert(last_create_subparser_index + 1, added_create_subparser_line)
-            main_argument_parser_content = "\n".join(main_argument_parser_lines)
-            
-        main_argument_parser_lines = main_argument_parser_content.split("\n") 
-        last_run_action_index = None
-        for i, line in enumerate(main_argument_parser_lines):
+                added_import_index = i
             if ".run_action(args)" in line:
                 last_run_action_index = i
             if added_run_action_condition_line in line:
-                last_run_action_index = -1
-                break
-        if last_run_action_index is None:
+                added_run_action_index = i
+            if ".create_subparser(subparsers)" in line:
+                last_create_subparser_index = i
+            if added_create_subparser_line in line:
+                added_create_subparser_index = i
+        
+        if last_import_index is None and added_import_index is None:
+            self.logger.error(f"Error: No import statement found in {main_argument_parser_path}")
+            exit(1)
+        if last_create_subparser_index is None and added_create_subparser_index is None:
+            self.logger.error(f"Error: No create_subparser method found in {main_argument_parser_path}")
+            exit(1)
+        if last_run_action_index is None and added_run_action_index is None:
             self.logger.error(f"Error: No run_action method found in {main_argument_parser_path}")
             exit(1)
-        if last_run_action_index > 0:
-            main_argument_parser_lines.insert(last_run_action_index + 1, added_run_action_condition_line)
-            main_argument_parser_lines.insert(last_run_action_index + 2, added_run_action_line)
-            main_argument_parser_content = "\n".join(main_argument_parser_lines)
-            
+
+        if self.action == CrudActionsEnum.GENERATE:
+            if last_import_index is not None:
+                main_argument_parser_lines.insert(last_import_index + 1, added_import_line)
+            if last_create_subparser_index is not None:
+                main_argument_parser_lines.insert(last_create_subparser_index + 1, added_create_subparser_line)
+            if last_run_action_index is not None:
+                main_argument_parser_lines.insert(last_run_action_index + 1, added_run_action_condition_line)
+                main_argument_parser_lines.insert(last_run_action_index + 2, added_run_action_line)
+        elif self.action == CrudActionsEnum.DELETE:
+            if added_import_index is not None:
+                main_argument_parser_lines.remove(added_import_line)
+            if added_create_subparser_index is not None:
+                main_argument_parser_lines.remove(added_create_subparser_line)
+            if added_run_action_index is not None:
+                main_argument_parser_lines.remove(added_run_action_condition_line)
+                main_argument_parser_lines.remove(added_run_action_line)
+        else:
+            self.logger.error(f"Unkown CrudAction: {self.action}")
+            exit(1)
+        
+        main_argument_parser_content = "\n".join(main_argument_parser_lines)
         self.file_service.write_file(main_argument_parser_path, main_argument_parser_content)
     
     def generate(self):
@@ -487,6 +497,7 @@ class Crud:
             
     def delete(self):
         self.logger.debug(f"delete()")
+        self.action = CrudActionsEnum.DELETE
         for model_name in self.model_names:
             if self.file_service.file_exists(self.model_paths[model_name]):
                 self.file_service.delete_file(self.model_paths[model_name])
@@ -497,6 +508,7 @@ class Crud:
             if self.file_service.file_exists(self.argument_parser_paths[model_name]):
                 self.file_service.delete_file(self.argument_parser_paths[model_name])
                 print(f"Deleted: {self.argument_parser_paths[model_name]}")
+            self._update_main_argument_parser(model_name)
         
         print(f"All model files -except the migration file- have been deleted successfully!")
         print( "---")
