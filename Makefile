@@ -146,6 +146,8 @@ list: ## Show available commands.
 	awk -F ':.*?## ' '{printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' | \
 	sort
 
+help: list ## Show available commands.
+
 git-hooks: ## Install hooks in .git-hooks/ to .git/hooks/.
 	@echo "Installing git hooks..."
 	@cp -r .git-hooks/* .git/hooks/
