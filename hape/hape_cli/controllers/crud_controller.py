@@ -23,15 +23,20 @@ class CrudController:
         is_yaml_file = is_yaml_string and schema_yaml.endswith('.yaml')
         is_json_default = is_json and isinstance(schema_json, bool)
         is_yaml_default = is_yaml and isinstance(schema_yaml, bool)
-        
-        
+        self.logger.debug(f"is_json_string: {is_json_string}")
+        self.logger.debug(f"is_yaml_string: {is_yaml_string}")
+        self.logger.debug(f"is_json_file: {is_json_file}")
+        self.logger.debug(f"is_yaml_file: {is_yaml_file}")
+        self.logger.debug(f"is_json_default: {is_json_default}")
+        self.logger.debug(f"is_yaml_default: {is_yaml_default}")
+
         if is_json_string:
             try:
                 schema = json.loads(schema_json)
             except e:
                 self.logger.error(f"Invalid JSON schema: {schema_json}")
                 exit(1)
-        elif schema_yaml:
+        elif is_yaml_string:
             try:
                 schema = yaml.safe_load(schema_yaml)
             except yaml.YAMLError as e:
