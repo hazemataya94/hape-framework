@@ -388,12 +388,7 @@ class Crud:
 
     def _update_main_argument_parser(self, model_name):
         self.logger.debug(f"_update_main_argument_parser(model_name: {model_name})")
-        if model_name == "test-delete-model":
-            return
         
-        print(f"model_name: {model_name}")
-        print(f"self.action: {self.action}")
-
         main_argument_parser_path = os.path.join(self.source_code_path, "argument_parsers", "main_argument_parser.py")
         main_argument_parser_content = self.file_service.read_file(main_argument_parser_path)
         

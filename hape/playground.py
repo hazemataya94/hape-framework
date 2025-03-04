@@ -46,28 +46,28 @@ class Playground:
             print(f"Error deleting k8s-deployment-cost: {e}")
             raise e
                     
-        # Crud(
-        #     project_name="hape",
-        #     schemas={   
-        #     "k8s-deployment": {
-        #         "id": {"int": ["primary", "autoincrement"]},
-        #         "service-name": {"string": ["required"]},
-        #         "pod-cpu": {"string": ["required"]},
-        #         "pod-ram": {"string": ["required"]},
-        #         "autoscaling": {"bool": ["required"]},
-        #         "min-replicas": {"int": ["nullable"]},
-        #         "max-replicas": {"int": ["nullable"]},
-        #         "current-replicas": {"int": ["required"]},
-        #     },
-        #     "k8s-deployment-cost": {
-        #         "id": {"int": ["primary", "autoincrement"]},
-        #         "k8s-deployment-id": {"int": ["required", "foreign-key(k8s-deployment.id, on-delete=cascade)"]},
-        #         "pod-cost": {"string": ["required"]},
-        #         "number-of-pods": {"int": ["required"]},
-        #         "total-cost": {"float": ["required"]}
-        #         }
-        #     }
-        # ).generate()
+        Crud(
+            project_name="hape",
+            schemas={   
+            "k8s-deployment": {
+                "id": {"int": ["primary", "autoincrement"]},
+                "service-name": {"string": ["required"]},
+                "pod-cpu": {"string": ["required"]},
+                "pod-ram": {"string": ["required"]},
+                "autoscaling": {"bool": ["required"]},
+                "min-replicas": {"int": ["nullable"]},
+                "max-replicas": {"int": ["nullable"]},
+                "current-replicas": {"int": ["required"]},
+            },
+            "k8s-deployment-cost": {
+                "id": {"int": ["primary", "autoincrement"]},
+                "k8s-deployment-id": {"int": ["required", "foreign-key(k8s-deployment.id, on-delete=cascade)"]},
+                "pod-cost": {"string": ["required"]},
+                "number-of-pods": {"int": ["required"]},
+                "total-cost": {"float": ["required"]}
+                }
+            }
+        ).generate()
 
         # def play_with_k8s_deployment(self):
         #     k8s_deployment = K8SDeployment(

@@ -44,3 +44,30 @@ if [ ! -f "${PROJECT_NAME_SNAKE_CASE}/models/${TEST_MODEL_SNAKE_CASE}_model.py" 
     echo "Error: ${PROJECT_NAME_SNAKE_CASE}/models/${TEST_MODEL_SNAKE_CASE}_model.py does not exist"
     exit 1
 fi
+
+TEST_MODEL_NAME="TestModel"
+MAIN_ARGUMENT_PARSER_MODEL_LINES=$(cat ${PROJECT_NAME_SNAKE_CASE}/argument_parsers/main_argument_parser.py | grep ${TEST_MODEL_NAME}ArgumentParser) || echo ""
+
+line_count=$(echo "$MAIN_ARGUMENT_PARSER_MODEL_LINES" | grep -c ${TEST_MODEL_NAME}ArgumentParser) || echo "0"
+if [ "$line_count" != 3 ]; then
+    echo "Error: ${TEST_MODEL_NAME}ArgumentParser is not added properly in main_argument_parser.py"
+    exit 1
+fi
+
+line_count=$(echo "$MAIN_ARGUMENT_PARSER_MODEL_LINES" | grep -c "import ${TEST_MODEL_NAME}ArgumentParser") || echo "0"
+if [ "$line_count" != 1 ]; then
+    echo "Error: import ${TEST_MODEL_NAME}ArgumentParser is not added properly in main_argument_parser.py"
+    exit 1
+fi
+
+line_count=$(echo "$MAIN_ARGUMENT_PARSER_MODEL_LINES" | grep -c "${TEST_MODEL_NAME}ArgumentParser().create_subparser") || echo "0"
+if [ "$line_count" != 1 ]; then
+    echo "Error: ${TEST_MODEL_NAME}ArgumentParser.create_subparser is not added properly in main_argument_parser.py"
+    exit 1
+fi
+
+line_count=$(echo "$MAIN_ARGUMENT_PARSER_MODEL_LINES" | grep -c "${TEST_MODEL_NAME}ArgumentParser().run_action(args)") || echo "0"
+if [ "$line_count" != 1 ]; then
+    echo "Error: ${TEST_MODEL_NAME}ArgumentParser.run_action is not added properly in main_argument_parser.py"
+    exit 1
+fi
