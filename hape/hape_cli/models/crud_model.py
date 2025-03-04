@@ -18,6 +18,12 @@ from hape.hape_cli.models.crud_column import CrudColumn
 from hape.hape_cli.models.crud_model_schema import CrudModelSchema
 
 class Crud:
+    logger = Logging.get_logger('hape.hape_cli.models.crud_model')
+    project_name = os.path.basename(os.getcwd())
+    project_name_snake_case = "hape" if project_name == "hape-framework" else NamingUtils.convert_to_snake_case(project_name)
+    
+    draft_json_file_path = os.path.join(project_name_snake_case, "migrations", "json", "draft.json")
+    draft_yaml_file_path = os.path.join(project_name_snake_case, "migrations", "yaml", "draft.yaml")
     
     def __init__(self, project_name: str, model_name: str = None, schemas: dict[str, dict] = None):
         self.logger = Logging.get_logger('hape.hape_cli.models.crud_model')
@@ -481,7 +487,7 @@ class Crud:
             self.logger.info("Migrations ran successfully!")
         except Exception as e:
             self.logger.error(f"Error: {e}")
-            print(f"Error: {e}")
+            self.logger.error(f"Error: {e}")
             exit(1)
          
         self.logger.info("CRUD generation completed successfully!")

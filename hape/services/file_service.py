@@ -86,7 +86,8 @@ class FileService:
     def read_file(self, file_path):
         self.logger.debug(f"read_file(file_path: {file_path})")
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f"Error: file {file_path} does not exist")
+            self.logger.error(f"Error: file {file_path} does not exist")
+            exit(1)
         with open(file_path, 'r', encoding='utf-8') as source_file:
             content = source_file.read()
         return content
@@ -94,9 +95,23 @@ class FileService:
     def read_yaml_file(self, yaml_path):
         self.logger.debug(f"read_yaml_file(yaml_path: {yaml_path})")
         if not os.path.exists(yaml_path):
-            raise FileNotFoundError(f"Error: file {yaml_path} does not exist")
+            self.logger.error(f"Error: file {yaml_path} does not exist")
+            exit(1)
         with open(yaml_path, 'r', encoding='utf-8') as file:
             data = self.yaml.load(file)
+        return data
+    
+    def read_json_file(self, json_path):
+        self.logger.debug(f"read_json_file(json_path: {json_path})")
+        if not os.path.exists(json_path):
+            self.logger.error(f"Error: file {json_path} does not exist")
+            exit(1)
+        with open(json_path, 'r', encoding='utf-8') as file:
+            try:
+                data = json.load(file)
+            except json.JSONDecodeError as e:
+                self.logger.error(f"Error: file {json_path} is not a valid JSON file. {e}")
+                exit(1)
         return data
 
     def write_yaml_file(self, yaml_path, data):
@@ -113,14 +128,16 @@ class FileService:
     def append_to_file(self, file_path, content):
         self.logger.debug(f"append_to_file(file_path: {file_path}")
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f"Error: file {file_path} does not exist")
+            self.logger.error(f"Error: file {file_path} does not exist")
+            exit(1)
         with open(file_path, 'a', encoding='utf-8') as destination_file:
             destination_file.write(content)
 
     def prepend_to_file(self, file_path, content):
         self.logger.debug(f"prepend_to_file(file_path: {file_path}")
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f"Error: file {file_path} does not exist")
+            self.logger.error(f"Error: file {file_path} does not exist")
+            exit(1)
         with open(file_path, 'r', encoding='utf-8') as file:
             file_content = file.read()
         with open(file_path, 'w', encoding='utf-8') as file:
@@ -129,7 +146,8 @@ class FileService:
     def add_string_after_keyword(self, file_path, keyword, string_to_add='\n'):
         self.logger.debug(f"add_string_after_keyword(file_path: {file_path}, keyword: {keyword}, string_to_add: {string_to_add})")
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f"Error: file {file_path} does not exist")
+            self.logger.error(f"Error: file {file_path} does not exist")
+            exit(1)
         with open(file_path, 'r+', encoding='utf-8') as file:
             content = file.readlines()
             for i, line in enumerate(content):
@@ -143,7 +161,8 @@ class FileService:
     def read_csv_file(self, csv_path):
         self.logger.debug(f"read_csv_file(csv_path: {csv_path})")
         if not os.path.exists(csv_path):
-            raise FileNotFoundError(f"Error: file {csv_path} does not exist")
+            self.logger.error(f"Error: file {csv_path} does not exist")
+            exit(1)
         with open(csv_path, 'r', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             clean_data = []
