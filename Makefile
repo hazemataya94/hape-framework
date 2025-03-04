@@ -175,7 +175,7 @@ reset-data: ## Deletes hello-world project from previous tests, drops and create
 	@rm -rf playground/hello-world
 	@echo "Dropping and creating database hape_db"
 	@docker exec mariadb_dev /bin/bash -c "mariadb --password=root -e 'DROP DATABASE IF EXISTS hape_db; CREATE DATABASE hape_db;'"
-	@rm -rf hape/migrations/versions/*.py hape/migrations/json/*.json hape/migrations/yaml/*.yaml
+	@rm -rf hape/migrations/versions/*.py hape/migrations/json/0*.json hape/migrations/yaml/0*.yaml
 	@echo "Local migrations removed."
 
 reset-local: reset-data ## Deletes hello-world project from previous tests, drops and creates database hape_db, runs migrations, and runs the playground.

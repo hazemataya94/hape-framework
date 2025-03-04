@@ -47,10 +47,12 @@ INIT_PROJECT_TEMPLATE = {
                 ".gitkeep": None
             },
             "json": {
-                ".gitkeep": None
+                ".gitkeep": None,
+                "draft.json": None
             },
             "yaml": {
-                ".gitkeep": None
+                ".gitkeep": None,
+                "draft.yaml": None
             }
         },
         "models": {
