@@ -12,10 +12,9 @@ class CrudArgumentParser:
         crud_parser_subparser = crud_parser.add_subparsers(dest="action")
 
         generate_parser = crud_parser_subparser.add_parser("generate", help="Generates a new CRUD operation")
-        input_group = generate_parser.add_mutually_exclusive_group(required=True)
-        input_group.add_argument("-n", "--name", help="Name of the model")
-        input_group.add_argument("-j", "--json", nargs="?", const=True, help="Schema of the model in JSON format")
-        input_group.add_argument("-y", "--yaml", nargs="?", const=True, help="Schema of the model in YAML format")
+        schema_group = generate_parser.add_mutually_exclusive_group(required=True)
+        schema_group.add_argument("-j", "--json", help="Schema of the model in JSON format")
+        schema_group.add_argument("-y", "--yaml", help="Schema of the model in YAML format")
         
         delete_parser = crud_parser_subparser.add_parser("delete", help="Deletes a CRUD operation")
         delete_parser.add_argument("-n", "--name", required=True, help="Name of the model")

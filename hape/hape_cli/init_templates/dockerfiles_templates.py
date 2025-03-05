@@ -13,30 +13,30 @@ ENTRYPOINT ["sleep", "infinity"]
 DOCKERFILE_PROD = """
 FROM python:3.12-bookworm
 
-RUN pip install --upgrade {{project_name}}
+RUN pip install --upgrade {{project_name_kebab_case}}
 
-ENTRYPOINT ["{{project_name}}"]
+ENTRYPOINT ["{{project_name_kebab_case}}"]
 """.strip()
 
 
 DOCKER_COMPOSE = """
 services:
-  {{project_name}}:
+  {{project_name_snake_case}}:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: {{project_name}}
+    container_name: {{project_name_snake_case}}_dev
     restart: always
     env_file:
       - ../.env
     environment:
-      HAPE_MARIADB_HOST: "mariadb"
+      HAPE_MARIADB_HOST: "mariadb_{{project_name_snake_case}}_dev"
     networks:
       - host_network
 
-  mariadb:
+  mariadb_{{project_name_snake_case}}_dev:
     image: mariadb:11.4.4
-    container_name: mariadb_dev
+    container_name: mariadb_{{project_name_snake_case}}_dev
     restart: always
     environment:
       MARIADB_ROOT_PASSWORD: root
@@ -51,9 +51,9 @@ services:
       - mariadb_data:/var/lib/mysql
       - ./mariadb-init:/docker-entrypoint-initdb.d
 
-  phpmyadmin:
+  phpmyadmin_{{project_name_snake_case}}_dev:
     image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin_dev
+    container_name: phpmyadmin_{{project_name_snake_case}}_dev
     restart: always
     environment:
       PMA_PORT: 3306

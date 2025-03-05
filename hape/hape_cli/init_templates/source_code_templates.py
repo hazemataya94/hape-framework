@@ -74,10 +74,10 @@ class MainArgumentParser:
 
     def create_parser(self):
         parser = argparse.ArgumentParser(
-            description="{{project_name_title}} created by HAPE Framework"
+            description="{{project_name_title_case}} created by HAPE Framework"
         )
         try:
-            parser.add_argument("-v", "--version", action="version", version=version("{{project_name}}"))
+            parser.add_argument("-v", "--version", action="version", version=version("{{project_name_kebab_case}}"))
         except:
             parser.add_argument("-v", "--version", action="version", version="0.0.0")
         

@@ -7,6 +7,7 @@ from hape.services.file_service import FileService
 from hape.hape_cli.models.crud_model import Crud
 from hape.hape_cli.models.json_model import Json
 from hape.hape_cli.models.yaml_model import Yaml
+from hape.utils.naming_utils import NamingUtils
 
 class Playground:
 
@@ -97,5 +98,14 @@ class Playground:
 
 
     def play(self):
-        HapeConfig.reset_db()
-        self.play_with_crud()
+        # HapeConfig.reset_db()
+        # self.play_with_crud()
+        var = "my-test-var"
+        print("original: " + var)
+        print("snake_case: " + NamingUtils.convert_to_snake_case(var))
+        print("kebab_case: " + NamingUtils.convert_to_kebab_case(var))
+        print("upper_snake_case: " + NamingUtils.convert_to_upper_snake_case(var))
+        print("upper_kebab_case: " + NamingUtils.convert_to_upper_kebab_case(var))
+        print("camel_case: " + NamingUtils.convert_to_camel_case(var))
+        print("pascal_case: " + NamingUtils.convert_to_pascal_case(var))
+        print("title_case: " + NamingUtils.convert_to_title_case(var))

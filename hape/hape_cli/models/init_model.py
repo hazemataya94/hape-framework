@@ -44,7 +44,7 @@ class Init:
     def _init_directory(self, root_path: str, dictionary: dict):
         self.logger.debug(f"_init_directory(root_path: {root_path}, dictionary)")
         for name, content in dictionary.items():
-            if name == '{{project_name}}':
+            if name == '{{project_name_snake_case}}':
                 name = NamingUtils.convert_to_snake_case(self.name)
             sub_path = os.path.join(root_path, name)
             if content is None:

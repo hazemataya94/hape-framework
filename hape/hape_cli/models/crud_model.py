@@ -398,7 +398,7 @@ class Crud:
         main_argument_parser_path = os.path.join(self.source_code_path, "argument_parsers", "main_argument_parser.py")
         main_argument_parser_content = self.file_service.read_file(main_argument_parser_path)
         
-        argument_parser_class_name = NamingUtils.convert_to_camel_case(model_name) + "ArgumentParser"
+        argument_parser_class_name = NamingUtils.convert_to_pascal_case(model_name) + "ArgumentParser"
         added_import_line = f"from {NamingUtils.convert_to_snake_case(self.project_name)}.argument_parsers.{self.model_names_snake_case[model_name]}_argument_parser import {argument_parser_class_name}"
         added_create_subparser_line = f"        {argument_parser_class_name}().create_subparser(subparsers)"        
         added_run_action_condition_line = f"        elif args.command == \"{model_name}\":"

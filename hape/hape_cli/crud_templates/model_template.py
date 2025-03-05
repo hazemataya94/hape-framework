@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, Float, Boolean, BigInteger, Fore
 from sqlalchemy.orm import relationship
 from hape.base.model import Model
 
-class {{model_name_camel_case}}(Model):
+class {{model_name_pascal_case}}(Model):
     __tablename__ = '{{model_name_snake_case}}'
     logger = Logging.get_logger('{{project_name_snake_case}}.models.{{model_name_snake_case}}')
     
