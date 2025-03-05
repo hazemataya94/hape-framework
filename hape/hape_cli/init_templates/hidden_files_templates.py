@@ -6,17 +6,17 @@ dockerfiles
 """.strip()
 
 ENV_EXAMPLE = """
-{{project_name_upper}}_MARIADB_HOST="host.docker.internal"
-{{project_name_upper}}_MARIADB_USERNAME="{{project_name_snake_case}}_user"
-{{project_name_upper}}_MARIADB_PASSWORD="{{project_name_snake_case}}_password"
-{{project_name_upper}}_MARIADB_DATABASE="{{project_name_snake_case}}_db"
+{{project_name_upper_snake_case}}_MARIADB_HOST="host.docker.internal"
+{{project_name_upper_snake_case}}_MARIADB_USERNAME="{{project_name_snake_case}}_user"
+{{project_name_upper_snake_case}}_MARIADB_PASSWORD="{{project_name_snake_case}}_password"
+{{project_name_upper_snake_case}}_MARIADB_DATABASE="{{project_name_snake_case}}_db"
 """.strip()
 
 GIT_IGNORE = """
 dockerfiles/*-init
 playground/*
 !playground/.gitkeep
-!{{project_name}}/migrations/.gitkeep
+!{{project_name_snake_case}}/migrations/.gitkeep
 *.zip
 *.venv
 *.vscode

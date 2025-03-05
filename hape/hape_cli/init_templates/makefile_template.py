@@ -1,9 +1,9 @@
 MAKEFILE = """
 clean: ## Clean up build, cache, playground and zip files.
-	rm -rf build dist {{project_name_snake_case}}.egg-info playground/* {{project_name}}.zip
+	rm -rf build dist {{project_name_snake_case}}.egg-info playground/* {{project_name_snake_case}}.zip
 
 zip: ## Create a zip archive excluding local files and playground.
-	zip -r {{project_name}}.zip . -x ".env" ".venv/*" ".git/*" "playground/*"
+	zip -r {{project_name_snake_case}}.zip . -x ".env" ".venv/*" ".git/*" "playground/*"
 	open .
 
 .venv: ## Create a virtual environment .venv if not exists.
@@ -27,7 +27,7 @@ init-dev: .venv ## Install development dependencies in .venv, docker-compose up 
 	@echo
 
 init-cli: ## Install CLI dependencies.
-	@echo "Installing `{{project_name}}` CLI"
+	@echo "Installing `{{project_name_kebab_case}}` CLI"
 	@pip install -r requirements-cli.txt
 
 freeze-dev: ## Freeze dependencies for development.
@@ -37,7 +37,7 @@ freeze-cli: ## Freeze dependencies for CLI.
 	@pip freeze > requirements-cli.txt
 
 install: ## Install the package.
-	pip install --upgrade {{project_name}}
+	pip install --upgrade {{project_name_kebab_case}}
 
 bump-version: ## Bump the patch version in setup.py.
 	@echo "🔄 Bumping patch version in setup.py..."
@@ -104,7 +104,7 @@ docker-ps: ## List running Docker services.
 	@docker-compose -f dockerfiles/docker-compose.yml ps
 
 docker-exec: ## Execute a shell in the HAPE Docker container.
-	@docker exec -it {{project_name}} bash
+	@docker exec -it {{project_name_snake_case}} bash
 
 source-env: ## Print export statements for the environment variables from .env file.
 	@echo "Run the following command to export environment variables:"

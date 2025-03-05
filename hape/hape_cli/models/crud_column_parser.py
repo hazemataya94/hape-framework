@@ -18,9 +18,9 @@ class CrudColumnParser:
         self.orm_relationships = "" # set in _parse_orm_column_properties()
         self.orm_column_properties = self._parse_orm_column_properties()
         
-        self.parsed_orm_column_template = "{{model_column_name_snake_case}} = Column({{orm_column_type_camel_case}}, {{orm_column_properties}})"
+        self.parsed_orm_column_template = "{{model_column_name_snake_case}} = Column({{orm_column_type}}, {{orm_column_properties}})"
         self.parsed_orm_column = self.parsed_orm_column_template.replace("{{model_column_name_snake_case}}", self.orm_column_name)
-        self.parsed_orm_column = self.parsed_orm_column.replace("{{orm_column_type_camel_case}}", self.orm_column_type)
+        self.parsed_orm_column = self.parsed_orm_column.replace("{{orm_column_type}}", self.orm_column_type)
         self.parsed_orm_column = self.parsed_orm_column.replace("{{orm_column_properties}}", self.orm_column_properties)
         self.parsed_orm_column = self.parsed_orm_column.replace(", )", ")")
 
@@ -74,9 +74,9 @@ class CrudColumnParser:
             elif property.property == CrudColumnValidPropertiesEnum.FOREIGN_KEY:
                 orm_column_properties += f"ForeignKey('{property.foreign_key.foreign_key_table}.{property.foreign_key.foreign_key_column}', ondelete='{property.foreign_key.foreign_key_on_delete}'), "
                 
-                foreign_key_model_camel_case = NamingUtils.convert_to_camel_case(property.foreign_key.foreign_key_table)
+                foreign_key_model_pascal_case = NamingUtils.convert_to_pascal_case(property.foreign_key.foreign_key_table)
                 
-                orm_column_relationships += f"relationship('{foreign_key_model_camel_case}', back_populates='{self.orm_column_name.rstrip('_id').rstrip('s')}s')\n    "
+                orm_column_relationships += f"relationship('{foreign_key_model_pascal_case}', back_populates='{self.orm_column_name.rstrip('_id').rstrip('s')}s')\n    "
                 
         self.orm_relationships = orm_column_relationships.strip()
         

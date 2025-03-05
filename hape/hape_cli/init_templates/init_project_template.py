@@ -14,7 +14,7 @@ INIT_PROJECT_TEMPLATE = {
     "main.py": MAIN_PY,
     "Makefile": MAKEFILE,
     "MANIFEST.in": MANIFEST_IN,
-    "README.md": "# {{project_name_title}}",
+    "README.md": "# {{project_name_title_case}}",
     "requirements-dev.txt": REQUIREMENTS_DEV,
     "requirements-cli.txt": REQUIREMENTS_CLI,
     "setup.py": SETUP_PY,
@@ -23,7 +23,7 @@ INIT_PROJECT_TEMPLATE = {
         "Dockerfile.prod": DOCKERFILE_PROD,
         "docker-compose.yml": DOCKER_COMPOSE,
     },
-    "{{project_name}}": {
+    "{{project_name_snake_case}}": {
         "__init__.py": None,
         "cli.py": CLI_PY,
         "bootstrap.py": BOOTSTRAP_PY,
@@ -47,12 +47,10 @@ INIT_PROJECT_TEMPLATE = {
                 ".gitkeep": None
             },
             "json": {
-                ".gitkeep": None,
-                "draft.json": None
+                ".gitkeep": None
             },
             "yaml": {
-                ".gitkeep": None,
-                "draft.yaml": None
+                ".gitkeep": None
             }
         },
         "models": {
