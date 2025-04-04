@@ -487,7 +487,7 @@ class Crud:
             self.logger.info("Migrations ran successfully!")
         except Exception as e:
             self.logger.error(f"Error: {e}")
-            self.logger.error(f"Error: {e}")
+            self.logger.error(f"Error: {e.__traceback__}")
             exit(1)
          
         self.logger.info("CRUD generation completed successfully!")
