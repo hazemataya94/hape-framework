@@ -24,6 +24,7 @@ elif [ "$1" == "cli" ]; then
         "init-project.sh"
         "crud-generate.sh"
         "crud-delete.sh"
+        "crud-functionality.sh"
     )
 else
     echo "Usage: $0 <code|cli>"
