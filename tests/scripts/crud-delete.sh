@@ -36,7 +36,7 @@ if [ ! -f "${PROJECT_NAME_SNAKE_CASE}/models/${TEST_DELETE_MODEL_SNAKE_CASE}_mod
     exit 1
 fi
 
-
+sleep 10
 echo "Deleting ${TEST_DELETE_MODEL} CRUD"
 echo "\$ ${COMMAND} crud delete --delete ${TEST_DELETE_MODEL}"
 ${COMMAND} crud delete --name ${TEST_DELETE_MODEL}
