@@ -164,8 +164,8 @@ test-cli: ## Run a new python container, installs hape cli and runs all tests in
 	@echo "!!! Note: make sure to run '$$ make docker-build-prod' at least once before running this command"
 	@sleep 0.5
 	@echo "Running all tests in a fresh hape-production container..."
-	@echo "$$ time docker run -it --rm --workdir /workspace -v $(shell pwd)/tests:/workspace/tests --entrypoint /bin/bash hape-production -c 'mkdir playground && ./tests/run-test-scripts.sh cli'"
-	@time docker run -it --rm --workdir /workspace -v $(shell pwd)/tests:/workspace/tests --entrypoint /bin/bash hape-production -c 'mkdir playground && ./tests/run-test-scripts.sh cli'
+	@echo "$$ time docker run -it --rm -e HAPE_MARIADB_HOST='host.docker.internal' --workdir /workspace -v $(shell pwd)/tests:/workspace/tests --entrypoint /bin/bash hape-production -c 'mkdir playground && ./tests/run-test-scripts.sh cli'"
+	@time docker run -it --rm -e HAPE_MARIADB_HOST='host.docker.internal' --workdir /workspace -v $(shell pwd)/tests:/workspace/tests --entrypoint /bin/bash hape-production -c 'mkdir playground && ./tests/run-test-scripts.sh cli'
 	@echo "All tests finished successfully!"
 
 test-code: reset-data ## Runs containers in dockerfiles/docker-compose.yml, Deletes hello-world project from previous tests, and run all code automated tests.

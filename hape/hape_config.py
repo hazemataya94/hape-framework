@@ -41,7 +41,7 @@ class HapeConfig:
         if not HapeConfig._db_session:
             try:
                 DATABASE_URL = HapeConfig.get_db_url(with_database)
-                engine = create_engine(DATABASE_URL, echo=True)
+                engine = create_engine(DATABASE_URL, echo=False)
                 with engine.connect() as connection:
                     connection.execute(text("SELECT 1"))
 

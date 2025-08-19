@@ -35,7 +35,6 @@ class Model(Base):
                     return False
         for field, field_type in self.__field_types.items():
             if field in self.__dict__ and not isinstance(self.__dict__[field], field_type):
-                print("invalid!")
                 return False
         return True
     
@@ -64,10 +63,8 @@ class Model(Base):
         except Exception:
             exit_status = False
             session.rollback()
-            print("---rollback---")
         finally:
             session.close()
-            print("---close---")
             return exit_status
 
     @classmethod

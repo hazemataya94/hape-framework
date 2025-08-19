@@ -15,6 +15,7 @@ if [ "$1" == "code" ]; then
         "init-project.sh"
         "crud-generate.sh"
         "crud-delete.sh"
+        "crud-functionality.sh"
     )
 elif [ "$1" == "cli" ]; then
     COMMAND="hape"

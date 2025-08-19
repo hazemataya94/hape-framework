@@ -440,12 +440,7 @@ class Crud:
         if last_run_action_index is None and added_run_action_index is None:
             self.logger.error(f"Error: No run_action method found in {main_argument_parser_path}")
             exit(1)
-        print(f"last_import_index: {last_import_index}")
-        print(f"added_import_index: {added_import_index}")
-        print(f"last_create_subparser_index: {last_create_subparser_index}")
-        print(f"added_create_subparser_index: {added_create_subparser_index}")
-        print(f"last_run_action_index: {last_run_action_index}")
-        print(f"added_run_action_index: {added_run_action_index}")
+        
         if self.action == CrudActionsEnum.GENERATE:
             if last_import_index is not None:
                 main_argument_parser_lines.insert(last_import_index + 1, added_import_line)
