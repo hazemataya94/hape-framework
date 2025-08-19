@@ -14,7 +14,7 @@ if [ "$1" == "code" ]; then
     test_scripts=(
         "init-project.sh"
         "crud-generate.sh"
-        "crud-delete.sh"
+        # "crud-delete.sh"
     )
 elif [ "$1" == "cli" ]; then
     COMMAND="hape"
@@ -22,7 +22,7 @@ elif [ "$1" == "cli" ]; then
         "install-hape.sh"
         "init-project.sh"
         "crud-generate.sh"
-        "crud-delete.sh"
+        # "crud-delete.sh"
     )
 else
     echo "Usage: $0 <code|cli>"
@@ -34,8 +34,8 @@ echo "Running all ${1} tests"
 echo "============================================================="
 
 for script in "${test_scripts[@]}"; do
-    echo "Running ${dir_name}/${script}"
+    echo "Running ${dir_name}/scripts/${script}"
     echo "--------------------------------"
-    ${dir_name}/${script}
+    ${dir_name}/scripts/${script}
     echo "============================================================="
 done

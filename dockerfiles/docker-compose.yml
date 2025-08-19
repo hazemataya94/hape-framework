@@ -9,7 +9,6 @@ services:
     env_file:
       - ../.env
     environment:
-      HAPE_LOG_LEVEL: DEBUG
       HAPE_MARIADB_HOST: "mariadb"
     volumes:
       - ../:/workspace

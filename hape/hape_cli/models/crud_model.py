@@ -5,6 +5,7 @@ from alembic import command
 from alembic.config import Config
 from alembic.script import ScriptDirectory
 from hape.logging import Logging
+from hape.hape_config import HapeConfig
 from hape.services.file_service import FileService
 from hape.hape_cli.enums.crud_actions import CrudActionsEnum
 from hape.hape_cli.crud_templates.argument_parser_template import ARGUMENT_PARSER_TEMPLATE
@@ -348,9 +349,12 @@ class Crud:
 
     def _run_migrations(self):
         self.logger.debug(f"_run_migrations()")
+        # test connection to db
+        HapeConfig.get_db_session()
+        
         alembic_config = Config(self.alembic_config_path)
         script = ScriptDirectory.from_config(alembic_config)
-
+        
         heads = script.get_heads()
         if len(heads) > 1:
             self.logger.warning(f"Multiple heads detected: {heads}")
@@ -436,12 +440,20 @@ class Crud:
         if last_run_action_index is None and added_run_action_index is None:
             self.logger.error(f"Error: No run_action method found in {main_argument_parser_path}")
             exit(1)
-
+        print(f"last_import_index: {last_import_index}")
+        print(f"added_import_index: {added_import_index}")
+        print(f"last_create_subparser_index: {last_create_subparser_index}")
+        print(f"added_create_subparser_index: {added_create_subparser_index}")
+        print(f"last_run_action_index: {last_run_action_index}")
+        print(f"added_run_action_index: {added_run_action_index}")
         if self.action == CrudActionsEnum.GENERATE:
             if last_import_index is not None:
                 main_argument_parser_lines.insert(last_import_index + 1, added_import_line)
+                last_create_subparser_index += 1
+                last_run_action_index += 1
             if last_create_subparser_index is not None:
                 main_argument_parser_lines.insert(last_create_subparser_index + 1, added_create_subparser_line)
+                last_run_action_index += 1
             if last_run_action_index is not None:
                 main_argument_parser_lines.insert(last_run_action_index + 1, added_run_action_condition_line)
                 main_argument_parser_lines.insert(last_run_action_index + 2, added_run_action_line)
@@ -486,8 +498,8 @@ class Crud:
             self._run_migrations()
             self.logger.info("Migrations ran successfully!")
         except Exception as e:
-            self.logger.error(f"Error: {e}")
-            self.logger.error(f"Error: {e.__traceback__}")
+            self.logger.error("Migrations failed!")
+            self.logger.error(f"Error: {e}", exc_info=True)
             exit(1)
          
         self.logger.info("CRUD generation completed successfully!")
