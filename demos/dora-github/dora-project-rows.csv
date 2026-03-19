@@ -1,0 +1,3 @@
+archived,change_fail_rate_ratio,default_branch,deployment_frequency_per_day,deployments_total,environment,failed_deployment_recovery_time_seconds,failed_deployments_total,group_path,has_change_data,has_deployments,lead_time_seconds,open_failed_deployments_total,project_path,provider,window
+False,0.333,main,0.42,3,production,1200.0,1,hape-demos,1,1,3600.0,0,hape-demos/hape-dora-demo-service-a,github,7d
+False,0.0,main,0.0,0,production,0.0,0,hape-demos,0,0,0.0,0,hape-demos/hape-dora-demo-service-b,github,7d

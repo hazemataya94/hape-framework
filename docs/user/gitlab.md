@@ -23,6 +23,6 @@ Options:
 
 ## Configuration
 Requires:
-- `GITLAB_DOMAIN`
+- `HAPE_GITLAB_DOMAIN`
 - `GITLAB_TOKEN`
 - `GITLAB_DEFAULT_GROUP_ID`

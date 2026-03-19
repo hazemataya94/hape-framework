@@ -6,6 +6,7 @@ Use these kustomize bases to run exporters inside the local kind cluster.
 
 ## Available exporters
 - `eks-deployment-cost/`
+- `dora/`
 
 ## Deploy EKS deployment cost exporter
 1) Create AWS credentials secret:
@@ -26,6 +27,19 @@ Delete:
 
 ```bash
 make kustomize-delete infrastructure/kubernetes/exporters/eks-deployment-cost
+```
+
+## Deploy DORA exporter
+Apply:
+
+```bash
+make kustomize-apply infrastructure/kubernetes/exporters/dora
+```
+
+Delete:
+
+```bash
+make kustomize-delete infrastructure/kubernetes/exporters/dora
 ```
 
 ## Kubernetes access mode

@@ -1,0 +1,185 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hape-dora-exporter
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: hape-dora-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hape-dora-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hape-dora-exporter
+    spec:
+      volumes:
+      - name: source-files
+        projected:
+          sources:
+          - configMap:
+              name: hape-dora-exporter-runtime-input
+              items:
+              - key: exporter_main_py
+                path: exporters/dora_exporter.py
+              - key: requirements_txt
+                path: requirements.txt
+              - key: dot_env
+                path: .env
+          - configMap:
+              name: hape-dora-exporter-runtime-modules
+              items:
+              - key: core_init_py
+                path: core/__init__.py
+              - key: core_config_py
+                path: core/config.py
+              - key: core_logging_py
+                path: core/logging.py
+              - key: core_errors_init_py
+                path: core/errors/__init__.py
+              - key: core_errors_exceptions_py
+                path: core/errors/exceptions.py
+              - key: core_errors_handler_py
+                path: core/errors/handler.py
+              - key: core_errors_messages_init_py
+                path: core/errors/messages/__init__.py
+              - key: core_errors_messages_config_error_messages_py
+                path: core/errors/messages/config_error_messages.py
+              - key: core_errors_messages_confluence_error_messages_py
+                path: core/errors/messages/confluence_error_messages.py
+              - key: core_errors_messages_gitlab_error_messages_py
+                path: core/errors/messages/gitlab_error_messages.py
+              - key: core_errors_messages_jira_error_messages_py
+                path: core/errors/messages/jira_error_messages.py
+              - key: core_errors_messages_csv_error_messages_py
+                path: core/errors/messages/csv_error_messages.py
+              - key: core_errors_messages_eks_deployment_cost_error_messages_py
+                path: core/errors/messages/eks_deployment_cost_error_messages.py
+              - key: core_errors_messages_markdown_error_messages_py
+                path: core/errors/messages/markdown_error_messages.py
+              - key: core_errors_messages_dora_error_messages_py
+                path: core/errors/messages/dora_error_messages.py
+              - key: services_init_py
+                path: services/__init__.py
+              - key: services_dora_service_py
+                path: services/dora_service.py
+              - key: services_dora_aggregation_service_py
+                path: services/dora_aggregation_service.py
+              - key: services_dora_config_service_py
+                path: services/dora_config_service.py
+              - key: services_dora_deployment_event_service_py
+                path: services/dora_deployment_event_service.py
+              - key: services_dora_failure_service_py
+                path: services/dora_failure_service.py
+              - key: services_dora_gitlab_provider_service_py
+                path: services/dora_gitlab_provider_service.py
+              - key: services_dora_github_provider_service_py
+                path: services/dora_github_provider_service.py
+              - key: services_dora_lead_time_service_py
+                path: services/dora_lead_time_service.py
+              - key: services_dora_models_py
+                path: services/dora_models.py
+              - key: clients_init_py
+                path: clients/__init__.py
+              - key: clients_gitlab_client_py
+                path: clients/gitlab_client.py
+              - key: clients_github_client_py
+                path: clients/github_client.py
+              - key: clients_prometheus_client_py
+                path: clients/prometheus_client.py
+              - key: utils_init_py
+                path: utils/__init__.py
+              - key: utils_datetime_utils_py
+                path: utils/datetime_utils.py
+              - key: utils_validation_utils_py
+                path: utils/validation_utils.py
+              - key: config_dora_git_rules_gitlab_json
+                path: config/dora/git-rules-gitlab.json
+              - key: config_dora_git_rules_github_json
+                path: config/dora/git-rules-github.json
+              - key: config_dora_kubernetes_mappings_gitlab_json
+                path: config/dora/kubernetes-mappings-gitlab.json
+              - key: config_dora_kubernetes_mappings_github_json
+                path: config/dora/kubernetes-mappings-github.json
+      - name: python-site-packages
+        emptyDir: {}
+      - name: github-app-private-key
+        secret:
+          secretName: hape-dora-exporter-github-app
+          optional: true
+      initContainers:
+      - name: install-requirements
+        image: python:3.12-slim
+        command: ["/bin/sh", "-c"]
+        args:
+        - pip install --no-cache-dir -r /workspace/src/requirements.txt --target /workspace/site-packages
+        volumeMounts:
+        - name: source-files
+          mountPath: /workspace/src
+          readOnly: true
+        - name: python-site-packages
+          mountPath: /workspace/site-packages
+      containers:
+      - name: dora-exporter
+        image: python:3.12-slim
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-c"]
+        args:
+        - python /workspace/src/exporters/dora_exporter.py
+        ports:
+        - containerPort: 9120
+          name: metrics
+        env:
+        - name: HAPE_DORA_EXPORTER_HOST
+          value: "0.0.0.0"
+        - name: HAPE_DORA_EXPORTER_PORT
+          value: "9120"
+        - name: HAPE_DORA_EXPORTER_REFRESH_SECONDS
+          value: "1500"
+        - name: HAPE_DORA_PROVIDER
+          value: "github"
+        - name: HAPE_DORA_GIT_RULES_PATH
+          value: "/workspace/src/config/dora/git-rules-github.json"
+        - name: HAPE_DORA_KUBERNETES_MAPPINGS_PATH
+          value: "/workspace/src/config/dora/kubernetes-mappings-github.json"
+        - name: HAPE_DORA_PROMETHEUS_URL
+          value: "http://kube-prometheus-stack-prometheus.monitoring.svc:9090"
+        - name: HAPE_DORA_KUBE_CONTEXT
+          value: ""
+        - name: HAPE_GITHUB_APP_PRIVATE_KEY_PATH
+          value: "/workspace/secrets/github-app.private-key.pem"
+        - name: PYTHONPATH
+          value: "/workspace/site-packages:/workspace/src"
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: metrics
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: metrics
+          initialDelaySeconds: 20
+          periodSeconds: 20
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            memory: 512Mi
+        volumeMounts:
+        - name: source-files
+          mountPath: /workspace/src
+          readOnly: true
+        - name: python-site-packages
+          mountPath: /workspace/site-packages
+        - name: github-app-private-key
+          mountPath: /workspace/secrets
+          readOnly: true

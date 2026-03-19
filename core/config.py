@@ -23,7 +23,7 @@ class Config:
     default_dotenv_path = Path(__file__).resolve().parents[1] / ".env"
 
     supported_config_keys = [
-        "GITLAB_DOMAIN",
+        "HAPE_GITLAB_DOMAIN",
         "GITLAB_TOKEN",
         "GITLAB_DEFAULT_GROUP_ID",
         "ATLASSIAN_DOMAIN",
@@ -35,6 +35,21 @@ class Config:
         "HAPE_EXPORTER_HOST",
         "HAPE_EXPORTER_PORT",
         "HAPE_EXPORTER_REFRESH_SECONDS",
+        "HAPE_DORA_EXPORTER_HOST",
+        "HAPE_DORA_EXPORTER_PORT",
+        "HAPE_DORA_EXPORTER_REFRESH_SECONDS",
+        "HAPE_DORA_GITLAB_GROUP_IDS",
+        "HAPE_DORA_GIT_RULES_PATH",
+        "HAPE_DORA_KUBERNETES_MAPPINGS_PATH",
+        "HAPE_DORA_PROMETHEUS_URL",
+        "HAPE_DORA_KUBE_CONTEXT",
+        "HAPE_DORA_PROVIDER",
+        "HAPE_GITHUB_API_URL",
+        "HAPE_GITHUB_TOKEN",
+        "HAPE_GITHUB_APP_ID",
+        "HAPE_GITHUB_INSTALLATION_ID",
+        "HAPE_GITHUB_APP_PRIVATE_KEY_PATH",
+        "HAPE_DORA_GITHUB_ORGS",
         "HAPE_EDC_KUBE_CONTEXT",
         "HAPE_EDC_AWS_PROFILE",
         "HAPE_EDC_IGNORED_NAMESPACES",
@@ -64,6 +79,10 @@ class Config:
         "CONFLUENCE_TEST_PARENT_PAGE_ID",
         "HAPE_EXPORTER_PORT",
         "HAPE_EXPORTER_REFRESH_SECONDS",
+        "HAPE_DORA_EXPORTER_PORT",
+        "HAPE_DORA_EXPORTER_REFRESH_SECONDS",
+        "HAPE_GITHUB_APP_ID",
+        "HAPE_GITHUB_INSTALLATION_ID",
         "HAPE_KUBE_AGENT_AI_STALE_HOURS",
         "HAPE_KUBE_AGENT_RESTART_THRESHOLD",
         "HAPE_KUBE_AGENT_POD_LOG_TAIL_LINES",
@@ -208,9 +227,9 @@ class Config:
 
     @staticmethod
     def get_gitlab_domain() -> str:
-        domain = Config._get_config_value("GITLAB_DOMAIN")
-        domain = ValidationUtils.require_string("GITLAB_DOMAIN", domain)
-        ValidationUtils.validate_domain("GITLAB_DOMAIN", domain)
+        domain = Config._get_config_value("HAPE_GITLAB_DOMAIN")
+        domain = ValidationUtils.require_string("HAPE_GITLAB_DOMAIN", domain)
+        ValidationUtils.validate_domain("HAPE_GITLAB_DOMAIN", domain)
         return domain
 
     @staticmethod
@@ -305,6 +324,124 @@ class Config:
         refresh_seconds = Config._get_config_int_with_default("HAPE_EXPORTER_REFRESH_SECONDS", 300)
         ValidationUtils.validate_positive_int("HAPE_EXPORTER_REFRESH_SECONDS", refresh_seconds)
         return refresh_seconds
+
+    @staticmethod
+    def get_dora_exporter_host() -> str:
+        host = Config._get_optional_config_value("HAPE_DORA_EXPORTER_HOST")
+        if host is None:
+            return Config.get_exporter_host()
+        return ValidationUtils.require_string("HAPE_DORA_EXPORTER_HOST", host)
+
+    @staticmethod
+    def get_dora_exporter_port() -> int:
+        port = Config._get_optional_config_value("HAPE_DORA_EXPORTER_PORT")
+        if port is None:
+            return Config.get_exporter_port()
+        parsed_port = int(port)
+        ValidationUtils.validate_positive_int("HAPE_DORA_EXPORTER_PORT", parsed_port)
+        return parsed_port
+
+    @staticmethod
+    def get_dora_exporter_refresh_seconds() -> int:
+        refresh_seconds = Config._get_optional_config_value("HAPE_DORA_EXPORTER_REFRESH_SECONDS")
+        if refresh_seconds is None:
+            return Config.get_exporter_refresh_seconds()
+        parsed_refresh_seconds = int(refresh_seconds)
+        ValidationUtils.validate_positive_int("HAPE_DORA_EXPORTER_REFRESH_SECONDS", parsed_refresh_seconds)
+        return parsed_refresh_seconds
+
+    @staticmethod
+    def get_dora_gitlab_group_ids_csv() -> str:
+        value = Config._get_optional_config_value("HAPE_DORA_GITLAB_GROUP_IDS")
+        if value:
+            return value
+        default_group_id = Config._get_optional_config_value("GITLAB_DEFAULT_GROUP_ID")
+        if default_group_id:
+            return default_group_id
+        raise ValueError("HAPE_DORA_GITLAB_GROUP_IDS or GITLAB_DEFAULT_GROUP_ID is required.")
+
+    @staticmethod
+    def get_dora_git_rules_path() -> str:
+        default_value = "config/dora/git-rules.json"
+        return Config._get_config_value_with_default("HAPE_DORA_GIT_RULES_PATH", default_value)
+
+    @staticmethod
+    def get_dora_kubernetes_mappings_path() -> str:
+        default_value = "config/dora/kubernetes-mappings.json"
+        return Config._get_config_value_with_default("HAPE_DORA_KUBERNETES_MAPPINGS_PATH", default_value)
+
+    @staticmethod
+    def get_dora_prometheus_url() -> str:
+        value = Config._get_optional_config_value("HAPE_DORA_PROMETHEUS_URL")
+        if value:
+            return value
+        return Config.get_kube_agent_prometheus_url()
+
+    @staticmethod
+    def get_dora_kube_context() -> str:
+        value = Config._get_optional_config_value("HAPE_DORA_KUBE_CONTEXT")
+        if value is None:
+            return ""
+        return value
+
+    @staticmethod
+    def get_dora_provider() -> str:
+        provider = Config._get_config_value_with_default("HAPE_DORA_PROVIDER", "gitlab").strip().lower()
+        if provider not in {"gitlab", "github"}:
+            raise ValueError("HAPE_DORA_PROVIDER must be 'gitlab' or 'github'.")
+        return provider
+
+    @staticmethod
+    def get_dora_github_api_url() -> str:
+        return Config._get_config_value_with_default("HAPE_GITHUB_API_URL", "https://api.github.com")
+
+    @staticmethod
+    def get_dora_github_token() -> str:
+        token = Config._get_optional_config_value("HAPE_GITHUB_TOKEN")
+        if token:
+            return token
+        if Config.has_dora_github_app_auth_config():
+            return ""
+        raise ValueError("HAPE_GITHUB_TOKEN is required when HAPE_DORA_PROVIDER=github.")
+
+    @staticmethod
+    def get_dora_github_orgs_csv() -> str:
+        orgs_csv = Config._get_optional_config_value("HAPE_DORA_GITHUB_ORGS")
+        if orgs_csv:
+            return orgs_csv
+        raise ValueError("HAPE_DORA_GITHUB_ORGS is required when HAPE_DORA_PROVIDER=github.")
+
+    @staticmethod
+    def get_dora_github_app_id() -> int | None:
+        app_id = Config._get_optional_config_value("HAPE_GITHUB_APP_ID")
+        if app_id is None:
+            return None
+        parsed_app_id = int(app_id)
+        ValidationUtils.validate_positive_int("HAPE_GITHUB_APP_ID", parsed_app_id)
+        return parsed_app_id
+
+    @staticmethod
+    def get_dora_github_installation_id() -> int | None:
+        installation_id = Config._get_optional_config_value("HAPE_GITHUB_INSTALLATION_ID")
+        if installation_id is None:
+            return None
+        parsed_installation_id = int(installation_id)
+        ValidationUtils.validate_positive_int("HAPE_GITHUB_INSTALLATION_ID", parsed_installation_id)
+        return parsed_installation_id
+
+    @staticmethod
+    def get_dora_github_app_private_key_path() -> str | None:
+        private_key_path = Config._get_optional_config_value("HAPE_GITHUB_APP_PRIVATE_KEY_PATH")
+        if private_key_path is None:
+            return None
+        return ValidationUtils.require_string("HAPE_GITHUB_APP_PRIVATE_KEY_PATH", private_key_path)
+
+    @staticmethod
+    def has_dora_github_app_auth_config() -> bool:
+        app_id = Config.get_dora_github_app_id()
+        installation_id = Config.get_dora_github_installation_id()
+        private_key_path = Config.get_dora_github_app_private_key_path()
+        return app_id is not None and installation_id is not None and private_key_path is not None
 
     @staticmethod
     def get_edc_kube_context() -> str:

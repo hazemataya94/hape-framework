@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "defaults": {
+    "provider": "gitlab",
+    "environment": "production",
+    "successful_job_statuses": ["success"],
+    "deploy_job_names": ["deploy"],
+    "deploy_job_name_regex": [],
+    "deploy_stages": ["deploy"],
+    "failure_detection_minutes": 60,
+    "recovery_timeout_minutes": 240,
+    "recovery_stability_minutes": 10
+  },
+  "groups": [
+    {
+      "group_path": "example/platform",
+      "defaults": {
+        "deploy_job_names": ["deploy", "release"],
+        "deploy_stages": ["deploy", "release"]
+      }
+    }
+  ],
+  "projects": [
+    {
+      "project_path": "example/platform/service-a",
+      "project_id": 1001,
+      "default_branch": "main",
+      "refs": ["main"],
+      "environment": "production",
+      "deploy_job_names": ["deploy-prod"],
+      "deploy_job_name_regex": ["^deploy-prod$"],
+      "deploy_stages": ["deploy"],
+      "failure_detection_minutes": 60,
+      "recovery_timeout_minutes": 240,
+      "recovery_stability_minutes": 10
+    },
+    {
+      "project_path": "example/platform/service-b",
+      "project_id": 1002,
+      "default_branch": "main",
+      "refs": ["main"],
+      "environment": "production",
+      "deploy_job_names": ["release-prod"],
+      "deploy_job_name_regex": ["^release-prod$"],
+      "deploy_stages": ["release"]
+    }
+  ]
+}

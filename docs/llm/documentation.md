@@ -20,5 +20,6 @@ Apply these rules when creating or updating documentation in this repository.
 - Demo README instructions must be concrete and executable from repository root without relying on implicit context.
 - Demo README files must include screenshots (or equivalent visual output captures) that show the feature outputs after successful execution.
 - In demo READMEs, place the `Screenshots` section immediately after `Prerequisites`.
+- For exporter demos, use the Kubernetes runtime-source deployment pattern (ConfigMap + initContainer dependencies) and avoid Docker build/load steps in README instructions unless explicitly required by the feature.
 - Once a demo folder is created, do not modify it for new feature demonstrations.
 - For any new or changed feature demonstration, create a new demo folder by default.

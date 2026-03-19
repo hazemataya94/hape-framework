@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "defaults": {
+    "provider": "gitlab",
+    "cluster": "kind-hape",
+    "workload_kind": "Deployment"
+  },
+  "projects": [
+    {
+      "project_path": "example/platform/service-a",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-a",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-a"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "example/platform/service-b",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-b",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-b"
+          }
+        }
+      ]
+    }
+  ]
+}

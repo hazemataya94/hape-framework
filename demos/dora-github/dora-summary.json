@@ -1,0 +1,52 @@
+{
+  "projects_total": 2,
+  "project_rows": [
+    {
+      "provider": "github",
+      "group_path": "hape-demos",
+      "project_path": "hape-demos/hape-dora-demo-service-a",
+      "default_branch": "main",
+      "archived": false,
+      "environment": "production",
+      "window": "7d",
+      "has_deployments": 1,
+      "deployments_total": 3,
+      "deployment_frequency_per_day": 0.42,
+      "lead_time_seconds": 3600.0,
+      "has_change_data": 1,
+      "failed_deployments_total": 1,
+      "change_fail_rate_ratio": 0.333,
+      "failed_deployment_recovery_time_seconds": 1200.0,
+      "open_failed_deployments_total": 0
+    },
+    {
+      "provider": "github",
+      "group_path": "hape-demos",
+      "project_path": "hape-demos/hape-dora-demo-service-b",
+      "default_branch": "main",
+      "archived": false,
+      "environment": "production",
+      "window": "7d",
+      "has_deployments": 0,
+      "deployments_total": 0,
+      "deployment_frequency_per_day": 0.0,
+      "lead_time_seconds": 0.0,
+      "has_change_data": 0,
+      "failed_deployments_total": 0,
+      "change_fail_rate_ratio": 0.0,
+      "failed_deployment_recovery_time_seconds": 0.0,
+      "open_failed_deployments_total": 0
+    }
+  ],
+  "rollups": {},
+  "no_deploy_data_rows": [
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-b"
+    }
+  ],
+  "no_change_data_rows": [
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-b"
+    }
+  ]
+}

@@ -1,0 +1,400 @@
+{
+  "version": 1,
+  "defaults": {
+    "provider": "github",
+    "cluster": "kind-hape",
+    "workload_kind": "Deployment"
+  },
+  "projects": [
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-a",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-a",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-a"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-b",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-b",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-b"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-c",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-c",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-c"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-d",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-d",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-d"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-e",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-e",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-e"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-f",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-f",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-f"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-g",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-g",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-g"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-h",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-h",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-h"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-i",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-i",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-i"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-j",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-j",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-j"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-k",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-k",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-k"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-l",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-l",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-l"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-m",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-m",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-m"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-n",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-n",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-n"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-o",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-o",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-o"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-p",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-p",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-p"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-q",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-q",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-q"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-r",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-r",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-r"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-s",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-s",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-s"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-t",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-t",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-t"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-u",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-u",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-u"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-v",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-v",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-v"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-w",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-w",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-w"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-x",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-x",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-x"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-y",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-y",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-y"
+          }
+        }
+      ]
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-z",
+      "cluster": "kind-hape",
+      "namespace": "payments",
+      "workloads": [
+        {
+          "kind": "Deployment",
+          "name": "service-z",
+          "prometheus_label_matchers": {
+            "namespace": "payments",
+            "deployment": "service-z"
+          }
+        }
+      ]
+    }
+  ]
+}

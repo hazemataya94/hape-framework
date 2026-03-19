@@ -12,6 +12,7 @@ Use these docs to run commands, configure HAPE, and execute supported integratio
 - [eks-pre-upgrade.md](eks-pre-upgrade.md) - EKS pre-upgrade snapshot workflow.
 - [eks-node-rotation.md](eks-node-rotation.md) - role-based EKS node rotation workflow.
 - [gitlab.md](gitlab.md) - GitLab automation usage.
+- [dora.md](dora.md) - GitLab DORA usage and debug commands.
 - [grafana.md](grafana.md) - Grafana datasources report usage.
 - [jira.md](jira.md) - Jira comment automation usage.
 - [eks-deployment-cost.md](eks-deployment-cost.md) - EKS deployment and statefulset cost report usage.

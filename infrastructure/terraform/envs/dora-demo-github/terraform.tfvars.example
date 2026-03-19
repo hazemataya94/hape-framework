@@ -1,0 +1,32 @@
+github_owner = "<YOUR_GITHUB_OWNER>"
+github_token = "<YOUR_GITHUB_TOKEN>"
+default_branch = "main"
+repository_visibility = "private"
+repository_names = [
+  "hape-dora-demo-service-a",
+  "hape-dora-demo-service-b",
+  "hape-dora-demo-service-c",
+  "hape-dora-demo-service-d",
+  "hape-dora-demo-service-e",
+  "hape-dora-demo-service-f",
+  "hape-dora-demo-service-g",
+  "hape-dora-demo-service-h",
+  "hape-dora-demo-service-i",
+  "hape-dora-demo-service-j",
+  "hape-dora-demo-service-k",
+  "hape-dora-demo-service-l",
+  "hape-dora-demo-service-m",
+  "hape-dora-demo-service-n",
+  "hape-dora-demo-service-o",
+  "hape-dora-demo-service-p",
+  "hape-dora-demo-service-q",
+  "hape-dora-demo-service-r",
+  "hape-dora-demo-service-s",
+  "hape-dora-demo-service-t",
+  "hape-dora-demo-service-u",
+  "hape-dora-demo-service-v",
+  "hape-dora-demo-service-w",
+  "hape-dora-demo-service-x",
+  "hape-dora-demo-service-y",
+  "hape-dora-demo-service-z"
+]

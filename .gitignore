@@ -1,6 +1,23 @@
 # HAPE Artifacts
 *-artifacts/
 
+# Temporary files
+tmp/
+*/tmp/
+**/tmp/
+
+# Terraform
+**.terraform.lock**
+**terraform.tfstate.lock**
+**.terraform/
+**terraform.tfstate
+**terraform.tfstate.backup
+**terraform.tfvars
+**tfplan
+
+# DORA seed output
+dora-seed-github-output.json
+
 # General
 *.zip
 *.venv
@@ -53,3 +70,6 @@ share/python-wheels/
 
 # Local AWS credentials for k8s secret generation
 infrastructure/kubernetes/aws-credentials/.aws-credentials
+
+# Local GitHub App private key for DORA exporter kustomize secretGenerator
+infrastructure/kubernetes/exporters/dora/secrets/github-app.private-key.pem

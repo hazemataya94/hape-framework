@@ -1,0 +1,7 @@
+gitlab_token = "<YOUR_GITLAB_TOKEN>"
+group_name = "hape-dora-sandbox"
+group_path = "hape-dora-sandbox"
+subgroup_name = "gitlab-free"
+subgroup_path = "gitlab-free"
+default_branch = "main"
+project_names = ["service-a", "service-b", "service-c", "service-d"]

@@ -25,7 +25,6 @@
 - lead time for changes
 - change fail rate
 - failed deployment recovery time
-- deployment rework rate
 
 ### Reliability
 - availability SLI
@@ -48,7 +47,8 @@
 
 ## Delivery performance (DORA) metrics
 ### Source
-- Kubernetes and Gitlab
+- GitLab Free CI pipelines and commit history
+- Prometheus and Kubernetes workload signals (mapped by JSON config)
 ### Labels
 - service
 - environment
@@ -61,11 +61,14 @@
 - rollback_of
 - incident_id or caused_incident
 ### Metrics
-- hape_delivery_deployments_total{service,environment,result}
-- hape_delivery_lead_time_seconds_bucket{service,environment}
-- hape_delivery_failed_recovery_time_seconds_bucket{service,environment}
-- hape_delivery_rework_deployments_total{service,environment}
-- hape_delivery_deployment_candidate_changes_total{service,environment}
+- hape_dora_project_info{provider,group_path,project_path,default_branch,archived}
+- hape_dora_project_has_deployments{provider,group_path,project_path,environment,window}
+- hape_dora_deployments_total{provider,group_path,project_path,environment,window}
+- hape_dora_deployment_frequency_per_day{provider,group_path,project_path,environment,window}
+- hape_dora_lead_time_seconds{provider,group_path,project_path,environment,window}
+- hape_dora_failed_deployments_total{provider,group_path,project_path,environment,window}
+- hape_dora_change_fail_rate_ratio{provider,group_path,project_path,environment,window}
+- hape_dora_failed_deployment_recovery_time_seconds{provider,group_path,project_path,environment,window}
 
 ## Service reliability USE, RED, and Golden signals 
 ### Source

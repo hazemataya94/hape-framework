@@ -1,10 +1,12 @@
+import re
 import os
 from pathlib import Path
-import re
 import subprocess
 import time
 from typing import Any, Dict, List, Optional
+
 import requests
+
 from utils.datetime_utils import DatetimeUtils
 
 from core.logging import LocalLogging
@@ -19,6 +21,27 @@ class GitLabClient:
         self.gitlab_token = Config.get_gitlab_token()
         gitlab_domain = Config.get_gitlab_domain()
         self.gitlab_url = f"https://{gitlab_domain}"
+
+    def _build_headers(self) -> dict[str, str]:
+        return {"Private-Token": self.gitlab_token}
+
+    def _request_json_get(self, endpoint_path: str, params: dict[str, Any] | None = None) -> Any:
+        url = f"{self.gitlab_url}{endpoint_path}"
+        response = requests.get(url, headers=self._build_headers(), params=params)
+        response.raise_for_status()
+        return response.json()
+
+    def _collect_paginated(self, endpoint_path: str, base_params: dict[str, Any]) -> list[dict[str, Any]]:
+        page = 1
+        items: list[dict[str, Any]] = []
+        while True:
+            params = {**base_params, "per_page": 100, "page": page}
+            page_items = self._request_json_get(endpoint_path=endpoint_path, params=params)
+            if not isinstance(page_items, list) or not page_items:
+                break
+            items.extend(page_items)
+            page += 1
+        return items
 
     def validate_clone_dir(self, clone_path: Path, overwrite: bool) -> None:
         self.logger.debug(f"validate_clone_dir(clone_path: {clone_path}, overwrite: {overwrite})")
@@ -61,31 +84,45 @@ class GitLabClient:
         self.logger.debug(f"git_clone(clone_url: {clone_url}, project_path: {project_path})")
         subprocess.run(["git", "clone", clone_url, project_path], check=True)
 
-    def get_group_projects(self, group_id: int) -> List[Dict[str, Any]]:
+    def get_group_projects(self, group_id: int, include_subgroups: bool = True, archived: bool = False) -> List[Dict[str, Any]]:
         self.logger.debug(f"get_group_projects(group_id: {group_id})")
-        headers = {"Private-Token": self.gitlab_token}
-        page = 1
-        all_projects = []
-        while True:
-            projects_url = f"{self.gitlab_url}/api/v4/groups/{group_id}/projects"
-            params = {
-                "include_subgroups": "true",
-                "archived": "false",
-                "simple": "true",
-                "per_page": "100",
-                "page": page,
-            }
-            response = requests.get(projects_url, headers=headers, params=params)
-            if response.status_code != 200:
-                raise RuntimeError(f"Failed to fetch projects: {response.json().get('message', 'No error message')}")
-            projects = response.json()
-            if not projects:
-                break
+        params = {"include_subgroups": str(include_subgroups).lower(), "archived": str(archived).lower(), "simple": "true"}
+        return self._collect_paginated(endpoint_path=f"/api/v4/groups/{group_id}/projects", base_params=params)
 
-            all_projects = all_projects + projects
-            page += 1
+    def get_project(self, project_id: int) -> dict[str, Any]:
+        self.logger.debug(f"get_project(project_id: {project_id})")
+        project = self._request_json_get(endpoint_path=f"/api/v4/projects/{project_id}")
+        if not isinstance(project, dict):
+            raise RuntimeError(f"Unexpected GitLab project response for project_id={project_id}.")
+        return project
 
-        return all_projects
+    def get_project_pipelines(self, project_id: int, updated_after: str, updated_before: str, ref: str | None = None, status: str | None = None) -> list[dict[str, Any]]:
+        self.logger.debug(
+            "get_project_pipelines("
+            f"project_id: {project_id}, updated_after: {updated_after}, updated_before: {updated_before}, "
+            f"ref: {ref}, status: {status})"
+        )
+        params: dict[str, Any] = {"updated_after": updated_after, "updated_before": updated_before}
+        if ref:
+            params["ref"] = ref
+        if status:
+            params["status"] = status
+        return self._collect_paginated(endpoint_path=f"/api/v4/projects/{project_id}/pipelines", base_params=params)
+
+    def get_pipeline_jobs(self, project_id: int, pipeline_id: int) -> list[dict[str, Any]]:
+        self.logger.debug(f"get_pipeline_jobs(project_id: {project_id}, pipeline_id: {pipeline_id})")
+        return self._collect_paginated(endpoint_path=f"/api/v4/projects/{project_id}/pipelines/{pipeline_id}/jobs", base_params={})
+
+    def get_project_commits(self, project_id: int, ref_name: str, since: str | None = None, until: str | None = None) -> list[dict[str, Any]]:
+        self.logger.debug(
+            f"get_project_commits(project_id: {project_id}, ref_name: {ref_name}, since: {since}, until: {until})"
+        )
+        params: dict[str, Any] = {"ref_name": ref_name}
+        if since:
+            params["since"] = since
+        if until:
+            params["until"] = until
+        return self._collect_paginated(endpoint_path=f"/api/v4/projects/{project_id}/repository/commits", base_params=params)
 
     # created_after is in isoformat, e.g. 2026-02-01T00:00:00+00:00
     def get_group_merge_requests(self, group_id: int, created_after: str, state: str = "all", author_username: Optional[str] = None) -> List[Dict[str, Any]]:

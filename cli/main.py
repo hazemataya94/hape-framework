@@ -7,6 +7,7 @@ from core.errors.handler import ErrorHandler
 from cli.commands.config_commands import ConfigCommands
 from cli.commands.confluence_commands import ConfluenceCommands
 from cli.commands.csv_commands import CsvCommands
+from cli.commands.dora_commands import DoraCommands
 from cli.commands.eks_deployment_cost_commands import EksDeploymentCostCommands
 from cli.commands.gitlab_commands import GitLabCommands
 from cli.commands.jira_commands import JiraCommands
@@ -69,6 +70,7 @@ class CLI:
         JiraCommands.register(subparsers)
         ConfluenceCommands.register(subparsers)
         CsvCommands.register(subparsers)
+        DoraCommands.register(subparsers)
         EksDeploymentCostCommands.register(subparsers)
         KubeAgentCommands.register(subparsers)
         MarkdownCommands.register(subparsers)

@@ -1,0 +1,191 @@
+{
+  "title": "HAPE / DORA / GitLab / Group",
+  "uid": "hape-dora-gitlab-group",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "refresh": "1m",
+  "time": {
+    "from": "now-90d",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "group",
+        "type": "query",
+        "label": "Group",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": "label_values(hape_dora_project_info, group_path)"
+      },
+      {
+        "name": "window",
+        "type": "custom",
+        "label": "Window",
+        "query": "7d,30d,90d",
+        "current": {
+          "selected": true,
+          "text": "30d",
+          "value": "30d"
+        }
+      },
+      {
+        "name": "environment",
+        "type": "query",
+        "label": "Environment",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": "label_values(hape_dora_deployments_total, environment)",
+        "includeAll": true
+      },
+      {
+        "name": "cluster",
+        "type": "custom",
+        "label": "Cluster",
+        "query": "kind-hape",
+        "current": {
+          "selected": true,
+          "text": "kind-hape",
+          "value": "kind-hape"
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "table",
+      "title": "Top 10 Highest Deployment Frequency",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(10, hape_dora_deployment_frequency_per_day{window=\"$window\",environment=~\"$environment\",group_path=\"$group\"})",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      }
+    },
+    {
+      "id": 2,
+      "type": "table",
+      "title": "Top 10 Lowest Non-Zero Deployment Frequency",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "bottomk(10, hape_dora_deployment_frequency_per_day{window=\"$window\",environment=~\"$environment\",group_path=\"$group\"} > 0)",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      }
+    },
+    {
+      "id": 3,
+      "type": "table",
+      "title": "Top 10 No Deploy Data",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(10, hape_dora_project_has_deployments{window=\"$window\",environment=~\"$environment\",group_path=\"$group\"} == 0)",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      }
+    },
+    {
+      "id": 4,
+      "type": "table",
+      "title": "Top 10 Highest Lead Time",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(10, hape_dora_lead_time_seconds{window=\"$window\",environment=~\"$environment\",group_path=\"$group\"})",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      }
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "Top 10 No Change Data",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(10, (hape_dora_lead_time_seconds{window=\"$window\",environment=~\"$environment\",group_path=\"$group\"} == 0))",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      }
+    }
+  ]
+}

@@ -1,0 +1,268 @@
+{
+  "version": 1,
+  "defaults": {
+    "provider": "github",
+    "environment": "production",
+    "successful_job_statuses": [
+      "success"
+    ],
+    "deploy_job_names": [
+      "deploy",
+      "deploy-prod"
+    ],
+    "deploy_job_name_regex": [
+      "^deploy.*$"
+    ],
+    "deploy_stages": [],
+    "failure_detection_minutes": 60,
+    "recovery_timeout_minutes": 240,
+    "recovery_stability_minutes": 10
+  },
+  "groups": [
+    {
+      "group_path": "hape-demos",
+      "defaults": {
+        "deploy_job_names": [
+          "deploy",
+          "release"
+        ]
+      }
+    }
+  ],
+  "projects": [
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-a",
+      "project_id": 2001,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-b",
+      "project_id": 2002,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-c",
+      "project_id": 2003,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-d",
+      "project_id": 2004,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-e",
+      "project_id": 2005,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-f",
+      "project_id": 2006,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-g",
+      "project_id": 2007,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-h",
+      "project_id": 2008,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-i",
+      "project_id": 2009,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-j",
+      "project_id": 2010,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-k",
+      "project_id": 2011,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-l",
+      "project_id": 2012,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-m",
+      "project_id": 2013,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-n",
+      "project_id": 2014,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-o",
+      "project_id": 2015,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-p",
+      "project_id": 2016,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-q",
+      "project_id": 2017,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-r",
+      "project_id": 2018,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-s",
+      "project_id": 2019,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-t",
+      "project_id": 2020,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-u",
+      "project_id": 2021,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-v",
+      "project_id": 2022,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-w",
+      "project_id": 2023,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-x",
+      "project_id": 2024,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-y",
+      "project_id": 2025,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    },
+    {
+      "project_path": "hape-demos/hape-dora-demo-service-z",
+      "project_id": 2026,
+      "default_branch": "main",
+      "refs": [
+        "main"
+      ],
+      "environment": "production"
+    }
+  ]
+}

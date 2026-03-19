@@ -1,0 +1,61 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: monitoring
+resources:
+- deployment.yaml
+- service.yaml
+- servicemonitor.yaml
+secretGenerator:
+- name: hape-dora-exporter-github-app
+  options:
+    disableNameSuffixHash: true
+  files:
+  - github-app.private-key.pem=./secrets/github-app.private-key.pem
+configMapGenerator:
+- name: hape-dora-exporter-runtime-input
+  options:
+    disableNameSuffixHash: true
+  files:
+  - exporter_main_py=../../../../exporters/dora_exporter.py
+  - requirements_txt=../../../../requirements.txt
+  - dot_env=../../../../.env
+- name: hape-dora-exporter-runtime-modules
+  options:
+    disableNameSuffixHash: true
+  files:
+  - core_init_py=../../../../core/__init__.py
+  - core_config_py=../../../../core/config.py
+  - core_logging_py=../../../../core/logging.py
+  - core_errors_init_py=../../../../core/errors/__init__.py
+  - core_errors_exceptions_py=../../../../core/errors/exceptions.py
+  - core_errors_handler_py=../../../../core/errors/handler.py
+  - core_errors_messages_init_py=../../../../core/errors/messages/__init__.py
+  - core_errors_messages_config_error_messages_py=../../../../core/errors/messages/config_error_messages.py
+  - core_errors_messages_confluence_error_messages_py=../../../../core/errors/messages/confluence_error_messages.py
+  - core_errors_messages_gitlab_error_messages_py=../../../../core/errors/messages/gitlab_error_messages.py
+  - core_errors_messages_jira_error_messages_py=../../../../core/errors/messages/jira_error_messages.py
+  - core_errors_messages_csv_error_messages_py=../../../../core/errors/messages/csv_error_messages.py
+  - core_errors_messages_eks_deployment_cost_error_messages_py=../../../../core/errors/messages/eks_deployment_cost_error_messages.py
+  - core_errors_messages_markdown_error_messages_py=../../../../core/errors/messages/markdown_error_messages.py
+  - core_errors_messages_dora_error_messages_py=../../../../core/errors/messages/dora_error_messages.py
+  - services_init_py=../../../../services/__init__.py
+  - services_dora_service_py=../../../../services/dora_service.py
+  - services_dora_aggregation_service_py=../../../../services/dora_aggregation_service.py
+  - services_dora_config_service_py=../../../../services/dora_config_service.py
+  - services_dora_deployment_event_service_py=../../../../services/dora_deployment_event_service.py
+  - services_dora_failure_service_py=../../../../services/dora_failure_service.py
+  - services_dora_gitlab_provider_service_py=../../../../services/dora_gitlab_provider_service.py
+  - services_dora_github_provider_service_py=../../../../services/dora_github_provider_service.py
+  - services_dora_lead_time_service_py=../../../../services/dora_lead_time_service.py
+  - services_dora_models_py=../../../../services/dora_models.py
+  - clients_init_py=../../../../clients/__init__.py
+  - clients_gitlab_client_py=../../../../clients/gitlab_client.py
+  - clients_github_client_py=../../../../clients/github_client.py
+  - clients_prometheus_client_py=../../../../clients/prometheus_client.py
+  - utils_init_py=../../../../utils/__init__.py
+  - utils_datetime_utils_py=../../../../utils/datetime_utils.py
+  - utils_validation_utils_py=../../../../utils/validation_utils.py
+  - config_dora_git_rules_gitlab_json=../../../../config/dora/git-rules-gitlab.json
+  - config_dora_git_rules_github_json=../../../../config/dora/git-rules-github.json
+  - config_dora_kubernetes_mappings_gitlab_json=../../../../config/dora/kubernetes-mappings-gitlab.json
+  - config_dora_kubernetes_mappings_github_json=../../../../config/dora/kubernetes-mappings-github.json

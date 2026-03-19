@@ -101,7 +101,7 @@ class EksDeploymentCostMetricsProvider:
         self.aws_profile = aws_profile
         self.ignored_namespaces_csv = ignored_namespaces_csv
         self.service = EksDeploymentCostService()
-        self.logger = LocalLogging.get_logger("hape.eks_deployment_cost_metrics_provider")
+        self.logger = LocalLogging.get_logger("hape.eks_deployment_cost_exporter")
         self._lock = Lock()
         self._last_refresh_epoch_seconds = 0.0
         self._last_metrics_payload = ""
