@@ -1,6 +1,19 @@
 <img src="https://raw.githubusercontent.com/hazemataya94/hape-framework/refs/heads/main/docs/logo.png" width="100%">
 
-# HAPE Framework Overview
+# HAPE Framework
+
+## Table of Contents
+- [Vision](#vision)
+- [Intellectual Property / Permissions](#intellectual-property--permissions)
+- [Contributions](#contributions)
+- [Demos](#demos)
+- [Architecture](#architecture)
+- [Makefile](#makefile)
+- [Documentation](#documentation)
+- [Getting started](#getting-started)
+- [Author](#author)
+
+
 The LLM agents have changed our world, software development world. Now to implement your vision, you just need a well guided LLM, and you'll implement your solution in no time.
 
 This also applies to infrastructure, since nowadays everything is switching to IaC, and as long as you understand software architecture, working on infrastructure is not that different.
@@ -44,6 +57,10 @@ To list all available Make commands and their descriptions:
 make help
 ```
 
+## Documentation
+- [Documentation Directory](docs/README.md)
+
+
 ## Getting started
 
 Install HAPE with pip:
@@ -82,9 +99,6 @@ options:
   --config-file-path CONFIG_FILE_PATH
                                 path to config.json (default: ~/.hape/config.json).
 ```
-
-## Documentation
-- [Documentation Directory](docs/README.md)
 
 ## Author
 - LinkedIn: https://www.linkedin.com/in/hazem-ataya-29849b151/
