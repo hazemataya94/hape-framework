@@ -15,6 +15,10 @@ from cli.commands.kube_agent_commands import KubeAgentCommands
 from cli.commands.markdown_commands import MarkdownCommands
 
 class _CommandHelpFormatter(argparse.HelpFormatter):
+    def __init__(self, prog: str) -> None:
+        # Keep long command names and their descriptions on the same line.
+        super().__init__(prog, max_help_position=32)
+
     def _format_action(self, action) -> str:
         if isinstance(action, argparse._SubParsersAction):
             formatted = super()._format_action(action)

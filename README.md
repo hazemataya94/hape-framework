@@ -44,6 +44,45 @@ To list all available Make commands and their descriptions:
 make help
 ```
 
+## Getting started
+
+Install HAPE with pip:
+
+```bash
+python3 -m pip install hape
+```
+
+Show available commands:
+
+```bash
+hape --help
+```
+
+Expected output:
+
+```text
+usage: hape [-h] [command] ...
+
+CLI for platform and DevOps automations.
+
+commands:
+    config                      config file operations.
+    gitlab                      GitLab operations.
+    jira                        fetch Jira issue data, remote links, or add comments.
+    confluence                  confluence page operations.
+    csv                         csv conversion operations.
+    dora                        DORA metrics operations.
+    eks-deployment-cost         generate EKS Deployment/StatefulSet cost report.
+    kube-agent                  investigate Kubernetes incidents from CLI triggers.
+    markdown                    markdown table import/export operations.
+
+options:
+  -h, --help                    show this help message and exit
+  --version                     print the installed hape version and exit.
+  --config-file-path CONFIG_FILE_PATH
+                                path to config.json (default: ~/.hape/config.json).
+```
+
 ## Documentation
 - [Documentation Directory](docs/README.md)
 
