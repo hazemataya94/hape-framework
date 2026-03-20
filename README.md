@@ -2,6 +2,16 @@
 
 # HAPE Framework
 
+The LLM agents have changed our world, software development world. Now to implement your vision, you just need a well guided LLM, and you'll implement your solution in no time.
+
+This also applies to infrastructure, since nowadays everything is switching to IaC, and as long as you understand software architecture, working on infrastructure is not that different.
+
+I'm starting this project on 22.02.2026 as a learning and research project to answer the question:
+Is it still a dream to have a self healing infrastructure further pushing our advancement pace in technology.
+
+The project is a newer version of HAPE Framework.<br>
+https://github.com/hazemataya94/hape-framework-deprecated
+
 ## Table of Contents
 - [Vision](#vision)
 - [Intellectual Property / Permissions](#intellectual-property--permissions)
@@ -12,17 +22,6 @@
 - [Documentation](#documentation)
 - [Getting started](#getting-started)
 - [Author](#author)
-
-
-The LLM agents have changed our world, software development world. Now to implement your vision, you just need a well guided LLM, and you'll implement your solution in no time.
-
-This also applies to infrastructure, since nowadays everything is switching to IaC, and as long as you understand software architecture, working on infrastructure is not that different.
-
-I'm starting this project on 22.02.2026 as a learning and research project to answer the question:
-Is it still a dream to have a self healing infrastructure further pushing our advancement pace in technology.
-
-The project is a newer version of HAPE Framework.<br>
-https://github.com/hazemataya94/hape-framework-deprecated
 
 ## Vision
 Modern organizations manage hundreds of microservices, each with its own infrastructure, CI/CD, monitoring, and deployment configurations. This complexity increases the cognitive load on developers and slows down development operations.
