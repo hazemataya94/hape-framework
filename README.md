@@ -90,6 +90,7 @@ commands:
     dora                        DORA metrics operations.
     eks-deployment-cost         generate EKS Deployment/StatefulSet cost report.
     kube-agent                  investigate Kubernetes incidents from CLI triggers.
+    init-cicd                   scaffold deployment and CI files for supported projects.
     markdown                    markdown table import/export operations.
 
 options:
