@@ -1,42 +1,58 @@
 # Kube Agent Service Logic
 
 ## Purpose
-Document how `KubeAgentService` executes investigations and how operators validate behavior.
+Document kube-agent service boundaries and runtime behavior for investigation, incidents, and cost analysis.
 
 ## Service and module locations
-- Service entrypoint: `services/kube_agent/kube_agent_service.py`.
-- Trigger layer: `services/kube_agent/triggers/`.
-- Evidence layer: `services/kube_agent/evidence/`.
-- Check layer: `services/kube_agent/checks/`.
-- Incident case layer: `services/kube_agent/case/`.
-- AI layer: `services/kube_agent/ai/`.
-- Findings layer: `services/kube_agent/findings/`.
-- Incident memory layer: `services/kube_agent/memory/`.
-- CLI commands: `cli/commands/kube_agent_commands.py`.
+- Compatibility facade: `services/kube_agent/kube_agent_service.py`.
+- Investigation domain:
+  - `services/kube_agent/investigation/investigation_service.py`
+  - `services/kube_agent/investigation/incidents_service.py`
+  - `services/kube_agent/investigation/investigation_runtime.py`
+  - `services/kube_agent/investigation/triggers/`
+  - `services/kube_agent/investigation/evidence/`
+  - `services/kube_agent/investigation/checks/`
+  - `services/kube_agent/investigation/case/`
+  - `services/kube_agent/investigation/findings/`
+  - `services/kube_agent/investigation/memory/`
+- Cost domain:
+  - `services/kube_agent/cost/cost_analysis_service.py`
+- AI layer remains: `services/kube_agent/ai/`
+- CLI commands: `cli/commands/kube_agent_commands.py`
 
-## Runtime flow
+## Investigation runtime flow
 ```mermaid
 flowchart TD
-  A[CLI investigate command] --> B[TriggerResolver]
-  B --> C[EvidenceCollector]
-  C --> D[DiagnosticCheckEngine]
-  D --> E[IncidentCaseBuilder]
-  E --> F[IncidentMemoryService find_existing]
-  F --> G[AI decision]
-  G --> H[AiExplainer optional]
-  E --> I[FindingsBuilder]
-  H --> I
-  I --> J[IncidentMemoryService save]
-  J --> K[CLI output text json markdown slack]
+  A[CLI investigate command] --> B[InvestigationService]
+  B --> C[InvestigationRuntime]
+  C --> D[TriggerResolver]
+  D --> E[EvidenceCollector]
+  E --> F[DiagnosticCheckEngine]
+  F --> G[IncidentCaseBuilder]
+  G --> H[IncidentMemoryService find_existing]
+  H --> I[AI decision]
+  I --> J[AiExplainer optional]
+  G --> K[FindingsBuilder]
+  J --> K
+  K --> L[IncidentMemoryService save]
+  L --> M[CLI output text json markdown slack]
 ```
 
 ## Layer boundaries
-- CLI parses arguments and calls `KubeAgentService` only.
-- `KubeAgentService` orchestrates trigger, evidence, checks, case, AI, findings, and memory.
+- CLI parses arguments and calls domain services only.
+- `KubeAgentService` is a compatibility facade and delegates to investigation and incidents services.
+- `InvestigationService` orchestrates the runtime and wraps failures with typed HAPE errors.
+- `CostAnalysisService` builds cost trigger input and delegates to investigation flow.
 - Clients perform transport operations only.
 - Deterministic checks consume normalized evidence only.
 - AI explanation consumes `IncidentCase` only.
 - Memory service stores fingerprints and runs and does not collect evidence.
+
+## Error contract
+- Services raise typed HAPE errors.
+- Validation and input failures use `HapeValidationError`.
+- External and system interaction failures use `HapeExternalError`.
+- Errors include stable code, user-facing message, and minimal non-sensitive context.
 
 ## Trigger handling
 - Supported kinds are `pod`, `deployment`, `node`, `alert`, and `cost`.
@@ -89,10 +105,9 @@ hape kube-agent cost-analyze --kube-context demo --namespace payments --deployme
 hape kube-agent cost-analyze --kube-context demo --namespace payments --all-workloads --historical-offset 1h --output markdown --use-ai false
 ```
 10. Confirm findings include workloads that increased compared to one hour ago.
-
 ## Test references
 - Kube-agent unit and integration tests: `tests/kube_agent/`.
 - Run all kube-agent tests:
 ```bash
-python -m pytest -q tests/kube_agent
+python -m pytest tests/kube_agent
 ```

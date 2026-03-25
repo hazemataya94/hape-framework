@@ -15,7 +15,10 @@ class ErrorHandler:
         active_print = print_fn or print
 
         if isinstance(exc, HapeError):
-            active_logger.error(f"[{exc.code}] {exc.message}")
+            if exc.context:
+                active_logger.error(f"[{exc.code}] {exc.message} | context={exc.context}")
+            else:
+                active_logger.error(f"[{exc.code}] {exc.message}")
             active_print(f"Error: {exc.message}")
             return exc.exit_code
 

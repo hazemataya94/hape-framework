@@ -1,0 +1,10 @@
+{
+  "name": "non-react-app",
+  "private": true,
+  "scripts": {
+    "build": "echo build"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}

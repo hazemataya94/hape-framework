@@ -1,0 +1,11 @@
+{
+  "name": "generic-react-app",
+  "private": true,
+  "scripts": {
+    "build": "echo build"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

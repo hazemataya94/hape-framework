@@ -1,8 +1,8 @@
 from datetime import UTC, datetime
 
-from services.kube_agent.checks.diagnostic_check_engine import DiagnosticCheckEngine
-from services.kube_agent.evidence.evidence_models import EvidenceBundle, EvidenceItem
-from services.kube_agent.triggers.trigger_models import Trigger
+from services.kube_agent.investigation.checks.diagnostic_check_engine import DiagnosticCheckEngine
+from services.kube_agent.investigation.evidence.evidence_models import EvidenceBundle, EvidenceItem
+from services.kube_agent.investigation.triggers.trigger_models import Trigger
 
 
 def test_oom_kill_check_is_matched_when_event_contains_oomkilled() -> None:

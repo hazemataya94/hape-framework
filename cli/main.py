@@ -4,6 +4,7 @@ from importlib import metadata
 
 from core.config import Config
 from core.errors.handler import ErrorHandler
+from cli.commands.init_cicd_commands import InitCicdCommands
 from cli.commands.config_commands import ConfigCommands
 from cli.commands.confluence_commands import ConfluenceCommands
 from cli.commands.csv_commands import CsvCommands
@@ -77,6 +78,7 @@ class CLI:
         DoraCommands.register(subparsers)
         EksDeploymentCostCommands.register(subparsers)
         KubeAgentCommands.register(subparsers)
+        InitCicdCommands.register(subparsers)
         MarkdownCommands.register(subparsers)
 
         return parser

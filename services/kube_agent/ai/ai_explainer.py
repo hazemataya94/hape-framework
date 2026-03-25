@@ -1,7 +1,7 @@
 from services.kube_agent.ai.ai_models import AiExplanation
 from services.kube_agent.ai.ai_prompt_builder import AiPromptBuilder
 from services.kube_agent.ai.ai_response_parser import AiResponseParser
-from services.kube_agent.case.incident_case_models import IncidentCase
+from services.kube_agent.investigation.case.incident_case_models import IncidentCase
 
 
 class AiExplainer:

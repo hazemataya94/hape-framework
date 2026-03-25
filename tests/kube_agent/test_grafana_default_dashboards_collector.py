@@ -1,8 +1,8 @@
 from datetime import UTC, datetime
 
-from services.kube_agent.evidence.collectors.grafana_default_dashboards_collector import GrafanaDefaultDashboardsCollector
-from services.kube_agent.evidence.evidence_models import EvidenceItem
-from services.kube_agent.triggers.trigger_models import Trigger
+from services.kube_agent.investigation.evidence.collectors.grafana_default_dashboards_collector import GrafanaDefaultDashboardsCollector
+from services.kube_agent.investigation.evidence.evidence_models import EvidenceItem
+from services.kube_agent.investigation.triggers.trigger_models import Trigger
 
 
 class _FakeGrafanaClient:

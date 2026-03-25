@@ -3,9 +3,10 @@ import json
 from typing import Any
 
 from core.logging import LocalLogging
-from services.kube_agent.findings.json_formatter import JsonFormatter
-from services.kube_agent.findings.markdown_formatter import MarkdownFormatter
-from services.kube_agent.findings.slack_formatter import SlackFormatter
+from services.kube_agent.cost.cost_analysis_service import CostAnalysisService
+from services.kube_agent.investigation.findings.json_formatter import JsonFormatter
+from services.kube_agent.investigation.findings.markdown_formatter import MarkdownFormatter
+from services.kube_agent.investigation.findings.slack_formatter import SlackFormatter
 from services.kube_agent.kube_agent_service import KubeAgentService
 
 
@@ -45,7 +46,6 @@ class KubeAgentCommands:
             return
         print(findings.summary)
 
-    @staticmethod
     def _register_investigate_parser(investigate_subparsers: argparse._SubParsersAction) -> None:
         pod_parser = investigate_subparsers.add_parser(
             "pod",
@@ -246,7 +246,6 @@ class KubeAgentCommands:
         )
         cost_parser.set_defaults(func=KubeAgentCommands.run_cost_analyze)
 
-    @staticmethod
     def register(subparsers: argparse._SubParsersAction) -> None:
         parser = subparsers.add_parser(
             "kube-agent",
@@ -346,23 +345,18 @@ class KubeAgentCommands:
     @staticmethod
     def run_cost_analyze(args: Any) -> None:
         LocalLogging.bootstrap()
-        kube_agent_service = KubeAgentService()
+        cost_analysis_service = CostAnalysisService()
         is_all_workloads = bool(args.all_workloads)
-        target_name = "__all__" if is_all_workloads else args.deployment
-        findings = kube_agent_service.investigate(
-            raw_trigger={
-                "type": "cost",
-                "cluster": args.kube_context,
-                "namespace": args.namespace,
-                "name": target_name,
-                "source": "cli",
-                "metadata": {"historical_offset": args.historical_offset, "all_workloads": is_all_workloads},
-            },
+        findings = cost_analysis_service.analyze(
+            kube_context=args.kube_context,
+            namespace=args.namespace,
+            deployment=args.deployment,
+            all_workloads=is_all_workloads,
+            historical_offset=args.historical_offset,
             use_ai=KubeAgentCommands._parse_bool_text(args.use_ai),
         )
         KubeAgentCommands._print_findings(findings=findings, output=args.output)
 
-    @staticmethod
     def run_incidents_list(args: Any) -> None:
         LocalLogging.bootstrap()
         kube_agent_service = KubeAgentService()

@@ -8,6 +8,7 @@ Use these files as quick references for report structure and expected fields.
 - [EKS deployment cost demo](eks-deployment-cost/README.md)
 - [Kube agent demo](kube-agent/README.md)
 - [Kube agent cost analysis demo](kube-agent-cost-analysis/README.md)
+- [Init-cicd demo](init-cicd/README.md)
 - [DORA metrics demo](dora-github/README.md)
 
 ## Notes

@@ -2,10 +2,10 @@ from pathlib import Path
 
 import pytest
 
-import services.kube_agent.kube_agent_service as kube_agent_service_module
-from services.kube_agent.findings.json_formatter import JsonFormatter
-from services.kube_agent.findings.markdown_formatter import MarkdownFormatter
-from services.kube_agent.findings.slack_formatter import SlackFormatter
+import services.kube_agent.investigation.investigation_runtime as investigation_runtime_module
+from services.kube_agent.investigation.findings.json_formatter import JsonFormatter
+from services.kube_agent.investigation.findings.markdown_formatter import MarkdownFormatter
+from services.kube_agent.investigation.findings.slack_formatter import SlackFormatter
 from services.kube_agent.kube_agent_service import KubeAgentService
 from utils.test_artifacts_utils import print_artifacts_directory
 
@@ -59,9 +59,9 @@ def _write_findings_artifacts(findings, output_dir: Path) -> dict[str, Path]:
 
 
 def test_kube_agent_investigate_pod_on_kind_cluster(apply_kube_agent_test_manifests: dict[str, str | None], monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    monkeypatch.setattr(kube_agent_service_module, "PrometheusClient", _FakePrometheusClient)
-    monkeypatch.setattr(kube_agent_service_module, "AlertmanagerClient", _FakeAlertmanagerClient)
-    monkeypatch.setattr(kube_agent_service_module, "GrafanaClient", _FakeGrafanaClient)
+    monkeypatch.setattr(investigation_runtime_module, "PrometheusClient", _FakePrometheusClient)
+    monkeypatch.setattr(investigation_runtime_module, "AlertmanagerClient", _FakeAlertmanagerClient)
+    monkeypatch.setattr(investigation_runtime_module, "GrafanaClient", _FakeGrafanaClient)
     monkeypatch.setenv("HAPE_KUBE_AGENT_SQLITE_PATH", str(tmp_path / "kube-agent-functional.sqlite"))
     service = KubeAgentService()
     findings = service.investigate(

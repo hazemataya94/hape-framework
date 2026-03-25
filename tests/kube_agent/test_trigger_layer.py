@@ -1,7 +1,7 @@
 import pytest
 
 from core.errors.exceptions import HapeValidationError
-from services.kube_agent.triggers.trigger_resolver import TriggerResolver
+from services.kube_agent.investigation.triggers.trigger_resolver import TriggerResolver
 
 
 def test_resolve_valid_pod_trigger() -> None:

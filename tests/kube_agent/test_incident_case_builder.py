@@ -1,9 +1,9 @@
 from datetime import UTC, datetime
 
-from services.kube_agent.case.incident_case_builder import IncidentCaseBuilder
-from services.kube_agent.checks.diagnostic_check_models import CheckResult
-from services.kube_agent.evidence.evidence_models import EvidenceBundle, EvidenceItem
-from services.kube_agent.triggers.trigger_models import Trigger
+from services.kube_agent.investigation.case.incident_case_builder import IncidentCaseBuilder
+from services.kube_agent.investigation.checks.diagnostic_check_models import CheckResult
+from services.kube_agent.investigation.evidence.evidence_models import EvidenceBundle, EvidenceItem
+from services.kube_agent.investigation.triggers.trigger_models import Trigger
 
 
 def test_incident_case_builder_sets_likely_causes_and_recommendations() -> None:

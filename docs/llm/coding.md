@@ -4,6 +4,11 @@ Apply these rules when changing code in this repository.
 # Repository safety
 - Always ignore any virtual environment files (for example `.venv`, `.exec-venv`). Do not modify them. Only scan or read when necessary and more efficient for llm usage than any other available method.
 
+# Restructuring and file moves
+- When the task is repository restructuring or moving files, use filesystem commands (`mkdir`, `mv`, `rm`) for the move operation.
+- After file moves, validate the result by checking that new paths exist and old paths are removed.
+- For move-focused tasks, avoid rewriting full code files when import/path updates are sufficient.
+
 # Typing and return values
 - Add type annotations for function parameters and return values.
 - Functions that aggregate counts across keys should return `collections.Counter`.

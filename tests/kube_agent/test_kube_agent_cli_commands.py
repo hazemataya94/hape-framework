@@ -46,6 +46,21 @@ class _FakeKubeAgentService:
         return None
 
 
+class _FakeCostAnalysisService:
+    last_call = None
+
+    def analyze(self, kube_context: str, namespace: str, deployment: str | None, all_workloads: bool, historical_offset: str, use_ai: bool):
+        _FakeCostAnalysisService.last_call = {
+            "kube_context": kube_context,
+            "namespace": namespace,
+            "deployment": deployment,
+            "all_workloads": all_workloads,
+            "historical_offset": historical_offset,
+            "use_ai": use_ai,
+        }
+        return _FakeFindings()
+
+
 def test_cli_parses_pod_flags_and_calls_service(monkeypatch) -> None:
     monkeypatch.setattr(kube_agent_commands_module, "KubeAgentService", _FakeKubeAgentService)
     parser = argparse.ArgumentParser()
@@ -188,7 +203,7 @@ def test_cli_deployment_and_node_commands(monkeypatch) -> None:
 
 
 def test_cli_cost_analyze_command(monkeypatch) -> None:
-    monkeypatch.setattr(kube_agent_commands_module, "KubeAgentService", _FakeKubeAgentService)
+    monkeypatch.setattr(kube_agent_commands_module, "CostAnalysisService", _FakeCostAnalysisService)
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
     KubeAgentCommands.register(subparsers)
@@ -209,14 +224,13 @@ def test_cli_cost_analyze_command(monkeypatch) -> None:
         ]
     )
     args.func(args)
-    assert _FakeKubeAgentService.last_raw_trigger["type"] == "cost"
-    assert _FakeKubeAgentService.last_raw_trigger["name"] == "api"
-    assert _FakeKubeAgentService.last_raw_trigger["metadata"]["historical_offset"] == "2h"
-    assert _FakeKubeAgentService.last_use_ai is True
+    assert _FakeCostAnalysisService.last_call["deployment"] == "api"
+    assert _FakeCostAnalysisService.last_call["historical_offset"] == "2h"
+    assert _FakeCostAnalysisService.last_call["use_ai"] is True
 
 
 def test_cli_cost_analyze_all_workloads_command(monkeypatch) -> None:
-    monkeypatch.setattr(kube_agent_commands_module, "KubeAgentService", _FakeKubeAgentService)
+    monkeypatch.setattr(kube_agent_commands_module, "CostAnalysisService", _FakeCostAnalysisService)
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
     KubeAgentCommands.register(subparsers)
@@ -236,9 +250,8 @@ def test_cli_cost_analyze_all_workloads_command(monkeypatch) -> None:
         ]
     )
     args.func(args)
-    assert _FakeKubeAgentService.last_raw_trigger["type"] == "cost"
-    assert _FakeKubeAgentService.last_raw_trigger["name"] == "__all__"
-    assert _FakeKubeAgentService.last_raw_trigger["metadata"]["all_workloads"] is True
+    assert _FakeCostAnalysisService.last_call["deployment"] is None
+    assert _FakeCostAnalysisService.last_call["all_workloads"] is True
 
 
 def test_cli_incidents_list_and_show(monkeypatch, capsys) -> None:
@@ -261,4 +274,4 @@ def test_cli_incidents_list_and_show(monkeypatch, capsys) -> None:
 if __name__ == "__main__":
     import pytest
 
-    raise SystemExit(pytest.main(["-q", __file__]))
+    raise SystemExit(pytest.main([__file__]))

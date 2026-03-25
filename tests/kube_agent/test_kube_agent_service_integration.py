@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 
-import services.kube_agent.kube_agent_service as kube_agent_service_module
+import services.kube_agent.investigation.investigation_runtime as investigation_runtime_module
 from services.kube_agent.kube_agent_service import KubeAgentService
 
 
@@ -129,10 +129,10 @@ class _FakeGrafanaClient:
 
 def test_full_investigate_pod_with_mocked_clients(monkeypatch, tmp_path) -> None:
     _FakeKubernetesClient.ensure_prometheus_port_forward_called = False
-    monkeypatch.setattr(kube_agent_service_module, "KubernetesClient", _FakeKubernetesClient)
-    monkeypatch.setattr(kube_agent_service_module, "PrometheusClient", _FakePrometheusClient)
-    monkeypatch.setattr(kube_agent_service_module, "AlertmanagerClient", _FakeAlertmanagerClient)
-    monkeypatch.setattr(kube_agent_service_module, "GrafanaClient", _FakeGrafanaClient)
+    monkeypatch.setattr(investigation_runtime_module, "KubernetesClient", _FakeKubernetesClient)
+    monkeypatch.setattr(investigation_runtime_module, "PrometheusClient", _FakePrometheusClient)
+    monkeypatch.setattr(investigation_runtime_module, "AlertmanagerClient", _FakeAlertmanagerClient)
+    monkeypatch.setattr(investigation_runtime_module, "GrafanaClient", _FakeGrafanaClient)
     monkeypatch.setenv("HAPE_KUBE_AGENT_SQLITE_PATH", str(tmp_path / "kube-agent.sqlite"))
     service = KubeAgentService()
     findings = service.investigate(
@@ -146,10 +146,10 @@ def test_full_investigate_pod_with_mocked_clients(monkeypatch, tmp_path) -> None
 
 
 def test_repeated_incident_memory_behavior(monkeypatch, tmp_path) -> None:
-    monkeypatch.setattr(kube_agent_service_module, "KubernetesClient", _FakeKubernetesClient)
-    monkeypatch.setattr(kube_agent_service_module, "PrometheusClient", _FakePrometheusClient)
-    monkeypatch.setattr(kube_agent_service_module, "AlertmanagerClient", _FakeAlertmanagerClient)
-    monkeypatch.setattr(kube_agent_service_module, "GrafanaClient", _FakeGrafanaClient)
+    monkeypatch.setattr(investigation_runtime_module, "KubernetesClient", _FakeKubernetesClient)
+    monkeypatch.setattr(investigation_runtime_module, "PrometheusClient", _FakePrometheusClient)
+    monkeypatch.setattr(investigation_runtime_module, "AlertmanagerClient", _FakeAlertmanagerClient)
+    monkeypatch.setattr(investigation_runtime_module, "GrafanaClient", _FakeGrafanaClient)
     monkeypatch.setenv("HAPE_KUBE_AGENT_SQLITE_PATH", str(tmp_path / "kube-agent.sqlite"))
     service = KubeAgentService()
     service.investigate(raw_trigger={"type": "pod", "cluster": "demo", "namespace": "payments", "name": "api"}, use_ai=False)
@@ -160,10 +160,10 @@ def test_repeated_incident_memory_behavior(monkeypatch, tmp_path) -> None:
 
 
 def test_ai_optional_path_and_no_ai_path(monkeypatch, tmp_path) -> None:
-    monkeypatch.setattr(kube_agent_service_module, "KubernetesClient", _FakeKubernetesClient)
-    monkeypatch.setattr(kube_agent_service_module, "PrometheusClient", _FakePrometheusClient)
-    monkeypatch.setattr(kube_agent_service_module, "AlertmanagerClient", _FakeAlertmanagerClient)
-    monkeypatch.setattr(kube_agent_service_module, "GrafanaClient", _FakeGrafanaClient)
+    monkeypatch.setattr(investigation_runtime_module, "KubernetesClient", _FakeKubernetesClient)
+    monkeypatch.setattr(investigation_runtime_module, "PrometheusClient", _FakePrometheusClient)
+    monkeypatch.setattr(investigation_runtime_module, "AlertmanagerClient", _FakeAlertmanagerClient)
+    monkeypatch.setattr(investigation_runtime_module, "GrafanaClient", _FakeGrafanaClient)
     monkeypatch.setenv("HAPE_KUBE_AGENT_SQLITE_PATH", str(tmp_path / "kube-agent.sqlite"))
     service = KubeAgentService()
     no_ai = service.investigate(raw_trigger={"type": "pod", "cluster": "demo", "namespace": "payments", "name": "api"}, use_ai=False)
@@ -173,10 +173,10 @@ def test_ai_optional_path_and_no_ai_path(monkeypatch, tmp_path) -> None:
 
 
 def test_cost_analyze_flow_with_mocked_clients(monkeypatch, tmp_path) -> None:
-    monkeypatch.setattr(kube_agent_service_module, "KubernetesClient", _FakeKubernetesClient)
-    monkeypatch.setattr(kube_agent_service_module, "PrometheusClient", _FakePrometheusClient)
-    monkeypatch.setattr(kube_agent_service_module, "AlertmanagerClient", _FakeAlertmanagerClient)
-    monkeypatch.setattr(kube_agent_service_module, "GrafanaClient", _FakeGrafanaClient)
+    monkeypatch.setattr(investigation_runtime_module, "KubernetesClient", _FakeKubernetesClient)
+    monkeypatch.setattr(investigation_runtime_module, "PrometheusClient", _FakePrometheusClient)
+    monkeypatch.setattr(investigation_runtime_module, "AlertmanagerClient", _FakeAlertmanagerClient)
+    monkeypatch.setattr(investigation_runtime_module, "GrafanaClient", _FakeGrafanaClient)
     monkeypatch.setenv("HAPE_KUBE_AGENT_SQLITE_PATH", str(tmp_path / "kube-agent.sqlite"))
     service = KubeAgentService()
     findings = service.investigate(
@@ -192,4 +192,4 @@ def test_cost_analyze_flow_with_mocked_clients(monkeypatch, tmp_path) -> None:
 if __name__ == "__main__":
     import pytest
 
-    raise SystemExit(pytest.main(["-q", __file__]))
+    raise SystemExit(pytest.main([__file__]))

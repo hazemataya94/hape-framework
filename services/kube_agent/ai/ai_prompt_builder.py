@@ -1,4 +1,4 @@
-from services.kube_agent.case.incident_case_models import IncidentCase
+from services.kube_agent.investigation.case.incident_case_models import IncidentCase
 
 
 class AiPromptBuilder:
