@@ -3,14 +3,15 @@
 ## Purpose
 Demonstrate end-to-end DORA output generation for GitHub repositories and show how to visualize the metrics in Grafana.
 
-## Prerequisites
-- Python dependencies installed.
-- Repository root as current working directory.
-- Local Kubernetes toolchain installed (`kind`, `kubectl`, `helm`, `helmfile`, `make`).
-- Terraform applied for `infrastructure/terraform/envs/dora-demo-github`.
-- GitHub repositories created by that Terraform stack with deploy workflow file.
+## Files
+- `hape-dora-github-overview-dashboard.png`: screenshot of the overview dashboard.
+- `hape-dora-github-project-dashboard.png`: screenshot of the project dashboard.
+- Dashboard JSON files used in Grafana import:
+  - `dashboards/hape-dora-github-overview.json`
+  - `dashboards/hape-dora-github-group.json`
+  - `dashboards/hape-dora-github-project.json`
 
-## Dashboards Screenshots
+## Screenshots
 
 ### HAPE DORA GitHub Overview Dashboard
 
@@ -19,6 +20,13 @@ Demonstrate end-to-end DORA output generation for GitHub repositories and show h
 ### HAPE DORA GitHub Project Dashboard
 
 ![HAPE DORA GitHub Project Dashboard](./hape-dora-github-project-dashboard.png)
+
+## Prerequisites
+- Python dependencies installed.
+- Repository root as current working directory.
+- Local Kubernetes toolchain installed (`kind`, `kubectl`, `helm`, `helmfile`, `make`).
+- Terraform applied for `infrastructure/terraform/envs/dora-demo-github`.
+- GitHub repositories created by that Terraform stack with deploy workflow file.
 
 ## Create GitHub demo repositories
 1. Go to the Terraform environment directory:

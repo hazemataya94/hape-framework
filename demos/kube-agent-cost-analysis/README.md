@@ -21,11 +21,6 @@
 - `kube-agent-cost-all-workloads-findings-markdown.png`: markdown screenshot for all workloads mode.
 - `kube-agent-cost-all-workloads-findings-slack.png`: Slack screenshot for all workloads mode.
 
-## Prerequisites
-- Python dependencies installed for this project.
-- Functional test prerequisites from `tests/kube_agent/README.md` are met.
-- `eks-deployment-cost` exporter is running and scraped by Prometheus.
-
 ## Screenshots
 Summary output:
 
@@ -58,6 +53,11 @@ All workloads markdown output:
 All workloads Slack output:
 
 ![Kube agent cost all workloads slack](./kube-agent-cost-all-workloads-findings-slack-txt.png)
+
+## Prerequisites
+- Python dependencies installed for this project.
+- Functional test prerequisites from `tests/kube_agent/README.md` are met.
+- `eks-deployment-cost` exporter is running and scraped by Prometheus.
 
 ## Steps to reproduce this demo
 1) Start local kind cluster:

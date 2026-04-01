@@ -3,15 +3,15 @@
 ## Purpose
 Show how `hape init-cicd` scaffolds Kubernetes manifests and CI files for a React project with local kind-backed functional validation artifacts.
 
+## Screenshots
+
+![Init CICD Output](./init-cicd-output.png)
+
 ## Prerequisites
 - Run commands from repository root: `public/hape-framework`.
 - Python dependencies are installed.
 - `kind` and `kubectl` are installed.
 - `hape` CLI is available in your shell.
-
-## Screenshots
-
-![Init CICD Output](./init-cicd-output.png)
 
 ## Create a local working react project
 

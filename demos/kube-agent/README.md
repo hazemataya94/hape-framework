@@ -10,10 +10,6 @@
 - `kube-agent-findings-markdown.png`: markdown findings output screenshot.
 - `kube-agent-findings-slack.png`: Slack text output screenshot.
 
-## Prerequisites
-- Python dependencies installed for this project.
-- Functional test prerequisites from `tests/kube_agent/README.md` are met.
-
 ## Screenshots
 Summary output:
 
@@ -30,6 +26,10 @@ Markdown output:
 Slack output:
 
 ![Kube agent findings slack](./kube-agent-findings-slack.png)
+
+## Prerequisites
+- Python dependencies installed for this project.
+- Functional test prerequisites from `tests/kube_agent/README.md` are met.
 
 ## Steps to reproduce this demo
 1) Start local kind cluster:
