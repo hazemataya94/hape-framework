@@ -29,5 +29,5 @@ This contract is for adding new tools and for making existing tools agent-safe.
 
 ## Documentation
 For each new tool:
-- add a page under `docs/user/` with 1–2 examples
+- add a page under `docs/cli/` with 1–2 examples
 - document safety level, side effects, and required config/env

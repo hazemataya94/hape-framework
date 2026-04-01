@@ -17,7 +17,7 @@ Apply these rules when creating or updating Prometheus exporters in this reposit
 - Escape label values before rendering exposition text.
 
 ## Documentation requirements
-- Update `docs/ops/exporters/<exporter>.md` whenever endpoint, metric, or config behavior changes.
+- Update `docs/exporters/<exporter>.md` whenever endpoint, metric, or config behavior changes.
 - Update related dashboard JSON in `dashboards/` when metric schema changes.
 
 ## Validation requirements

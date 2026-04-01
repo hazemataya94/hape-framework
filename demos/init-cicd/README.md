@@ -100,7 +100,7 @@ make kind-down
 ```
 
 ## Related documentation
-- [Init CI/CD user guide](../../docs/user/init-cicd.md)
-- [Init CI/CD service logic](../../docs/ops/init-cicd-service.md)
-- [Configuration](../../docs/user/config.md)
+- [Init CI/CD CLI user guide](../../docs/cli/init-cicd.md)
+- [Init CI/CD service logic](../../docs/services/init-cicd-service.md)
+- [Configuration](../../docs/cli/config.md)
 - [Local Kubernetes](../../docs/infra/local-kubernetes.md)

@@ -73,8 +73,8 @@ make kind-down
 ```
 
 ## Related documentation
-- [EKS deployment cost user guide](../../docs/user/eks-deployment-cost.md)
-- [EKS deployment cost service logic](../../docs/ops/eks-deployment-cost-service.md)
+- [EKS deployment cost CLI user guide](../../docs/cli/eks-deployment-cost.md)
+- [EKS deployment cost service logic](../../docs/services/eks-deployment-cost-service.md)
 - [EKS deployment cost exporter](../../docs/exporters/eks-deployment-cost-exporter.md)
 - [EKS deployment cost fixtures](../../docs/infra/eks-deployment-cost-fixtures.md)
 - [Local Kubernetes](../../docs/infra/local-kubernetes.md)

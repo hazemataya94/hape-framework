@@ -8,7 +8,8 @@ Apply these rules when creating or updating documentation in this repository.
 - If a change modifies `Makefile`, always update `docs/makefile.md` in the same change.
 - Use simple, clear words and short sentences; avoid ambiguous words (`it`, `this`, `that`, `soon`, `latest`, `correct`).
 - Write explicit statements with subject, condition, and expected result; prefer simple words (`fix` over `resolve`, `use` over `utilize`).
-- For documents under `docs/ops/`, add a Mermaid flowchart when it helps provide a clear general workflow overview.
+- For documents under `docs/services/`, add a Mermaid flowchart when it helps provide a clear general workflow overview.
+- For every new or updated file under `docs/services/`, always include a final `## Related documentation` section with links to the most relevant docs under `docs/cli/`, `docs/infra/`, `docs/exporters/`, and `docs/architectures/` when applicable.
 
 ## Command examples in docs
 - When writing documentation command examples for Python, always use `python` (never virtualenv-prefixed interpreter paths or `python3`).
@@ -21,5 +22,6 @@ Apply these rules when creating or updating documentation in this repository.
 - Demo README files must include screenshots (or equivalent visual output captures) that show the feature outputs after successful execution.
 - In demo READMEs, place the `Screenshots` section immediately after `Prerequisites`.
 - For exporter demos, use the Kubernetes runtime-source deployment pattern (ConfigMap + initContainer dependencies) and avoid Docker build/load steps in README instructions unless explicitly required by the feature.
+- Every demo README under `demos/*/README.md` must end with a final `## Related documentation` section linking to the corresponding user guide and service documentation, plus supporting infra/exporter/architecture docs when relevant.
 - Once a demo folder is created, do not modify it for new feature demonstrations.
 - For any new or changed feature demonstration, create a new demo folder by default.

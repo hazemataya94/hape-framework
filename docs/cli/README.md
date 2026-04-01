@@ -1,4 +1,4 @@
-# User Docs
+# CLI Docs
 
 ## Purpose
 This directory contains user-facing documentation for HAPE CLI commands and workflows.

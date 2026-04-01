@@ -9,5 +9,5 @@ HAPE is a CLI for platform and DevOps automations.
 - [Infrastructure Docs](infra/README.md) - local Kubernetes, Helmfile, fixtures, and Terraform documentation.
 - [Makefile Docs](makefile.md) - variables, targets, and common Make workflows.
 - [LLM Agent Rules](llm/README.md) - rule files for LLM agents working in this repository.
-- [Operations Docs](ops/README.md) - operational runbooks and automation procedures.
-- [User Docs](user/README.md) - user-facing CLI command and workflow documentation.
+- [Services Docs](services/README.md) - service logic, runtime behavior, and operational validation.
+- [CLI Docs](cli/README.md) - user-facing CLI command and workflow documentation.

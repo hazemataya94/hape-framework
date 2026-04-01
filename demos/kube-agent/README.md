@@ -65,7 +65,7 @@ make kind-down
 ```
 
 ## Related documentation
-- [Kube agent user guide](../../docs/user/kube-agent.md)
-- [Kube agent service logic](../../docs/ops/kube-agent-service.md)
+- [Kube agent CLI user guide](../../docs/cli/kube-agent.md)
+- [Kube agent service logic](../../docs/services/kube-agent-service.md)
 - [Kube agent architecture](../../docs/architectures/kube_agent_architecture.md)
 - [Kube agent functional tests](../../tests/kube_agent/README.md)
