@@ -123,5 +123,5 @@ make kind-down
 ## Related documentation
 - [Kube agent user guide](../../docs/user/kube-agent.md)
 - [Kube agent service logic](../../docs/ops/kube-agent-service.md)
-- [EKS deployment cost exporter](../../docs/ops/exporters/eks-deployment-cost-exporter.md)
+- [EKS deployment cost exporter](../../docs/exporters/eks-deployment-cost-exporter.md)
 - [Kube agent architecture](../../docs/architectures/kube_agent_architecture.md)

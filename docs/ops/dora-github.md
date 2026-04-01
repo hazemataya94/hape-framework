@@ -44,3 +44,9 @@ flowchart TD
 - No deploy data table for configured repositories with zero deploys.
 - No change data table for configured repositories with no lead-time change set.
 - Lowest non-zero ranking tables for deployment frequency, lead time, change fail rate, and recovery time.
+
+## Related documentation
+- [DORA Metrics (User Guide)](../user/dora.md)
+- [DORA Exporter Runbook](../exporters/dora-exporter.md)
+- [Terraform DORA GitHub](../infra/terraform-dora-github.md)
+- [Configuration](../user/config.md)

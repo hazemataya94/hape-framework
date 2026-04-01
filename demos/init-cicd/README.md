@@ -98,3 +98,9 @@ Delete kind cluster if you no longer need it:
 ```bash
 make kind-down
 ```
+
+## Related documentation
+- [Init CI/CD user guide](../../docs/user/init-cicd.md)
+- [Init CI/CD service logic](../../docs/ops/init-cicd-service.md)
+- [Configuration](../../docs/user/config.md)
+- [Local Kubernetes](../../docs/infra/local-kubernetes.md)

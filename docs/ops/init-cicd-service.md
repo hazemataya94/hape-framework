@@ -68,3 +68,9 @@ HAPE_RUN_KUBE_AGENT_FUNCTIONAL_TESTS=1 python -m pytest tests/init_cicd/test_ini
 
 ## Future direction
 The command is designed for deployment-type expansion in future versions, including options such as `aws-serversless`.
+
+## Related documentation
+- [Init CI/CD (User Guide)](../user/init-cicd.md)
+- [Configuration](../user/config.md)
+- [Infrastructure Overview](../infra/overview.md)
+- [Local Kubernetes](../infra/local-kubernetes.md)

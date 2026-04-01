@@ -111,3 +111,9 @@ hape kube-agent cost-analyze --kube-context demo --namespace payments --all-work
 ```bash
 python -m pytest tests/kube_agent
 ```
+
+## Related documentation
+- [Kube Agent (User Guide)](../user/kube-agent.md)
+- [Kube Agent Architecture](../architectures/kube_agent_architecture.md)
+- [Kube Agent Fixtures](../infra/kube-agent-fixtures.md)
+- [Helmfile Monitoring Stack](../infra/helmfile-monitoring.md)

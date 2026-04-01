@@ -138,3 +138,10 @@ kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80
 make kustomize-delete infrastructure/kubernetes/exporters/dora
 make kind-down
 ```
+
+## Related documentation
+- [DORA metrics user guide](../../docs/user/dora.md)
+- [DORA GitHub operations](../../docs/ops/dora-github.md)
+- [DORA exporter runbook](../../docs/exporters/dora-exporter.md)
+- [Terraform DORA GitHub](../../docs/infra/terraform-dora-github.md)
+- [Helmfile monitoring stack](../../docs/infra/helmfile-monitoring.md)

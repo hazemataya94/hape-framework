@@ -107,3 +107,10 @@ hape eks-deployment-cost report \
 - Functional scenario and expected behavior are covered by `tests/eks-deployment-cost/test_eks_deployment_cost_functional.py`.
 - Local kind cluster config is under `infrastructure/kubernetes/kind/`.
 - Local test fixtures are under `infrastructure/kubernetes/eks-deployment-cost/` and are applied with kustomize.
+
+## Related documentation
+- [EKS Deployment Cost (User Guide)](../user/eks-deployment-cost.md)
+- [EKS Deployment Cost Exporter](../exporters/eks-deployment-cost-exporter.md)
+- [EKS Deployment Cost Fixtures](../infra/eks-deployment-cost-fixtures.md)
+- [Local Kubernetes](../infra/local-kubernetes.md)
+- [Infrastructure Overview](../infra/overview.md)
