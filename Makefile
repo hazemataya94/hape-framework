@@ -3,9 +3,11 @@ VERSION_FILE ?= VERSION
 INSTALL_PREFIX ?=
 KIND_CLUSTER_NAME ?= hape
 KIND_CONFIG_PATH ?= infrastructure/kubernetes/kind/cluster-config.yaml
+DOCKER_IMAGE ?= hazemataya/hape
+DOCKERFILE_PATH ?= docker/Dockerfile
 KUSTOMIZE_TARGET_PATH := $(word 2,$(MAKECMDGOALS))
 
-.PHONY: help clean bump-version build install kind-up helmfile-sync kind-down kustomize-apply kustomize-delete
+.PHONY: help clean bump-version build install kind-up helmfile-sync kind-down kustomize-apply kustomize-delete publish-docker
 
 ifneq ($(filter kustomize-apply kustomize-delete,$(firstword $(MAKECMDGOALS))),)
   ifneq ($(KUSTOMIZE_TARGET_PATH),)
@@ -119,6 +121,22 @@ publish: build ## Publish package to public PyPI. Commit, tag, and push the vers
 		echo ""; \
 		echo "Pushing tags"; \
 		git push origin --tags; \
+		echo ""; \
+		echo "Publishing Docker image"; \
+		sleep 2; \
+		$(MAKE) publish-docker; \
 	) || ( \
 		echo "Upload failed. Not committing version bump."; \
 	)
+
+publish-docker: ## Build and publish Docker image with latest and VERSION tags.
+	@set -eu; \
+	version=$$(cat $(VERSION_FILE)); \
+	echo "$$ docker build --no-cache -f $(DOCKERFILE_PATH) -t $(DOCKER_IMAGE):latest ."; \
+	docker build --no-cache -f $(DOCKERFILE_PATH) -t $(DOCKER_IMAGE):latest .; \
+	echo "$$ docker tag $(DOCKER_IMAGE):latest $(DOCKER_IMAGE):$$version"; \
+	docker tag $(DOCKER_IMAGE):latest $(DOCKER_IMAGE):$$version; \
+	echo "$$ docker push $(DOCKER_IMAGE):latest"; \
+	docker push $(DOCKER_IMAGE):latest; \
+	echo "$$ docker push $(DOCKER_IMAGE):$$version"; \
+	docker push $(DOCKER_IMAGE):$$version
