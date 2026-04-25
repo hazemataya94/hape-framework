@@ -16,32 +16,59 @@ This document describes the high-level architecture for a self-governance DevOps
 
 ```mermaid
 graph TD
-  U[User] --> CLI[CLI]
-  AG[DevOps Platform Agent] --> CLI
-  CLI --> CP[Clients Packages]
-  P[TSDB Time Series Database] --> EXP[Metrics Collectors]
-  P --> G[Visualization Tool]
-  CP --> K[Kubernetes]
-  CP --> CLOUD[AWS GCP]
-  CP --> VCS[GitHub GitLab]
-  CP --> WM[Jira Confluence]
-  CP --> TF[Terraform State]
-  EXP --> K
-  EXP --> CLOUD
-  EXP --> VCS
-  EXP --> WM
-  EXP --> TF
+  U[User]
+  G[Visualization Tool]
+  AG[DevOps Platform Agent]
+
+  subgraph APP["Application Layer"]
+    CLI[CLI]
+    API[API]
+  end
+
+  subgraph BL["Business Logic Layer"]
+    SVC[Services]
+    EXP[Metrics Collectors]
+  end
+
+  subgraph INT["Integration Layer"]
+    CP[Clients]
+    K[Kubernetes]
+    CLOUD[AWS GCP]
+    VCS[GitHub GitLab]
+    WM[Jira Confluence]
+    TF[Terraform State]
+  end
+
+  subgraph DATA["Data Layer"]
+    P[TSDB Time Series Database]
+  end
+
+  U --> CLI
+  U --> API
   G --> U
+  AG --> CLI
+  AG --> API
+  CLI --> SVC
+  API --> SVC
+  SVC --> CP
+  EXP --> CP
+  P --> EXP
+  P --> G
   P --> AG
+  CP --> K
+  CP --> CLOUD
+  CP --> VCS
+  CP --> WM
+  CP --> TF
 ```
 ---
 
 ## Main flows
 1) **Observability**
-- Metrics collectors read 3rd-party systems (cached + rate-limited) → time-series metrics database scrapes metrics collectors → visualization tool dashboards/alerts
+- Metrics collectors read via clients package adapters (cached + rate-limited) → time-series metrics database scrapes metrics collectors → visualization tool dashboards/alerts
 
 2) **Automation**
-- User/Agent → CLI → Python clients → 3rd-party systems (actions/control)
+- User/Agent → CLI or API → services → Python clients → 3rd-party systems (actions/control)
 
 3) **Feedback loop**
 - Visualization tool alerts/insights → User/Agent → CLI runs remediation workflows
@@ -56,6 +83,9 @@ graph TD
 - **CLI**
   - Primary interface for **human** and **AI** interaction.
   - Runs automation workflows and exposes a stable command surface.
+- **API (FastAPI)**
+  - Token-authenticated HTTP interface for the same workflows exposed by CLI.
+  - Uses strict 1:1 command parity naming with CLI paths.
 
 ### Responsibilities
 - Execute operational actions (e.g., remediation, housekeeping, rollout steps).
@@ -63,8 +93,16 @@ graph TD
 
 ### Architecture
 
+#### General Layer Model
+- **Application Layer**: `CLI` and `API`.
+- **Business Logic Layer**: `Services` and `Metrics Collectors`.
+- **Integration Layer**: `Clients` and third-party systems (Kubernetes, cloud providers, VCS, work-management tools, Terraform state).
+- **Data Layer**: Time-series data store (`TSDB`).
+- **Outside layered runtime model**: `User`, `DevOps Platform Agent`, and `Visualization Tool` are interaction actors/surfaces, not core execution layers.
+
 #### Layers
 - **CLI**: Argument parsing and user input handling. Commands call services only.
+- **API**: HTTP request parsing and response mapping. Endpoints call services only.
 - **Services**: Domain logic that orchestrates one or more clients to perform automation tasks.
 - **Clients**: Low-level adapters for external systems (Jira, Confluence, GitLab, AWS, Kubernetes).
 - **Core**: Cross-cutting infrastructure (configuration, logging, centralized error handling). Shared across all layers.
@@ -73,10 +111,13 @@ graph TD
 
 #### Layer Restrictions
 - CLI must not call clients directly. All external access goes through services.
+- API must not call clients directly. All external access goes through services.
 - Services may call multiple clients, but clients must not call services.
 - Clients must not call other clients.
 - Core and utils are reusable by any layer, but should not depend on services or CLI.
 - Clients should not import CLI or service code.
+- API authentication is required via bearer tokens stored in a local JSON token store.
+- API throttling is enforced per token (`10` requests per minute).
 - Development-only dependencies must live in `requirements-build.txt` and be installed in the `.venv` explicitly (do not auto-install in Make targets).
 - Configuration is loaded from JSON via `core/config.py`. CLI passes `--config-file-path` to set the config path.
 
@@ -84,7 +125,9 @@ graph TD
 ```mermaid
 flowchart TD
     userNode[Developer/Engineer] --> cliLayer[CLI Commands]
+    userNode --> apiLayer[FastAPI Endpoints]
     cliLayer --> serviceLayer[Services]
+    apiLayer --> serviceLayer
     serviceLayer --> clientLayer[Clients]
     clientLayer --> externalLayer[External APIs]
 ```
@@ -141,12 +184,14 @@ Core and utils are shared across all layers.
 ### Architecture
 
 #### Layers
-- **Exporters**: Runtime Python modules that collect metrics from external systems and expose Prometheus metrics.
+- **Exporters**: Runtime Python modules that collect metrics using clients package adapters and expose Prometheus metrics.
+- **Clients**: Low-level adapters for external systems used by exporters and automation services.
 - **Dashboards**: Grafana dashboard definitions (JSON) versioned as code.
 - **Manifests**: Deployment artifacts for Prometheus, Grafana, and dashboard provisioning.
 
 #### Layer Restrictions
 - Exporters must contain collection and metrics exposition logic only and must not contain dashboard or deployment manifest content.
+- Exporters must not call external systems directly; exporter integrations must go through clients package modules.
 - Dashboards must contain visualization definitions only and must not contain runtime exporter logic.
 - Manifests must reference exporters and dashboards as deployable assets and must not duplicate exporter logic.
 - Exporters may use core and utils modules, but should not import CLI command modules.

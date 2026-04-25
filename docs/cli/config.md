@@ -36,6 +36,13 @@ Logging keys (environment-based):
 - `HAPE_ENABLE_LOG_FILE` (0/1 or true/false; default `0`)
 - `HAPE_LOG_FILE` (path for log file when file logging is enabled; default `~/.hape/hape.log`)
 
+API keys:
+- `HAPE_API_HOST` (default `0.0.0.0`)
+- `HAPE_API_PORT` (default `8080`)
+- `HAPE_API_ADMIN_KEY` (required for token management endpoints)
+- `HAPE_API_TOKENS_FILE` (default `~/.hape/api-tokens.json`)
+- `HAPE_API_RATE_LIMIT_PER_MINUTE` (default `10`)
+
 GitLab keys:
 - `HAPE_GITLAB_DOMAIN`
 - `GITLAB_TOKEN`

@@ -8,6 +8,9 @@ Document all `Makefile` variables and targets in one place.
 - `VERSION_FILE` (default: `VERSION`)
 - `INSTALL_PREFIX` (default: empty)
 - `PYPI_TOKEN_FILE` (default: `../../pypi.token`)
+- `API_BASE_URL` (default: `http://localhost:8080`)
+- `API_TOKEN_NAME` (default: `default-token`)
+- `API_ADMIN_KEY` (default: empty; required for `make api-generate-token`)
 - `KIND_CLUSTER_NAME` (default: `hape`)
 - `KIND_CONFIG_PATH` (default: `infrastructure/kubernetes/kind/cluster-config.yaml`)
 - `KUSTOMIZE_TARGET_PATH` (derived from second argument to `make kustomize-apply` or `make kustomize-delete`)
@@ -18,6 +21,8 @@ Document all `Makefile` variables and targets in one place.
 - `make bump-version`: increment patch version in `VERSION`.
 - `make build`: bump version, then build wheel and source distribution.
 - `make install`: install latest wheel from `dist/` with optional prefix.
+- `make run-api`: run FastAPI server (`python -m api.app`).
+- `make api-generate-token`: generate an API token using `POST /auth/tokens`.
 - `make kind-up`: create local `kind` cluster when not already running.
 - `make helmfile-sync`: sync Helmfile releases for local cluster tooling.
 - `make kind-down`: delete local `kind` cluster when running.
@@ -43,6 +48,24 @@ Install latest wheel:
 
 ```bash
 make install
+```
+
+Run API server:
+
+```bash
+make run-api
+```
+
+Generate API token:
+
+```bash
+make api-generate-token API_ADMIN_KEY=<YOUR_ADMIN_KEY> API_TOKEN_NAME=automation-bot
+```
+
+Generate API token against a different API base URL:
+
+```bash
+make api-generate-token API_ADMIN_KEY=<YOUR_ADMIN_KEY> API_BASE_URL=http://127.0.0.1:8080
 ```
 
 Create local cluster:

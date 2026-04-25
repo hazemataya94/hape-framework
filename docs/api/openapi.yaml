@@ -1,0 +1,1581 @@
+openapi: 3.1.0
+info:
+  title: HAPE API
+  version: 1.0.0
+paths:
+  /healthz:
+    get:
+      tags:
+      - health
+      summary: Healthz
+      operationId: healthz_healthz_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Healthz Healthz Get
+  /auth/tokens:
+    post:
+      tags:
+      - auth
+      summary: Create Token
+      operationId: create_token_auth_tokens_post
+      parameters:
+      - name: x-hape-admin-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: X-Hape-Admin-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTokenRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTokenResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - auth
+      summary: List Tokens
+      operationId: list_tokens_auth_tokens_get
+      parameters:
+      - name: x-hape-admin-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: X-Hape-Admin-Key
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TokenMetadata'
+                title: Response List Tokens Auth Tokens Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/tokens/revoke:
+    post:
+      tags:
+      - auth
+      summary: Revoke Token
+      operationId: revoke_token_auth_tokens_revoke_post
+      parameters:
+      - name: x-hape-admin-key
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: X-Hape-Admin-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevokeTokenRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response Revoke Token Auth Tokens Revoke Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /config/init-config-file:
+    post:
+      tags:
+      - config
+      summary: Init Config File
+      operationId: init_config_file_config_init_config_file_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitConfigFileRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response Init Config File Config Init Config File Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /gitlab/clone:
+    post:
+      tags:
+      - gitlab
+      summary: Clone Group Projects
+      operationId: clone_group_projects_gitlab_clone_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloneRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  anyOf:
+                  - type: string
+                  - type: integer
+                title: Response Clone Group Projects Gitlab Clone Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /gitlab/mr-count-per-day:
+    post:
+      tags:
+      - gitlab
+      summary: Mr Count Per Day
+      operationId: mr_count_per_day_gitlab_mr_count_per_day_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MrCountPerDayRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Mr Count Per Day Gitlab Mr Count Per Day Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /github/init-repo:
+    post:
+      tags:
+      - github
+      summary: Init Repo
+      operationId: init_repo_github_init_repo_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitRepoRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response Init Repo Github Init Repo Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /jira/md-to-comment:
+    post:
+      tags:
+      - jira
+      summary: Md To Comment
+      operationId: md_to_comment_jira_md_to_comment_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MdToCommentRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Md To Comment Jira Md To Comment Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /confluence/get-page:
+    post:
+      tags:
+      - confluence
+      summary: Get Page
+      operationId: get_page_confluence_get_page_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetPageRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Page Confluence Get Page Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /confluence/create-page:
+    post:
+      tags:
+      - confluence
+      summary: Create Page
+      operationId: create_page_confluence_create_page_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePageRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  anyOf:
+                  - type: string
+                  - type: object
+                    additionalProperties: true
+                title: Response Create Page Confluence Create Page Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /confluence/md-to-page:
+    post:
+      tags:
+      - confluence
+      summary: Md To Page
+      operationId: md_to_page_confluence_md_to_page_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MdToPageRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  anyOf:
+                  - type: string
+                  - type: object
+                    additionalProperties: true
+                title: Response Md To Page Confluence Md To Page Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /csv/from-json:
+    post:
+      tags:
+      - csv
+      summary: From Json
+      operationId: from_json_csv_from_json_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FromJsonRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response From Json Csv From Json Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /csv/to-json:
+    post:
+      tags:
+      - csv
+      summary: To Json
+      operationId: to_json_csv_to_json_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ToJsonRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response To Json Csv To Json Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /markdown/export-tables-to-csv:
+    post:
+      tags:
+      - markdown
+      summary: Export Tables To Csv
+      operationId: export_tables_to_csv_markdown_export_tables_to_csv_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportTablesRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: array
+                  items:
+                    type: string
+                title: Response Export Tables To Csv Markdown Export Tables To Csv
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /markdown/import-csv-table:
+    post:
+      tags:
+      - markdown
+      summary: Import Csv Table
+      operationId: import_csv_table_markdown_import_csv_table_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportCsvTableRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response Import Csv Table Markdown Import Csv Table Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /dora/validate-config:
+    post:
+      tags:
+      - dora
+      summary: Validate Config
+      operationId: validate_config_dora_validate_config_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateConfigRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                title: Response Validate Config Dora Validate Config Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /dora/list-projects:
+    post:
+      tags:
+      - dora
+      summary: List Projects
+      operationId: list_projects_dora_list_projects_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Projects Dora List Projects Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /dora/list-deployments:
+    post:
+      tags:
+      - dora
+      summary: List Deployments
+      operationId: list_deployments_dora_list_deployments_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectPathRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Deployments Dora List Deployments Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /dora/compute-project:
+    post:
+      tags:
+      - dora
+      summary: Compute Project
+      operationId: compute_project_dora_compute_project_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectPathRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Compute Project Dora Compute Project Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /eks-deployment-cost/report:
+    post:
+      tags:
+      - eks-deployment-cost
+      summary: Report
+      operationId: report_eks_deployment_cost_report_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Report Eks Deployment Cost Report Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /kube-agent/investigate/pod:
+    post:
+      tags:
+      - kube-agent
+      summary: Investigate Pod
+      operationId: investigate_pod_kube_agent_investigate_pod_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestigatePodRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Investigate Pod Kube Agent Investigate Pod Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /kube-agent/investigate/deployment:
+    post:
+      tags:
+      - kube-agent
+      summary: Investigate Deployment
+      operationId: investigate_deployment_kube_agent_investigate_deployment_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestigateDeploymentRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Investigate Deployment Kube Agent Investigate Deployment
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /kube-agent/investigate/node:
+    post:
+      tags:
+      - kube-agent
+      summary: Investigate Node
+      operationId: investigate_node_kube_agent_investigate_node_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestigateNodeRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Investigate Node Kube Agent Investigate Node Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /kube-agent/investigate/alert:
+    post:
+      tags:
+      - kube-agent
+      summary: Investigate Alert
+      operationId: investigate_alert_kube_agent_investigate_alert_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestigateAlertRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Investigate Alert Kube Agent Investigate Alert Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /kube-agent/cost-analyze:
+    post:
+      tags:
+      - kube-agent
+      summary: Cost Analyze
+      operationId: cost_analyze_kube_agent_cost_analyze_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CostAnalyzeRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Cost Analyze Kube Agent Cost Analyze Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /kube-agent/incidents/list:
+    post:
+      tags:
+      - kube-agent
+      summary: Incidents List
+      operationId: incidents_list_kube_agent_incidents_list_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentsListRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Incidents List Kube Agent Incidents List Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /kube-agent/incidents/show:
+    post:
+      tags:
+      - kube-agent
+      summary: Incidents Show
+      operationId: incidents_show_kube_agent_incidents_show_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentsShowRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Incidents Show Kube Agent Incidents Show Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /init-cicd:
+    post:
+      tags:
+      - init-cicd
+      summary: Init Cicd
+      operationId: init_cicd_init_cicd_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitCicdRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Init Cicd Init Cicd Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    CloneRequest:
+      properties:
+        group_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Group Id
+        clone_dir:
+          type: string
+          title: Clone Dir
+          default: /Users/hazem.ataya/workspace/repos
+      type: object
+      title: CloneRequest
+    CostAnalyzeRequest:
+      properties:
+        kube_context:
+          type: string
+          title: Kube Context
+        namespace:
+          type: string
+          title: Namespace
+        deployment:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Deployment
+        all_workloads:
+          type: boolean
+          title: All Workloads
+          default: false
+        historical_offset:
+          type: string
+          title: Historical Offset
+          default: 1h
+        output:
+          type: string
+          title: Output
+          default: text
+        use_ai:
+          type: string
+          title: Use Ai
+          default: 'false'
+      type: object
+      required:
+      - kube_context
+      - namespace
+      title: CostAnalyzeRequest
+    CreatePageRequest:
+      properties:
+        parent_page_id:
+          type: string
+          title: Parent Page Id
+        page_title:
+          type: string
+          title: Page Title
+        page_body:
+          type: string
+          title: Page Body
+        space_key:
+          type: string
+          title: Space Key
+        labels:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Labels
+      type: object
+      required:
+      - parent_page_id
+      - page_title
+      - page_body
+      - space_key
+      title: CreatePageRequest
+    CreateTokenRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+      - name
+      title: CreateTokenRequest
+    CreateTokenResponse:
+      properties:
+        token:
+          type: string
+          title: Token
+        token_id:
+          type: string
+          title: Token Id
+        name:
+          type: string
+          title: Name
+        created_at:
+          type: string
+          title: Created At
+      type: object
+      required:
+      - token
+      - token_id
+      - name
+      - created_at
+      title: CreateTokenResponse
+    ExportTablesRequest:
+      properties:
+        md_file:
+          type: string
+          title: Md File
+        output_dir:
+          type: string
+          title: Output Dir
+        delimiter:
+          type: string
+          title: Delimiter
+          default: ','
+      type: object
+      required:
+      - md_file
+      - output_dir
+      title: ExportTablesRequest
+    FromJsonRequest:
+      properties:
+        json_file:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Json File
+        json_content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Json Content
+        output_file:
+          type: string
+          title: Output File
+        delimiter:
+          type: string
+          title: Delimiter
+          default: ','
+      type: object
+      required:
+      - output_file
+      title: FromJsonRequest
+    GetPageRequest:
+      properties:
+        page_id:
+          type: string
+          title: Page Id
+        expand:
+          type: string
+          title: Expand
+          default: body.storage
+      type: object
+      required:
+      - page_id
+      title: GetPageRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ImportCsvTableRequest:
+      properties:
+        csv_file:
+          type: string
+          title: Csv File
+        md_file:
+          type: string
+          title: Md File
+        delimiter:
+          type: string
+          title: Delimiter
+          default: ','
+        table_title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Table Title
+      type: object
+      required:
+      - csv_file
+      - md_file
+      title: ImportCsvTableRequest
+    IncidentsListRequest:
+      properties:
+        output:
+          type: string
+          title: Output
+          default: text
+      type: object
+      title: IncidentsListRequest
+    IncidentsShowRequest:
+      properties:
+        incident_id:
+          type: string
+          title: Incident Id
+        output:
+          type: string
+          title: Output
+          default: text
+      type: object
+      required:
+      - incident_id
+      title: IncidentsShowRequest
+    InitCicdRequest:
+      properties:
+        project_path:
+          type: string
+          title: Project Path
+        deployment_type:
+          type: string
+          title: Deployment Type
+      type: object
+      required:
+      - project_path
+      - deployment_type
+      title: InitCicdRequest
+    InitConfigFileRequest:
+      properties:
+        config_file_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Config File Path
+        dot_env_file:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dot Env File
+      type: object
+      title: InitConfigFileRequest
+    InitRepoRequest:
+      properties:
+        repo_path:
+          type: string
+          title: Repo Path
+        owner:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Owner
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        visibility:
+          type: string
+          title: Visibility
+          default: private
+      type: object
+      required:
+      - repo_path
+      title: InitRepoRequest
+    InvestigateAlertRequest:
+      properties:
+        kube_context:
+          type: string
+          title: Kube Context
+        alertname:
+          type: string
+          title: Alertname
+        namespace:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Namespace
+        pod:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pod
+        node:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Node
+        output:
+          type: string
+          title: Output
+          default: text
+        use_ai:
+          type: string
+          title: Use Ai
+          default: 'false'
+      type: object
+      required:
+      - kube_context
+      - alertname
+      title: InvestigateAlertRequest
+    InvestigateDeploymentRequest:
+      properties:
+        kube_context:
+          type: string
+          title: Kube Context
+        namespace:
+          type: string
+          title: Namespace
+        deployment:
+          type: string
+          title: Deployment
+        output:
+          type: string
+          title: Output
+          default: text
+        use_ai:
+          type: string
+          title: Use Ai
+          default: 'false'
+      type: object
+      required:
+      - kube_context
+      - namespace
+      - deployment
+      title: InvestigateDeploymentRequest
+    InvestigateNodeRequest:
+      properties:
+        kube_context:
+          type: string
+          title: Kube Context
+        node:
+          type: string
+          title: Node
+        output:
+          type: string
+          title: Output
+          default: text
+        use_ai:
+          type: string
+          title: Use Ai
+          default: 'false'
+      type: object
+      required:
+      - kube_context
+      - node
+      title: InvestigateNodeRequest
+    InvestigatePodRequest:
+      properties:
+        kube_context:
+          type: string
+          title: Kube Context
+        namespace:
+          type: string
+          title: Namespace
+        pod:
+          type: string
+          title: Pod
+        output:
+          type: string
+          title: Output
+          default: text
+        use_ai:
+          type: string
+          title: Use Ai
+          default: 'false'
+      type: object
+      required:
+      - kube_context
+      - namespace
+      - pod
+      title: InvestigatePodRequest
+    MdToCommentRequest:
+      properties:
+        issue_key:
+          type: string
+          title: Issue Key
+        md_path:
+          type: string
+          title: Md Path
+      type: object
+      required:
+      - issue_key
+      - md_path
+      title: MdToCommentRequest
+    MdToPageRequest:
+      properties:
+        parent_page_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Parent Page Id
+        md_path:
+          type: string
+          title: Md Path
+          default: README.md
+        page_title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Title
+        space_key:
+          type: string
+          title: Space Key
+        labels:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Labels
+      type: object
+      required:
+      - space_key
+      title: MdToPageRequest
+    MrCountPerDayRequest:
+      properties:
+        created_after:
+          type: string
+          title: Created After
+        group_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Group Id
+        project_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Project Id
+        username:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Username
+      type: object
+      required:
+      - created_after
+      title: MrCountPerDayRequest
+    ProjectPathRequest:
+      properties:
+        project_path:
+          type: string
+          title: Project Path
+      type: object
+      required:
+      - project_path
+      title: ProjectPathRequest
+    ReportRequest:
+      properties:
+        kube_context:
+          type: string
+          title: Kube Context
+        kube_config_file:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Kube Config File
+        aws_profile:
+          type: string
+          title: Aws Profile
+        aws_region:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Aws Region
+        resource_types:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Resource Types
+        namespaces:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Namespaces
+        top_n:
+          type: integer
+          title: Top N
+          default: 20
+        output_dir:
+          type: string
+          title: Output Dir
+      type: object
+      required:
+      - kube_context
+      - aws_profile
+      - output_dir
+      title: ReportRequest
+    RevokeTokenRequest:
+      properties:
+        token_id:
+          type: string
+          title: Token Id
+      type: object
+      required:
+      - token_id
+      title: RevokeTokenRequest
+    ToJsonRequest:
+      properties:
+        csv_file:
+          type: string
+          title: Csv File
+        output_file:
+          type: string
+          title: Output File
+        delimiter:
+          type: string
+          title: Delimiter
+          default: ','
+      type: object
+      required:
+      - csv_file
+      - output_file
+      title: ToJsonRequest
+    TokenMetadata:
+      properties:
+        token_id:
+          type: string
+          title: Token Id
+        name:
+          type: string
+          title: Name
+        created_at:
+          type: string
+          title: Created At
+        revoked:
+          type: boolean
+          title: Revoked
+      type: object
+      required:
+      - token_id
+      - name
+      - created_at
+      - revoked
+      title: TokenMetadata
+    ValidateConfigRequest:
+      properties:
+        git_rules_path:
+          type: string
+          title: Git Rules Path
+          default: config/dora/git-rules.json
+        kubernetes_mappings_path:
+          type: string
+          title: Kubernetes Mappings Path
+          default: config/dora/kubernetes-mappings.json
+      type: object
+      title: ValidateConfigRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

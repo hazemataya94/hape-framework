@@ -4,6 +4,8 @@ certifi==2026.1.4
 charset-normalizer==3.4.4
 dotenv==0.9.9
 durationpy==0.10
+fastapi
+httpx
 idna==3.11
 iniconfig==2.3.0
 jmespath==1.1.0
@@ -27,4 +29,5 @@ s3transfer==0.16.0
 six==1.17.0
 typing_extensions==4.15.0
 urllib3==2.6.2
+uvicorn
 websocket-client==1.9.0

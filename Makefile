@@ -2,13 +2,16 @@ PYTHON ?= python
 VERSION_FILE ?= VERSION
 INSTALL_PREFIX ?=
 PYPI_TOKEN_FILE ?= ../pypi.token
+API_BASE_URL ?= http://localhost:8080
+API_TOKEN_NAME ?= default-token
+API_ADMIN_KEY ?=
 KIND_CLUSTER_NAME ?= hape
 KIND_CONFIG_PATH ?= infrastructure/kubernetes/kind/cluster-config.yaml
 DOCKER_IMAGE ?= hazemataya/hape
 DOCKERFILE_PATH ?= docker/Dockerfile
 KUSTOMIZE_TARGET_PATH := $(word 2,$(MAKECMDGOALS))
 
-.PHONY: help clean bump-version build install kind-up helmfile-sync kind-down kustomize-apply kustomize-delete publish-docker
+.PHONY: help clean bump-version build install run-api api-generate-token kind-up helmfile-sync kind-down kustomize-apply kustomize-delete publish-docker
 
 ifneq ($(filter kustomize-apply kustomize-delete,$(firstword $(MAKECMDGOALS))),)
   ifneq ($(KUSTOMIZE_TARGET_PATH),)
@@ -54,6 +57,21 @@ install: ## Install to $(INSTALL_PREFIX)/bin via pip.
 		echo "$$ $(PYTHON) -m pip install --upgrade --force-reinstall $$wheel"; \
 		$(PYTHON) -m pip install --upgrade --force-reinstall $$wheel; \
 	fi
+
+run-api: ## Run FastAPI server.
+	@echo "$$ $(PYTHON) -m api.app"
+	@$(PYTHON) -m api.app
+
+api-generate-token: ## Generate API token using auth endpoint.
+	@if [ -z "$(API_ADMIN_KEY)" ]; then \
+		echo "Error: API_ADMIN_KEY is required. Set API_ADMIN_KEY=<YOUR_ADMIN_KEY>."; \
+		exit 1; \
+	fi
+	@echo "$$ curl -sS -X POST \"$(API_BASE_URL)/auth/tokens\" -H \"Content-Type: application/json\" -H \"X-Hape-Admin-Key: <REDACTED>\" -d '{\"name\":\"$(API_TOKEN_NAME)\"}'"
+	@curl -sS -X POST "$(API_BASE_URL)/auth/tokens" \
+		-H "Content-Type: application/json" \
+		-H "X-Hape-Admin-Key: $(API_ADMIN_KEY)" \
+		-d '{"name":"$(API_TOKEN_NAME)"}'
 
 kind-up: ## Create local kind cluster named $(KIND_CLUSTER_NAME).
 	@if kind get clusters | grep -xq "$(KIND_CLUSTER_NAME)"; then \

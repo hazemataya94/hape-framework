@@ -51,6 +51,11 @@ class Config:
         "HAPE_GITHUB_INSTALLATION_ID",
         "HAPE_GITHUB_APP_PRIVATE_KEY_PATH",
         "HAPE_DORA_GITHUB_ORGS",
+        "HAPE_API_HOST",
+        "HAPE_API_PORT",
+        "HAPE_API_ADMIN_KEY",
+        "HAPE_API_TOKENS_FILE",
+        "HAPE_API_RATE_LIMIT_PER_MINUTE",
         "HAPE_EDC_KUBE_CONTEXT",
         "HAPE_EDC_AWS_PROFILE",
         "HAPE_EDC_IGNORED_NAMESPACES",
@@ -84,6 +89,8 @@ class Config:
         "HAPE_DORA_EXPORTER_REFRESH_SECONDS",
         "HAPE_GITHUB_APP_ID",
         "HAPE_GITHUB_INSTALLATION_ID",
+        "HAPE_API_PORT",
+        "HAPE_API_RATE_LIMIT_PER_MINUTE",
         "HAPE_KUBE_AGENT_AI_STALE_HOURS",
         "HAPE_KUBE_AGENT_RESTART_THRESHOLD",
         "HAPE_KUBE_AGENT_POD_LOG_TAIL_LINES",
@@ -402,6 +409,34 @@ class Config:
         if owner is None:
             return ""
         return ValidationUtils.require_string("HAPE_GITHUB_DEFAULT_OWNER", owner).strip()
+
+    @staticmethod
+    def get_api_host() -> str:
+        host = Config._get_config_value_with_default("HAPE_API_HOST", "0.0.0.0")
+        return ValidationUtils.require_string("HAPE_API_HOST", host)
+
+    @staticmethod
+    def get_api_port() -> int:
+        port = Config._get_config_int_with_default("HAPE_API_PORT", 8080)
+        ValidationUtils.validate_positive_int("HAPE_API_PORT", port)
+        return port
+
+    @staticmethod
+    def get_api_admin_key() -> str:
+        admin_key = Config._get_optional_config_value("HAPE_API_ADMIN_KEY")
+        if admin_key is None:
+            return ""
+        return ValidationUtils.require_string("HAPE_API_ADMIN_KEY", admin_key)
+
+    @staticmethod
+    def get_api_tokens_file_path() -> str:
+        return Config._get_config_value_with_default("HAPE_API_TOKENS_FILE", "~/.hape/api-tokens.json")
+
+    @staticmethod
+    def get_api_rate_limit_per_minute() -> int:
+        limit_value = Config._get_config_int_with_default("HAPE_API_RATE_LIMIT_PER_MINUTE", 10)
+        ValidationUtils.validate_positive_int("HAPE_API_RATE_LIMIT_PER_MINUTE", limit_value)
+        return limit_value
 
     @staticmethod
     def get_dora_github_token() -> str:

@@ -8,6 +8,7 @@ This contract is for adding new tools and for making existing tools agent-safe.
 - **Inputs**: all inputs must be explicit CLI flags (no positional args).
 - **Outputs**: deterministic stdout format (prefer JSON or clearly titled sections).
 - **Side effects**: declared in docs + help (create/update/delete, uploads, deploys).
+- **CLI/API parity**: when API is present, endpoint paths must map 1:1 to CLI command paths.
 
 ## Safety levels
 - **read**: fetch/list/describe only.
@@ -31,3 +32,4 @@ This contract is for adding new tools and for making existing tools agent-safe.
 For each new tool:
 - add a page under `docs/cli/` with 1–2 examples
 - document safety level, side effects, and required config/env
+- when API is present, add matching docs under `docs/api/` including token auth requirements and throttling behavior
