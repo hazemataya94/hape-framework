@@ -77,6 +77,7 @@ CLI for platform and DevOps automations.
 commands:
     config                      config file operations.
     gitlab                      GitLab operations.
+    github                      GitHub operations.
     jira                        fetch Jira issue data, remote links, or add comments.
     confluence                  confluence page operations.
     csv                         csv conversion operations.

@@ -46,6 +46,7 @@ class Config:
         "HAPE_DORA_PROVIDER",
         "HAPE_GITHUB_API_URL",
         "HAPE_GITHUB_TOKEN",
+        "HAPE_GITHUB_DEFAULT_OWNER",
         "HAPE_GITHUB_APP_ID",
         "HAPE_GITHUB_INSTALLATION_ID",
         "HAPE_GITHUB_APP_PRIVATE_KEY_PATH",
@@ -394,6 +395,13 @@ class Config:
     @staticmethod
     def get_dora_github_api_url() -> str:
         return Config._get_config_value_with_default("HAPE_GITHUB_API_URL", "https://api.github.com")
+
+    @staticmethod
+    def get_github_default_owner() -> str:
+        owner = Config._get_optional_config_value("HAPE_GITHUB_DEFAULT_OWNER")
+        if owner is None:
+            return ""
+        return ValidationUtils.require_string("HAPE_GITHUB_DEFAULT_OWNER", owner).strip()
 
     @staticmethod
     def get_dora_github_token() -> str:

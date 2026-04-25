@@ -44,6 +44,22 @@ class GrafanaClient:
             return None
         return response.json()
 
+    def _request(self, method: str, path: str, payload: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> Any:
+        url = f"{self.base_url}{path}"
+        self.logger.debug(f"_request(method: {method}, path: {path}, payload: {payload}, params: {params})")
+        response = self.session.request(
+            method=method,
+            url=url,
+            json=payload,
+            params=params,
+            timeout=self.timeout_seconds,
+            auth=self.auth,
+        )
+        response.raise_for_status()
+        if not response.content:
+            return None
+        return response.json()
+
     def list_datasources(self) -> list[dict[str, Any]]:
         self.logger.debug("list_datasources()")
         data = self._request_json("/api/datasources")
@@ -64,6 +80,42 @@ class GrafanaClient:
             all_dashboards.extend(data)
             page += 1
         return all_dashboards
+
+    def create_user(self, login: str, email: str, password: str, name: str | None = None) -> dict[str, Any]:
+        self.logger.debug(f"create_user(login: {login}, email: {email})")
+        payload = {"name": name or login, "email": email, "login": login, "password": password}
+        data = self._request("POST", "/api/admin/users", payload=payload)
+        if isinstance(data, dict):
+            return data
+        return {}
+
+    def create_service_account(self, name: str, role: str = "Viewer") -> dict[str, Any]:
+        self.logger.debug(f"create_service_account(name: {name}, role: {role})")
+        payload = {"name": name, "role": role}
+        data = self._request("POST", "/api/serviceaccounts", payload=payload)
+        if isinstance(data, dict):
+            return data
+        return {}
+
+    def create_service_account_token(self, service_account_id: int, token_name: str) -> dict[str, Any]:
+        self.logger.debug(f"create_service_account_token(service_account_id: {service_account_id}, token_name: {token_name})")
+        payload = {"name": token_name}
+        data = self._request("POST", f"/api/serviceaccounts/{service_account_id}/tokens", payload=payload)
+        if isinstance(data, dict):
+            return data
+        return {}
+
+    def ensure_dashboard_viewer_permission(self, dashboard_uid: str, user_id: int) -> dict[str, Any]:
+        self.logger.debug(f"ensure_dashboard_viewer_permission(dashboard_uid: {dashboard_uid}, user_id: {user_id})")
+        payload = {
+            "items": [
+                {"userId": user_id, "permission": 1},
+            ]
+        }
+        data = self._request("POST", f"/api/dashboards/uid/{dashboard_uid}/permissions", payload=payload)
+        if isinstance(data, dict):
+            return data
+        return {}
 
     def get_dashboard_by_uid(self, uid: str) -> dict[str, Any]:
         self.logger.debug(f"get_dashboard_by_uid(uid: {uid})")

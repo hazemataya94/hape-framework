@@ -193,6 +193,58 @@ class GitHubClient:
 
         raise RuntimeError(f"GitHub request exhausted retries unexpectedly for endpoint '{endpoint_path}'.")
 
+    def _request_json_post(self, endpoint_path: str, payload: dict[str, Any]) -> Any:
+        self._refresh_installation_token_if_needed()
+        for retry_attempt in range(0, self.max_retries + 1):
+            response: requests.Response | None = None
+            try:
+                response = self.session.post(
+                    f"{self.base_url}{endpoint_path}",
+                    json=payload,
+                    timeout=self.timeout_seconds,
+                )
+            except requests.RequestException as exc:
+                if retry_attempt >= self.max_retries:
+                    raise
+                delay_seconds = self._compute_retry_delay_seconds(response=None, retry_attempt=retry_attempt + 1)
+                self.logger.warning(
+                    "GitHub request failed with transport error; retrying in %.2fs (attempt %s/%s): endpoint=%s error=%s",
+                    delay_seconds,
+                    retry_attempt + 1,
+                    self.max_retries,
+                    endpoint_path,
+                    exc,
+                )
+                time.sleep(delay_seconds)
+                continue
+
+            if response.status_code == 401 and self.auth_mode == "app":
+                if retry_attempt >= self.max_retries:
+                    response.raise_for_status()
+                self.token = ""
+                self._refresh_installation_token_if_needed()
+                continue
+
+            if self._is_retryable_status_code(response.status_code):
+                if retry_attempt >= self.max_retries:
+                    response.raise_for_status()
+                delay_seconds = self._compute_retry_delay_seconds(response=response, retry_attempt=retry_attempt + 1)
+                self.logger.warning(
+                    "GitHub request returned retryable status %s; retrying in %.2fs (attempt %s/%s): endpoint=%s",
+                    response.status_code,
+                    delay_seconds,
+                    retry_attempt + 1,
+                    self.max_retries,
+                    endpoint_path,
+                )
+                time.sleep(delay_seconds)
+                continue
+
+            response.raise_for_status()
+            return response.json()
+
+        raise RuntimeError(f"GitHub POST request exhausted retries unexpectedly for endpoint '{endpoint_path}'.")
+
     def _collect_paginated(self, endpoint_path: str, base_params: dict[str, Any] | None = None, root_key: str | None = None) -> list[dict[str, Any]]:
         params = dict(base_params or {})
         params.setdefault("per_page", 100)
@@ -214,6 +266,58 @@ class GitHubClient:
         if include_archived:
             return repositories
         return [repo for repo in repositories if not bool(repo.get("archived", False))]
+
+    def get_authenticated_user(self) -> dict[str, Any]:
+        payload = self._request_json_get(endpoint_path="/user")
+        if not isinstance(payload, dict):
+            raise RuntimeError("Unexpected GitHub authenticated user response.")
+        return payload
+
+    def get_authenticated_organizations(self) -> list[dict[str, Any]]:
+        payload = self._request_json_get(endpoint_path="/user/orgs")
+        if not isinstance(payload, list):
+            raise RuntimeError("Unexpected GitHub authenticated organizations response.")
+        return payload
+
+    def resolve_token_default_owner(self) -> str:
+        try:
+            user_payload = self.get_authenticated_user()
+        except Exception:
+            user_payload = {}
+        user_login = str(user_payload.get("login", "")).strip()
+        if user_login:
+            return user_login
+        try:
+            organizations = self.get_authenticated_organizations()
+        except Exception:
+            organizations = []
+        candidate_orgs = sorted(
+            {
+                str(organization.get("login", "")).strip()
+                for organization in organizations
+                if str(organization.get("login", "")).strip()
+            }
+        )
+        if candidate_orgs:
+            return candidate_orgs[0]
+        return ""
+
+    def create_repository(self, owner: str, repo_name: str, private: bool = True) -> dict[str, Any]:
+        owner = owner.strip()
+        repo_name = repo_name.strip()
+        payload = {
+            "name": repo_name,
+            "private": private,
+            "auto_init": False,
+        }
+        authenticated_owner = self.resolve_token_default_owner()
+        if owner.lower() == authenticated_owner.lower():
+            response_payload = self._request_json_post(endpoint_path="/user/repos", payload=payload)
+        else:
+            response_payload = self._request_json_post(endpoint_path=f"/orgs/{owner}/repos", payload=payload)
+        if not isinstance(response_payload, dict):
+            raise RuntimeError(f"Unexpected GitHub create repository response for owner={owner}, repo={repo_name}.")
+        return response_payload
 
     def get_repository(self, owner: str, repo: str) -> dict[str, Any]:
         self.logger.debug("get_repository(owner: %s, repo: %s)", owner, repo)

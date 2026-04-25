@@ -15,7 +15,7 @@ Create distributable build artifacts in the `dist/` directory.
 
 ```
 source .venv/bin/activate
-python -m pip install -r requirements-dev.txt
+python -m pip install -r requirements-build.txt
 make build
 ```
 

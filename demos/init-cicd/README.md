@@ -8,7 +8,7 @@ Show how `hape init-cicd` scaffolds Kubernetes manifests and CI files for a Reac
 ![Init CICD Output](./init-cicd-output.png)
 
 ## Prerequisites
-- Run commands from repository root: `public/hape-framework`.
+- Run commands from repository root: `hape-framework`.
 - Python dependencies are installed.
 - `kind` and `kubectl` are installed.
 - `hape` CLI is available in your shell.

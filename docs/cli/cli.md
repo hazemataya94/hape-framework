@@ -17,6 +17,7 @@ Commands are grouped by integration. Each group has subcommands where needed.
 ## Commands
 - `config` - [config.md](config.md)
 - `gitlab` - [gitlab.md](gitlab.md)
+- `github` - [github.md](github.md)
 - `jira` - [jira.md](jira.md)
 - `confluence` - [confluence.md](confluence.md)
 - `csv` - [csv.md](csv.md)

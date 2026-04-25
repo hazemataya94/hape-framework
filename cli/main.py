@@ -11,6 +11,7 @@ from cli.commands.csv_commands import CsvCommands
 from cli.commands.dora_commands import DoraCommands
 from cli.commands.eks_deployment_cost_commands import EksDeploymentCostCommands
 from cli.commands.gitlab_commands import GitLabCommands
+from cli.commands.github_commands import GitHubCommands
 from cli.commands.jira_commands import JiraCommands
 from cli.commands.kube_agent_commands import KubeAgentCommands
 from cli.commands.markdown_commands import MarkdownCommands
@@ -72,6 +73,7 @@ class CLI:
 
         ConfigCommands.register(subparsers)
         GitLabCommands.register(subparsers)
+        GitHubCommands.register(subparsers)
         JiraCommands.register(subparsers)
         ConfluenceCommands.register(subparsers)
         CsvCommands.register(subparsers)

@@ -7,6 +7,7 @@ Document all `Makefile` variables and targets in one place.
 - `PYTHON` (default: `python`)
 - `VERSION_FILE` (default: `VERSION`)
 - `INSTALL_PREFIX` (default: empty)
+- `PYPI_TOKEN_FILE` (default: `../../pypi.token`)
 - `KIND_CLUSTER_NAME` (default: `hape`)
 - `KIND_CONFIG_PATH` (default: `infrastructure/kubernetes/kind/cluster-config.yaml`)
 - `KUSTOMIZE_TARGET_PATH` (derived from second argument to `make kustomize-apply` or `make kustomize-delete`)
@@ -23,6 +24,7 @@ Document all `Makefile` variables and targets in one place.
 - `make kustomize-apply <path>`: render and apply a kustomization directory.
 - `make kustomize-delete <path>`: render and delete resources from a kustomization directory.
 - `make publish`: build and publish package to PyPI, then commit/tag/push the new version.
+  - Fails fast if `PYPI_TOKEN_FILE` does not exist or is empty.
 
 ## Common usage
 Show available targets:
@@ -77,6 +79,12 @@ Publish package to PyPI:
 
 ```bash
 make publish
+```
+
+Publish package with a custom PyPI token path:
+
+```bash
+make publish PYPI_TOKEN_FILE=/path/to/pypi.token
 ```
 
 ## Validation steps

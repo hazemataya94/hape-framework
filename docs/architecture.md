@@ -77,7 +77,7 @@ graph TD
 - Clients must not call other clients.
 - Core and utils are reusable by any layer, but should not depend on services or CLI.
 - Clients should not import CLI or service code.
-- Development-only dependencies must live in `requirements-dev.txt` and be installed in the `.venv` explicitly (do not auto-install in Make targets).
+- Development-only dependencies must live in `requirements-build.txt` and be installed in the `.venv` explicitly (do not auto-install in Make targets).
 - Configuration is loaded from JSON via `core/config.py`. CLI passes `--config-file-path` to set the config path.
 
 #### General Flow

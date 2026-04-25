@@ -1,6 +1,7 @@
 PYTHON ?= python
 VERSION_FILE ?= VERSION
 INSTALL_PREFIX ?=
+PYPI_TOKEN_FILE ?= ../pypi.token
 KIND_CLUSTER_NAME ?= hape
 KIND_CONFIG_PATH ?= infrastructure/kubernetes/kind/cluster-config.yaml
 DOCKER_IMAGE ?= hazemataya/hape
@@ -101,8 +102,16 @@ kustomize-delete: ## Delete kustomization path passed as second make argument.
 	fi
 	kubectl kustomize --load-restrictor=LoadRestrictionsNone "$(KUSTOMIZE_TARGET_PATH)" | kubectl delete -f -
 
-publish: build ## Publish package to public PyPI. Commit, tag, and push the version.
-	@TWINE_USERNAME=__token__ TWINE_PASSWORD="$$(cat ../../pypi.token)" twine upload dist/* \
+publish: ## Publish package to public PyPI. Commit, tag, and push the version.
+	@if [ ! -f "$(PYPI_TOKEN_FILE)" ]; then \
+		echo "Error: PyPI token file not found at $(PYPI_TOKEN_FILE). Set PYPI_TOKEN_FILE to a valid token file path."; \
+		exit 1; \
+	fi
+	@if [ ! -s "$(PYPI_TOKEN_FILE)" ]; then \
+		echo "Error: PyPI token file is empty at $(PYPI_TOKEN_FILE)."; \
+		exit 1; \
+	fi
+	@TWINE_USERNAME=__token__ TWINE_PASSWORD="$$(cat "$(PYPI_TOKEN_FILE)")" twine upload dist/* \
 	&& \
 	( \
 		version=$$(cat $(VERSION_FILE)); \
