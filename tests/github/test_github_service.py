@@ -9,6 +9,7 @@ from services.github_service import GitHubService
 
 class _FakeGitHubClient:
     created_payloads: list[dict[str, object]] = []
+    added_collaborators: list[dict[str, object]] = []
 
     def create_repository(self, owner: str, repo_name: str, private: bool = True) -> dict[str, str]:
         self.created_payloads.append(
@@ -27,6 +28,20 @@ class _FakeGitHubClient:
     def resolve_token_default_owner(self) -> str:
         return "token-user"
 
+    def resolve_user_login_by_email(self, email: str) -> str:
+        return "host-admin"
+
+    def add_repository_collaborator(self, owner: str, repo_name: str, username: str, permission: str = "push") -> bool:
+        self.added_collaborators.append(
+            {
+                "owner": owner,
+                "repo_name": repo_name,
+                "username": username,
+                "permission": permission,
+            }
+        )
+        return True
+
 
 class _FakeFailingGitHubClient:
     def create_repository(self, owner: str, repo_name: str, private: bool = True) -> dict[str, str]:
@@ -38,6 +53,12 @@ class _FakeFailingGitHubClient:
     def resolve_token_default_owner(self) -> str:
         return "token-user"
 
+    def resolve_user_login_by_email(self, email: str) -> str:
+        return "host-admin"
+
+    def add_repository_collaborator(self, owner: str, repo_name: str, username: str, permission: str = "push") -> bool:
+        return True
+
 
 def test_init_repo_uses_repo_basename_and_private_default(tmp_path: Path, monkeypatch) -> None:
     repo_path = tmp_path / "service-a"
@@ -45,14 +66,22 @@ def test_init_repo_uses_repo_basename_and_private_default(tmp_path: Path, monkey
     monkeypatch.setattr("services.github_service.Config.get_github_default_owner", lambda: "")
     monkeypatch.setattr("services.github_service.GitHubService._run_git_init", lambda *args, **kwargs: None)
     monkeypatch.setattr("services.github_service.GitHubService._run_git_add_remote", lambda *args, **kwargs: None)
+    monkeypatch.setattr("services.github_service.GitHubService._read_global_git_email", lambda *args, **kwargs: "admin@example.com")
     service = GitHubService(github_client=_FakeGitHubClient())
     result = service.init_repo(repo_path=str(repo_path))
     assert result["full_name"] == "token-user/service-a"
     assert result["local_path"] == str(repo_path.resolve())
+    assert result["admin_login"] == "host-admin"
     assert _FakeGitHubClient.created_payloads[-1] == {
         "owner": "token-user",
         "repo_name": "service-a",
         "private": True,
+    }
+    assert _FakeGitHubClient.added_collaborators[-1] == {
+        "owner": "token-user",
+        "repo_name": "service-a",
+        "username": "host-admin",
+        "permission": "admin",
     }
 
 
@@ -62,9 +91,11 @@ def test_init_repo_prefers_configured_default_owner(tmp_path: Path, monkeypatch)
     monkeypatch.setattr("services.github_service.Config.get_github_default_owner", lambda: "hape-vibes")
     monkeypatch.setattr("services.github_service.GitHubService._run_git_init", lambda *args, **kwargs: None)
     monkeypatch.setattr("services.github_service.GitHubService._run_git_add_remote", lambda *args, **kwargs: None)
+    monkeypatch.setattr("services.github_service.GitHubService._read_global_git_email", lambda *args, **kwargs: "admin@example.com")
     service = GitHubService(github_client=_FakeGitHubClient())
     result = service.init_repo(repo_path=str(repo_path), name="custom-name", visibility="public")
     assert result["full_name"] == "hape-vibes/custom-name"
+    assert result["admin_login"] == "host-admin"
     assert _FakeGitHubClient.created_payloads[-1] == {
         "owner": "hape-vibes",
         "repo_name": "custom-name",
@@ -86,12 +117,26 @@ def test_init_repo_error_message_includes_github_reason(tmp_path: Path, monkeypa
     repo_path = tmp_path / "service-d"
     repo_path.mkdir(parents=True, exist_ok=True)
     monkeypatch.setattr("services.github_service.Config.get_github_default_owner", lambda: "")
+    monkeypatch.setattr("services.github_service.GitHubService._read_global_git_email", lambda *args, **kwargs: "admin@example.com")
     service = GitHubService(github_client=_FakeFailingGitHubClient())
     with pytest.raises(HapeExternalError) as error:
         service.init_repo(repo_path=str(repo_path))
     assert error.value.code == "GITHUB_CREATE_REPO_FAILED"
     assert "status=422" in error.value.message
     assert "already_exists" in error.value.message
+
+
+def test_init_repo_fails_when_global_git_email_is_missing(tmp_path: Path, monkeypatch) -> None:
+    repo_path = tmp_path / "service-e"
+    repo_path.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr("services.github_service.Config.get_github_default_owner", lambda: "")
+    monkeypatch.setattr("services.github_service.GitHubService._run_git_init", lambda *args, **kwargs: None)
+    monkeypatch.setattr("services.github_service.GitHubService._run_git_add_remote", lambda *args, **kwargs: None)
+    monkeypatch.setattr("services.github_service.GitHubService._read_global_git_email", lambda *args, **kwargs: "")
+    service = GitHubService(github_client=_FakeGitHubClient())
+    with pytest.raises(HapeValidationError) as error:
+        service.init_repo(repo_path=str(repo_path))
+    assert error.value.code == "GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE"
 
 
 if __name__ == "__main__":

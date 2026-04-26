@@ -245,6 +245,16 @@ class GitHubClient:
 
         raise RuntimeError(f"GitHub POST request exhausted retries unexpectedly for endpoint '{endpoint_path}'.")
 
+    def _request_json_put(self, endpoint_path: str, payload: dict[str, Any]) -> requests.Response:
+        self._refresh_installation_token_if_needed()
+        response = self.session.put(
+            f"{self.base_url}{endpoint_path}",
+            json=payload,
+            timeout=self.timeout_seconds,
+        )
+        response.raise_for_status()
+        return response
+
     def _collect_paginated(self, endpoint_path: str, base_params: dict[str, Any] | None = None, root_key: str | None = None) -> list[dict[str, Any]]:
         params = dict(base_params or {})
         params.setdefault("per_page", 100)
@@ -318,6 +328,37 @@ class GitHubClient:
         if not isinstance(response_payload, dict):
             raise RuntimeError(f"Unexpected GitHub create repository response for owner={owner}, repo={repo_name}.")
         return response_payload
+
+    def resolve_user_login_by_email(self, email: str) -> str:
+        normalized_email = email.strip().lower()
+        if not normalized_email:
+            return ""
+        payload = self._request_json_get(
+            endpoint_path="/search/users",
+            params={"q": f"{normalized_email} in:email", "per_page": 1},
+        )
+        if not isinstance(payload, dict):
+            return ""
+        users = payload.get("items")
+        if not isinstance(users, list) or not users:
+            return ""
+        first_user = users[0]
+        if not isinstance(first_user, dict):
+            return ""
+        return str(first_user.get("login", "")).strip()
+
+    def add_repository_collaborator(self, owner: str, repo_name: str, username: str, permission: str = "push") -> bool:
+        normalized_owner = owner.strip()
+        normalized_repo_name = repo_name.strip()
+        normalized_username = username.strip()
+        normalized_permission = permission.strip().lower()
+        if not normalized_owner or not normalized_repo_name or not normalized_username:
+            return False
+        response = self._request_json_put(
+            endpoint_path=f"/repos/{normalized_owner}/{normalized_repo_name}/collaborators/{normalized_username}",
+            payload={"permission": normalized_permission},
+        )
+        return response.status_code in {201, 204}
 
     def get_repository(self, owner: str, repo: str) -> dict[str, Any]:
         self.logger.debug("get_repository(owner: %s, repo: %s)", owner, repo)

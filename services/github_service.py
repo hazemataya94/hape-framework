@@ -133,6 +133,80 @@ class GitHubService:
             text=True,
         )
 
+    @staticmethod
+    def _read_global_git_email() -> str:
+        completed_process = subprocess.run(
+            ["git", "config", "--global", "user.email"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return completed_process.stdout.strip()
+
+    def _resolve_host_git_admin_login(self) -> str:
+        try:
+            global_git_email = self._read_global_git_email()
+        except subprocess.CalledProcessError as exc:
+            raise HapeValidationError(
+                code="GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE",
+                message=get_github_error_message("GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE"),
+            ) from exc
+        if not global_git_email:
+            raise HapeValidationError(
+                code="GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE",
+                message=get_github_error_message("GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE"),
+            )
+        try:
+            resolved_login = self.github_client.resolve_user_login_by_email(email=global_git_email)
+        except Exception as exc:
+            raise HapeExternalError(
+                code="GITHUB_USER_LOOKUP_FAILED",
+                message=get_github_error_message(
+                    "GITHUB_USER_LOOKUP_FAILED",
+                    email=global_git_email,
+                ),
+            ) from exc
+        if not resolved_login:
+            raise HapeValidationError(
+                code="GITHUB_USER_LOGIN_UNRESOLVED",
+                message=get_github_error_message(
+                    "GITHUB_USER_LOGIN_UNRESOLVED",
+                    email=global_git_email,
+                ),
+            )
+        return resolved_login
+
+    def _ensure_host_user_admin_access(self, owner: str, repo_name: str) -> str:
+        admin_login = self._resolve_host_git_admin_login()
+        try:
+            collaborator_added = self.github_client.add_repository_collaborator(
+                owner=owner,
+                repo_name=repo_name,
+                username=admin_login,
+                permission="admin",
+            )
+        except Exception as exc:
+            raise HapeExternalError(
+                code="GITHUB_ADD_ADMIN_COLLABORATOR_FAILED",
+                message=get_github_error_message(
+                    "GITHUB_ADD_ADMIN_COLLABORATOR_FAILED",
+                    owner=owner,
+                    repo_name=repo_name,
+                    username=admin_login,
+                ),
+            ) from exc
+        if not collaborator_added:
+            raise HapeExternalError(
+                code="GITHUB_ADD_ADMIN_COLLABORATOR_FAILED",
+                message=get_github_error_message(
+                    "GITHUB_ADD_ADMIN_COLLABORATOR_FAILED",
+                    owner=owner,
+                    repo_name=repo_name,
+                    username=admin_login,
+                ),
+            )
+        return admin_login
+
     def __init__(self, github_client: GitHubClient | None = None) -> None:
         self.github_client = github_client or GitHubClient()
         self.logger = LocalLogging.get_logger("hape.git_hub_service")
@@ -177,6 +251,7 @@ class GitHubService:
                     repo_name=resolved_repo_name,
                 ),
             )
+        admin_login = self._ensure_host_user_admin_access(owner=resolved_owner, repo_name=resolved_repo_name)
         try:
             self._run_git_init(repo_path=resolved_repo_path)
             self._run_git_add_remote(repo_path=resolved_repo_path, remote_url=ssh_clone_url)
@@ -188,12 +263,19 @@ class GitHubService:
                     repo_path=str(resolved_repo_path),
                 ),
             ) from exc
-        self.logger.info("Repository initialized at %s and created as %s/%s", resolved_repo_path, resolved_owner, resolved_repo_name)
+        self.logger.info(
+            "Repository initialized at %s and created as %s/%s with admin collaborator %s",
+            resolved_repo_path,
+            resolved_owner,
+            resolved_repo_name,
+            admin_login,
+        )
         return {
             "full_name": str(repository_data.get("full_name", f"{resolved_owner}/{resolved_repo_name}")),
             "html_url": str(repository_data.get("html_url", "")),
             "clone_url": ssh_clone_url,
             "local_path": str(resolved_repo_path),
+            "admin_login": admin_login,
         }
 
 

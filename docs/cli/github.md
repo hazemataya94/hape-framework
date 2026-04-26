@@ -6,6 +6,7 @@ Use GitHub CLI commands in HAPE to initialize a local repository and create the 
 ## Prerequisites
 - Set `HAPE_GITHUB_TOKEN` in environment variables or config.
 - Optional: set `HAPE_GITHUB_DEFAULT_OWNER` to use a default owner when `--owner` is not passed.
+- Set global git user email on host with `git config --global user.email <email>` so HAPE can resolve and grant admin access for the repository.
 - Ensure `--repo-path` exists and does not contain a `.git` directory.
 
 ## Init repository
@@ -31,4 +32,5 @@ HAPE resolves owner in this order:
 - Repository name defaults to the basename of `--repo-path` when `--name` is not set.
 - Visibility defaults to private.
 - Command fails when `--repo-path` already contains `.git`.
-- On success, HAPE runs `git init`, adds `origin`, and prints repository URL and local path.
+- On success, HAPE resolves the host global git email to a GitHub login and adds that user as an admin collaborator.
+- On success, HAPE runs `git init`, adds `origin`, and prints repository URL, local path, and admin collaborator login.

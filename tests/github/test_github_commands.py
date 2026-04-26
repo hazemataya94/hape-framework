@@ -19,6 +19,7 @@ class _FakeGitHubService:
             "html_url": "https://github.com/hape-vibes/service-a",
             "clone_url": "git@github.com:hape-vibes/service-a.git",
             "local_path": repo_path,
+            "admin_login": "host-admin",
         }
 
 
@@ -49,6 +50,7 @@ def test_init_repo_command_parses_and_calls_service(monkeypatch, capsys) -> None
     }
     output = capsys.readouterr().out
     assert "repository: hape-vibes/service-a" in output
+    assert "admin_collaborator: host-admin" in output
 
 
 if __name__ == "__main__":

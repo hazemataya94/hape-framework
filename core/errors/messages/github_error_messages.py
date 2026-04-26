@@ -8,6 +8,10 @@ ERROR_MESSAGES = {
     "GITHUB_CREATE_REPO_FAILED_WITH_REASON": "Failed to create GitHub repository '{owner}/{repo_name}'. Reason: {reason}.",
     "GITHUB_CREATE_REPO_INVALID_RESPONSE": "GitHub create repository response is invalid for '{owner}/{repo_name}'.",
     "GITHUB_LOCAL_GIT_INIT_FAILED": "Failed to initialize local git repository at {repo_path}.",
+    "GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE": "Unable to read global git email from host. Run 'git config --global user.email <email>' and retry.",
+    "GITHUB_USER_LOOKUP_FAILED": "Failed to resolve GitHub user login for email '{email}'.",
+    "GITHUB_USER_LOGIN_UNRESOLVED": "Could not resolve any GitHub login for host global git email '{email}'.",
+    "GITHUB_ADD_ADMIN_COLLABORATOR_FAILED": "Failed to add GitHub admin collaborator '{username}' to '{owner}/{repo_name}'.",
 }
 
 

@@ -73,6 +73,7 @@ class GitHubCommands:
         print(f"url: {result['html_url']}")
         print(f"clone_url: {result['clone_url']}")
         print(f"local_path: {result['local_path']}")
+        print(f"admin_collaborator: {result['admin_login']}")
 
     @staticmethod
     def run_help(args: Any) -> None:
