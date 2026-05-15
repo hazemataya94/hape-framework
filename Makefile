@@ -155,6 +155,7 @@ publish: ## Publish package to public PyPI. Commit, tag, and push the version.
 	) || ( \
 		echo "Upload failed. Not committing version bump."; \
 	)
+	make $(publish-docker)
 
 publish-docker: ## Build and publish Docker image with latest and VERSION tags.
 	@set -eu; \
