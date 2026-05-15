@@ -255,6 +255,15 @@ class GitHubClient:
         response.raise_for_status()
         return response
 
+    def _request_delete(self, endpoint_path: str) -> requests.Response:
+        self._refresh_installation_token_if_needed()
+        response = self.session.delete(
+            f"{self.base_url}{endpoint_path}",
+            timeout=self.timeout_seconds,
+        )
+        response.raise_for_status()
+        return response
+
     def _collect_paginated(self, endpoint_path: str, base_params: dict[str, Any] | None = None, root_key: str | None = None) -> list[dict[str, Any]]:
         params = dict(base_params or {})
         params.setdefault("per_page", 100)
@@ -273,6 +282,13 @@ class GitHubClient:
     def get_org_repositories(self, org_name: str, include_archived: bool = False) -> list[dict[str, Any]]:
         self.logger.debug("get_org_repositories(org_name: %s, include_archived: %s)", org_name, include_archived)
         repositories = self._collect_paginated(endpoint_path=f"/orgs/{org_name}/repos", base_params={"type": "all"}, root_key=None)
+        if include_archived:
+            return repositories
+        return [repo for repo in repositories if not bool(repo.get("archived", False))]
+
+    def get_authenticated_user_repositories(self, include_archived: bool = False) -> list[dict[str, Any]]:
+        self.logger.debug("get_authenticated_user_repositories(include_archived: %s)", include_archived)
+        repositories = self._collect_paginated(endpoint_path="/user/repos", base_params={"type": "owner"}, root_key=None)
         if include_archived:
             return repositories
         return [repo for repo in repositories if not bool(repo.get("archived", False))]
@@ -366,6 +382,14 @@ class GitHubClient:
         if not isinstance(payload, dict):
             raise RuntimeError(f"Unexpected GitHub repository response for {owner}/{repo}.")
         return payload
+
+    def delete_repository(self, owner: str, repo_name: str) -> bool:
+        normalized_owner = owner.strip()
+        normalized_repo_name = repo_name.strip()
+        if not normalized_owner or not normalized_repo_name:
+            return False
+        response = self._request_delete(endpoint_path=f"/repos/{normalized_owner}/{normalized_repo_name}")
+        return response.status_code == 204
 
     def get_repository_workflow_runs(self, owner: str, repo: str, created_after: str, created_before: str, branch: str | None = None, status: str | None = None) -> list[dict[str, Any]]:
         self.logger.debug(

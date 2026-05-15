@@ -14,6 +14,8 @@ from core.logging import LocalLogging
 
 
 class GitHubService:
+    DELETE_REPOS_CONFIRMATION_PHRASE = "delete selected repos"
+
     @staticmethod
     def _extract_create_repo_failure_reason(exc: Exception) -> str:
         if isinstance(exc, requests.HTTPError) and exc.response is not None:
@@ -207,9 +209,233 @@ class GitHubService:
             )
         return admin_login
 
+    @staticmethod
+    def _resolve_repository_target(org: str | None) -> tuple[str, str | None]:
+        normalized_org = str(org or "").strip()
+        if normalized_org:
+            return "org", normalized_org
+        return "user", None
+
+    @staticmethod
+    def _normalize_repo_filter_values(values: list[str] | None) -> list[str]:
+        normalized_values: list[str] = []
+        if not values:
+            return normalized_values
+        for raw_value in values:
+            for token in str(raw_value).split(","):
+                normalized_token = token.strip()
+                if normalized_token:
+                    normalized_values.append(normalized_token)
+        return normalized_values
+
+    @staticmethod
+    def _repository_matches_filter(repository: dict[str, Any], filter_values: set[str]) -> bool:
+        if not filter_values:
+            return False
+        repo_name = str(repository.get("name", "")).strip().lower()
+        repo_full_name = str(repository.get("full_name", "")).strip().lower()
+        return repo_name in filter_values or repo_full_name in filter_values
+
+    @staticmethod
+    def _resolve_delete_org(org: str) -> str:
+        normalized_org = org.strip()
+        if not normalized_org:
+            raise HapeValidationError(
+                code="GITHUB_DELETE_REPOS_ORG_REQUIRED",
+                message=get_github_error_message("GITHUB_DELETE_REPOS_ORG_REQUIRED"),
+            )
+        return normalized_org
+
+    @staticmethod
+    def _normalize_repository_payload(repository: dict[str, Any]) -> dict[str, Any]:
+        owner_payload = repository.get("owner", {})
+        if not isinstance(owner_payload, dict):
+            owner_payload = {}
+        return {
+            "id": int(repository.get("id", 0)),
+            "name": str(repository.get("name", "")),
+            "full_name": str(repository.get("full_name", "")),
+            "owner_login": str(owner_payload.get("login", "")),
+            "private": bool(repository.get("private", False)),
+            "archived": bool(repository.get("archived", False)),
+            "default_branch": str(repository.get("default_branch", "")),
+            "html_url": str(repository.get("html_url", "")),
+            "ssh_url": str(repository.get("ssh_url", "")),
+        }
+
+    @staticmethod
+    def _normalize_authenticated_user_payload(user_payload: dict[str, Any]) -> dict[str, str]:
+        return {
+            "login": str(user_payload.get("login", "")),
+            "name": str(user_payload.get("name", "")),
+            "html_url": str(user_payload.get("html_url", "")),
+        }
+
+    @staticmethod
+    def _normalize_delete_repository_payload(repository: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "name": str(repository.get("name", "")),
+            "full_name": str(repository.get("full_name", "")),
+            "private": bool(repository.get("private", False)),
+            "archived": bool(repository.get("archived", False)),
+            "html_url": str(repository.get("html_url", "")),
+        }
+
     def __init__(self, github_client: GitHubClient | None = None) -> None:
         self.github_client = github_client or GitHubClient()
         self.logger = LocalLogging.get_logger("hape.git_hub_service")
+
+    def list_repositories(self, org: str | None = None, include_archived: bool = False) -> list[dict[str, Any]]:
+        self.logger.debug(
+            "list_repositories(org=%s, include_archived=%s)",
+            org or "",
+            include_archived,
+        )
+        normalized_scope, normalized_org = self._resolve_repository_target(org=org)
+        scope_target = normalized_org or "authenticated-user"
+        try:
+            if normalized_scope == "user":
+                repositories = self.github_client.get_authenticated_user_repositories(include_archived=include_archived)
+            else:
+                repositories = self.github_client.get_org_repositories(org_name=normalized_org or "", include_archived=include_archived)
+        except Exception as exc:
+            raise HapeExternalError(
+                code="GITHUB_LIST_REPOS_FAILED",
+                message=get_github_error_message(
+                    "GITHUB_LIST_REPOS_FAILED",
+                    scope=normalized_scope,
+                    scope_target=scope_target,
+                ),
+            ) from exc
+        normalized_repositories = [self._normalize_repository_payload(repository=repository) for repository in repositories]
+        normalized_repositories.sort(key=lambda item: str(item.get("full_name", "")))
+        return normalized_repositories
+
+    def get_authenticated_user_info(self) -> dict[str, str]:
+        self.logger.debug("get_authenticated_user_info()")
+        try:
+            user_payload = self.github_client.get_authenticated_user()
+        except Exception as exc:
+            raise HapeExternalError(
+                code="GITHUB_AUTHENTICATED_USER_INFO_FAILED",
+                message=get_github_error_message("GITHUB_AUTHENTICATED_USER_INFO_FAILED"),
+            ) from exc
+        return self._normalize_authenticated_user_payload(user_payload=user_payload)
+
+    def get_delete_repositories_confirmation_phrase(self) -> str:
+        return self.DELETE_REPOS_CONFIRMATION_PHRASE
+
+    def list_repositories_for_deletion(self, org: str, include: list[str] | None = None, exclude: list[str] | None = None, delete_all: bool = False) -> list[dict[str, Any]]:
+        normalized_org = self._resolve_delete_org(org=org)
+        include_values = self._normalize_repo_filter_values(values=include)
+        exclude_values = {value.lower() for value in self._normalize_repo_filter_values(values=exclude)}
+        if not delete_all and not include_values:
+            raise HapeValidationError(
+                code="GITHUB_DELETE_REPOS_SELECTION_REQUIRED",
+                message=get_github_error_message("GITHUB_DELETE_REPOS_SELECTION_REQUIRED"),
+            )
+        try:
+            repositories = self.github_client.get_org_repositories(org_name=normalized_org, include_archived=True)
+        except Exception as exc:
+            raise HapeExternalError(
+                code="GITHUB_DELETE_REPOS_LIST_FAILED",
+                message=get_github_error_message(
+                    "GITHUB_DELETE_REPOS_LIST_FAILED",
+                    org=normalized_org,
+                ),
+            ) from exc
+        selected_repositories: list[dict[str, Any]]
+        if delete_all:
+            selected_repositories = repositories
+        else:
+            include_value_set = {value.lower() for value in include_values}
+            selected_repositories = [repository for repository in repositories if self._repository_matches_filter(repository=repository, filter_values=include_value_set)]
+            missing_include_values = sorted(
+                value
+                for value in include_values
+                if value.lower() not in {
+                    str(repository.get("name", "")).strip().lower()
+                    for repository in repositories
+                }
+                and value.lower() not in {
+                    str(repository.get("full_name", "")).strip().lower()
+                    for repository in repositories
+                }
+            )
+            if missing_include_values:
+                raise HapeValidationError(
+                    code="GITHUB_DELETE_REPOS_INCLUDE_NOT_FOUND",
+                    message=get_github_error_message(
+                        "GITHUB_DELETE_REPOS_INCLUDE_NOT_FOUND",
+                        missing=", ".join(missing_include_values),
+                    ),
+                )
+        if exclude_values:
+            selected_repositories = [
+                repository
+                for repository in selected_repositories
+                if not self._repository_matches_filter(repository=repository, filter_values=exclude_values)
+            ]
+        if not selected_repositories:
+            raise HapeValidationError(
+                code="GITHUB_DELETE_REPOS_EMPTY_AFTER_FILTERS",
+                message=get_github_error_message("GITHUB_DELETE_REPOS_EMPTY_AFTER_FILTERS"),
+            )
+        normalized_selected_repositories = [
+            self._normalize_delete_repository_payload(repository=repository)
+            for repository in selected_repositories
+        ]
+        normalized_selected_repositories.sort(key=lambda item: str(item.get("full_name", "")))
+        return normalized_selected_repositories
+
+    def delete_repositories(self, org: str, include: list[str] | None = None, exclude: list[str] | None = None, delete_all: bool = False, confirmation_phrase: str = "") -> dict[str, Any]:
+        expected_confirmation_phrase = self.get_delete_repositories_confirmation_phrase()
+        if confirmation_phrase.strip() != expected_confirmation_phrase:
+            raise HapeValidationError(
+                code="GITHUB_DELETE_REPOS_CONFIRMATION_MISMATCH",
+                message=get_github_error_message(
+                    "GITHUB_DELETE_REPOS_CONFIRMATION_MISMATCH",
+                    expected_phrase=expected_confirmation_phrase,
+                ),
+            )
+        normalized_org = self._resolve_delete_org(org=org)
+        repositories_for_deletion = self.list_repositories_for_deletion(
+            org=normalized_org,
+            include=include,
+            exclude=exclude,
+            delete_all=delete_all,
+        )
+        deleted_repositories: list[str] = []
+        for repository in repositories_for_deletion:
+            repo_name = str(repository.get("name", "")).strip()
+            full_name = str(repository.get("full_name", "")).strip()
+            if not repo_name:
+                continue
+            try:
+                delete_succeeded = self.github_client.delete_repository(owner=normalized_org, repo_name=repo_name)
+            except Exception as exc:
+                raise HapeExternalError(
+                    code="GITHUB_DELETE_REPO_FAILED",
+                    message=get_github_error_message(
+                        "GITHUB_DELETE_REPO_FAILED",
+                        full_name=full_name or f"{normalized_org}/{repo_name}",
+                    ),
+                ) from exc
+            if not delete_succeeded:
+                raise HapeExternalError(
+                    code="GITHUB_DELETE_REPO_FAILED",
+                    message=get_github_error_message(
+                        "GITHUB_DELETE_REPO_FAILED",
+                        full_name=full_name or f"{normalized_org}/{repo_name}",
+                    ),
+                )
+            deleted_repositories.append(full_name or f"{normalized_org}/{repo_name}")
+        deleted_repositories.sort()
+        return {
+            "org": normalized_org,
+            "deleted_repositories": deleted_repositories,
+            "deleted_count": len(deleted_repositories),
+        }
 
     def init_repo(self, repo_path: str, owner: str | None = None, name: str | None = None, visibility: str = "private") -> dict[str, Any]:
         self.logger.debug(

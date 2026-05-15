@@ -12,6 +12,17 @@ ERROR_MESSAGES = {
     "GITHUB_USER_LOOKUP_FAILED": "Failed to resolve GitHub user login for email '{email}'.",
     "GITHUB_USER_LOGIN_UNRESOLVED": "Could not resolve any GitHub login for host global git email '{email}'.",
     "GITHUB_ADD_ADMIN_COLLABORATOR_FAILED": "Failed to add GitHub admin collaborator '{username}' to '{owner}/{repo_name}'.",
+    "GITHUB_LIST_REPO_SCOPE_INVALID": "Repository scope must be 'user' or 'org'. Value is '{scope}'.",
+    "GITHUB_LIST_REPO_ORG_NAME_REQUIRED": "Organization name is required when repository scope is 'org'. Set --org.",
+    "GITHUB_LIST_REPOS_FAILED": "Failed to list GitHub repositories for scope '{scope}' and target '{scope_target}'.",
+    "GITHUB_AUTHENTICATED_USER_INFO_FAILED": "Failed to fetch authenticated GitHub user information.",
+    "GITHUB_DELETE_REPOS_ORG_REQUIRED": "Organization is required for repository deletion. Set --org.",
+    "GITHUB_DELETE_REPOS_SELECTION_REQUIRED": "Select repositories to delete using --all or --include.",
+    "GITHUB_DELETE_REPOS_INCLUDE_NOT_FOUND": "Requested repositories in --include were not found in the organization: {missing}.",
+    "GITHUB_DELETE_REPOS_EMPTY_AFTER_FILTERS": "No repositories remain for deletion after applying include/exclude filters.",
+    "GITHUB_DELETE_REPOS_CONFIRMATION_MISMATCH": "Deletion cancelled. Confirmation phrase does not match. Expected phrase: '{expected_phrase}'.",
+    "GITHUB_DELETE_REPOS_LIST_FAILED": "Failed to list organization repositories for deletion in '{org}'.",
+    "GITHUB_DELETE_REPO_FAILED": "Failed to delete GitHub repository '{full_name}'.",
 }
 
 

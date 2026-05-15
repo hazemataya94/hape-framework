@@ -9,6 +9,9 @@ All command-execution endpoints use HTTP POST.
 - `hape gitlab clone` -> `POST /gitlab/clone`
 - `hape gitlab mr-count-per-day` -> `POST /gitlab/mr-count-per-day`
 - `hape github init-repo` -> `POST /github/init-repo`
+- `hape github list-repos` -> `POST /github/list-repos`
+- `hape github user-info` -> `POST /github/user-info`
+- `hape github delete-repos` -> `POST /github/delete-repos`
 - `hape jira md-to-comment` -> `POST /jira/md-to-comment`
 - `hape confluence get-page` -> `POST /confluence/get-page`
 - `hape confluence create-page` -> `POST /confluence/create-page`

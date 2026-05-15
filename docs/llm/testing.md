@@ -11,6 +11,7 @@ Apply these rules when creating, updating, or running tests in this repository.
 - Hard rule: Functional test suites must be opt-in via environment flags and must default to cleanup after test completion.
 - Hard rule: Never use `-q` in pytest commands for documentation, examples, or execution steps.
 - Hard rule: For every new feature, add functional tests when the feature has runtime behavior that can be validated on local `kind`.
+- Hard rule: For every new command, endpoint, service/client behavior, or other created runtime feature, add or update automated tests in the same change set.
 - Hard rule: Functional tests for new features must generate real output artifacts (for example JSON, Markdown, CSV, or text outputs), not only in-memory assertions.
 - Hard rule: New feature demos under `demos/` must be created from generated functional test artifacts.
 

@@ -262,6 +262,105 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /github/list-repos:
+    post:
+      tags:
+      - github
+      summary: List Repos
+      operationId: list_repos_github_list_repos_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListReposRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+                title: Response List Repos Github List Repos Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /github/user-info:
+    post:
+      tags:
+      - github
+      summary: User Info
+      operationId: user_info_github_user_info_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfoResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /github/delete-repos:
+    post:
+      tags:
+      - github
+      summary: Delete Repos
+      operationId: delete_repos_github_delete_repos_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteReposRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Delete Repos Github Delete Repos Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /jira/md-to-comment:
     post:
       tags:
@@ -1270,6 +1369,67 @@ components:
       required:
       - repo_path
       title: InitRepoRequest
+    ListReposRequest:
+      properties:
+        org:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Org
+        include_archived:
+          type: boolean
+          title: Include Archived
+          default: false
+      type: object
+      title: ListReposRequest
+    DeleteReposRequest:
+      properties:
+        org:
+          type: string
+          title: Org
+        include:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Include
+        exclude:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Exclude
+        delete_all:
+          type: boolean
+          title: Delete All
+          default: false
+        confirmation_phrase:
+          type: string
+          title: Confirmation Phrase
+      type: object
+      required:
+      - org
+      - confirmation_phrase
+      title: DeleteReposRequest
+    UserInfoResponse:
+      properties:
+        login:
+          type: string
+          title: Login
+        name:
+          type: string
+          title: Name
+        html_url:
+          type: string
+          title: Html Url
+      type: object
+      required:
+      - login
+      - name
+      - html_url
+      title: UserInfoResponse
     InvestigateAlertRequest:
       properties:
         kube_context:
