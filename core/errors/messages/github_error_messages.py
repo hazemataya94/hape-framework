@@ -23,6 +23,9 @@ ERROR_MESSAGES = {
     "GITHUB_DELETE_REPOS_CONFIRMATION_MISMATCH": "Deletion cancelled. Confirmation phrase does not match. Expected phrase: '{expected_phrase}'.",
     "GITHUB_DELETE_REPOS_LIST_FAILED": "Failed to list organization repositories for deletion in '{org}'.",
     "GITHUB_DELETE_REPO_FAILED": "Failed to delete GitHub repository '{full_name}'.",
+    "GITHUB_CLONE_REPOS_ORG_REQUIRED": "Organization is required for cloning repositories. Set --org.",
+    "GITHUB_CLONE_REPOS_DIR_REQUIRED": "Clone directory is required. Set --clone-dir.",
+    "GITHUB_CLONE_REPO_FAILED": "Failed to clone GitHub repository '{full_name}'.",
 }
 
 

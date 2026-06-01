@@ -78,6 +78,24 @@ class GitHubCommands:
         )
         list_repos_parser.set_defaults(func=GitHubCommands.run_list_repos)
 
+        clone_repos_parser = github_subparsers.add_parser(
+            "clone-repos",
+            help="clone all repositories from a GitHub organization.",
+        )
+        clone_repos_parser.add_argument(
+            "--org",
+            required=True,
+            default=None,
+            help="GitHub organization login to clone repositories from.",
+        )
+        clone_repos_parser.add_argument(
+            "--clone-dir",
+            required=True,
+            default=None,
+            help="directory to clone repositories into.",
+        )
+        clone_repos_parser.set_defaults(func=GitHubCommands.run_clone_repos)
+
         user_info_parser = github_subparsers.add_parser(
             "user-info",
             help="get authenticated GitHub user information.",
@@ -145,6 +163,16 @@ class GitHubCommands:
             include_archived=args.include_archived,
         )
         print(json.dumps(repositories, indent=2, sort_keys=True))
+
+    @staticmethod
+    def run_clone_repos(args: Any) -> None:
+        LocalLogging.bootstrap()
+        github_service = GitHubService()
+        result = github_service.clone_repositories(
+            org=args.org,
+            clone_dir=args.clone_dir,
+        )
+        print(json.dumps(result, indent=2, sort_keys=True))
 
     @staticmethod
     def run_user_info(args: Any) -> None:
