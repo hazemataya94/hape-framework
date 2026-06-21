@@ -9,6 +9,7 @@ class _FakeGitHubService:
     last_call = {}
     last_create_call = {}
     last_list_call = {}
+    last_clone_call = {}
     user_info_calls = 0
     last_delete_preview_call = {}
     last_delete_call = {}
@@ -61,6 +62,21 @@ class _FakeGitHubService:
                 "ssh_url": "git@github.com:hape-vibes/service-a.git",
             }
         ]
+
+    def clone_repositories(self, org: str, clone_dir: str) -> dict[str, object]:
+        _FakeGitHubService.last_clone_call = {
+            "org": org,
+            "clone_dir": clone_dir,
+        }
+        return {
+            "org": org,
+            "clone_dir": clone_dir,
+            "cloned_repositories": ["hape-vibes/service-a"],
+            "skipped_repositories": [],
+            "cloned_count": 1,
+            "skipped_count": 0,
+            "total_repositories": 1,
+        }
 
     def get_authenticated_user_info(self) -> dict[str, str]:
         _FakeGitHubService.user_info_calls += 1
@@ -263,6 +279,32 @@ def test_list_repos_command_defaults_to_user_context_when_org_is_not_passed(monk
     output = capsys.readouterr().out
     payload = json.loads(output)
     assert payload[0]["full_name"] == "hape-vibes/service-a"
+
+
+def test_clone_repos_command_parses_and_calls_service(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(github_commands_module, "GitHubService", _FakeGitHubService)
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(dest="command")
+    GitHubCommands.register(subparsers)
+    args = parser.parse_args(
+        [
+            "github",
+            "clone-repos",
+            "--org",
+            "microagi-labs",
+            "--clone-dir",
+            "/tmp/microagi-labs",
+        ]
+    )
+    args.func(args)
+    assert _FakeGitHubService.last_clone_call == {
+        "org": "microagi-labs",
+        "clone_dir": "/tmp/microagi-labs",
+    }
+    output = capsys.readouterr().out
+    payload = json.loads(output)
+    assert payload["cloned_count"] == 1
+    assert payload["org"] == "microagi-labs"
 
 
 def test_user_info_command_calls_service_and_prints_json(monkeypatch, capsys) -> None:

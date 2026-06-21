@@ -331,6 +331,125 @@ def test_list_repositories_for_org_scope_calls_org_endpoint() -> None:
     assert repositories[0]["archived"] is True
 
 
+def test_clone_repositories_uses_list_repositories_and_clones_with_recursive_paths(tmp_path: Path, monkeypatch) -> None:
+    service = GitHubService(github_client=_FakeListRepositoriesGitHubClient())
+    list_repositories_calls: list[dict[str, object]] = []
+    clone_calls: list[dict[str, str]] = []
+
+    def _fake_list_repositories(org: str | None = None, include_archived: bool = False) -> list[dict[str, object]]:
+        list_repositories_calls.append(
+            {
+                "org": org,
+                "include_archived": include_archived,
+            }
+        )
+        return [
+            {
+                "id": 21,
+                "name": "service-a",
+                "full_name": "microagi-labs/service-a",
+                "owner_login": "microagi-labs",
+                "private": True,
+                "archived": False,
+                "default_branch": "main",
+                "html_url": "https://github.com/microagi-labs/service-a",
+                "ssh_url": "git@github.com:microagi-labs/service-a.git",
+            },
+            {
+                "id": 22,
+                "name": "service-b",
+                "full_name": "microagi-labs/service-b",
+                "owner_login": "microagi-labs",
+                "private": True,
+                "archived": False,
+                "default_branch": "main",
+                "html_url": "https://github.com/microagi-labs/service-b",
+                "ssh_url": "git@github.com:microagi-labs/service-b.git",
+            },
+        ]
+
+    def _fake_run_git_clone(clone_url: str, target_path: Path) -> None:
+        clone_calls.append({"clone_url": clone_url, "target_path": str(target_path)})
+
+    monkeypatch.setattr(service, "list_repositories", _fake_list_repositories)
+    monkeypatch.setattr(service, "_run_git_clone", _fake_run_git_clone)
+
+    result = service.clone_repositories(org="microagi-labs", clone_dir=str(tmp_path))
+
+    assert list_repositories_calls == [{"org": "microagi-labs", "include_archived": False}]
+    assert clone_calls == [
+        {
+            "clone_url": "git@github.com:microagi-labs/service-a.git",
+            "target_path": str(tmp_path / "microagi-labs" / "service-a"),
+        },
+        {
+            "clone_url": "git@github.com:microagi-labs/service-b.git",
+            "target_path": str(tmp_path / "microagi-labs" / "service-b"),
+        },
+    ]
+    assert result["cloned_count"] == 2
+    assert result["skipped_count"] == 0
+
+
+def test_clone_repositories_skips_existing_repositories(tmp_path: Path, monkeypatch) -> None:
+    service = GitHubService(github_client=_FakeListRepositoriesGitHubClient())
+    existing_repository_path = tmp_path / "microagi-labs" / "service-a"
+    existing_repository_path.mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setattr(
+        service,
+        "list_repositories",
+        lambda org=None, include_archived=False: [
+            {
+                "id": 21,
+                "name": "service-a",
+                "full_name": "microagi-labs/service-a",
+                "owner_login": "microagi-labs",
+                "private": True,
+                "archived": False,
+                "default_branch": "main",
+                "html_url": "https://github.com/microagi-labs/service-a",
+                "ssh_url": "git@github.com:microagi-labs/service-a.git",
+            },
+            {
+                "id": 22,
+                "name": "service-b",
+                "full_name": "microagi-labs/service-b",
+                "owner_login": "microagi-labs",
+                "private": True,
+                "archived": False,
+                "default_branch": "main",
+                "html_url": "https://github.com/microagi-labs/service-b",
+                "ssh_url": "git@github.com:microagi-labs/service-b.git",
+            },
+        ],
+    )
+
+    clone_calls: list[str] = []
+    monkeypatch.setattr(service, "_run_git_clone", lambda clone_url, target_path: clone_calls.append(str(target_path)))
+
+    result = service.clone_repositories(org="microagi-labs", clone_dir=str(tmp_path))
+
+    assert clone_calls == [str(tmp_path / "microagi-labs" / "service-b")]
+    assert result["cloned_count"] == 1
+    assert result["skipped_count"] == 1
+    assert result["skipped_repositories"] == ["microagi-labs/service-a"]
+
+
+def test_clone_repositories_requires_org(tmp_path: Path) -> None:
+    service = GitHubService(github_client=_FakeListRepositoriesGitHubClient())
+    with pytest.raises(HapeValidationError) as error:
+        service.clone_repositories(org="", clone_dir=str(tmp_path))
+    assert error.value.code == "GITHUB_CLONE_REPOS_ORG_REQUIRED"
+
+
+def test_clone_repositories_requires_clone_dir() -> None:
+    service = GitHubService(github_client=_FakeListRepositoriesGitHubClient())
+    with pytest.raises(HapeValidationError) as error:
+        service.clone_repositories(org="microagi-labs", clone_dir="")
+    assert error.value.code == "GITHUB_CLONE_REPOS_DIR_REQUIRED"
+
+
 def test_get_authenticated_user_info_returns_normalized_payload() -> None:
     service = GitHubService(github_client=_FakeAuthenticatedUserGitHubClient())
     payload = service.get_authenticated_user_info()

@@ -60,6 +60,13 @@ Include archived repositories:
 python -m cli.main github list-repos --org hape-vibes --include-archived
 ```
 
+## Clone repositories
+Clone all repositories in an organization into a target directory:
+
+```bash
+python -m cli.main github clone-repos --org microagi-labs --clone-dir /path/to/dir
+```
+
 ## Authenticated user info
 Get authenticated GitHub user info:
 
@@ -100,5 +107,8 @@ Notes:
 - `list-repos` without `--org` returns repositories owned by the authenticated user personal account.
 - `list-repos --org <org-login>` returns repositories for that organization.
 - `list-repos` prints JSON output with stable repository fields.
+- `clone-repos` uses organization repositories returned by `list_repositories` and clones each repository by SSH URL.
+- `clone-repos` writes repositories under recursive namespace paths: `<clone-dir>/<org>/<repo-name>`.
+- `clone-repos` skips repositories that already exist locally and returns JSON with cloned and skipped counts.
 - `user-info` prints JSON output with authenticated `login`, `name`, and `html_url`.
 - `delete-repos` deletes only organization repositories in the provided `--org`.

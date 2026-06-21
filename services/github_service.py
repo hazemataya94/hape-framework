@@ -257,6 +257,16 @@ class GitHubService:
         return normalized_org
 
     @staticmethod
+    def _resolve_clone_org(org: str) -> str:
+        normalized_org = org.strip()
+        if not normalized_org:
+            raise HapeValidationError(
+                code="GITHUB_CLONE_REPOS_ORG_REQUIRED",
+                message=get_github_error_message("GITHUB_CLONE_REPOS_ORG_REQUIRED"),
+            )
+        return normalized_org
+
+    @staticmethod
     def _resolve_create_repo_name(name: str) -> str:
         normalized_name = name.strip()
         if not normalized_name:
@@ -265,6 +275,33 @@ class GitHubService:
                 message=get_github_error_message("GITHUB_CREATE_REPO_NAME_REQUIRED"),
             )
         return normalized_name
+
+    @staticmethod
+    def _resolve_clone_dir(clone_dir: str) -> Path:
+        normalized_clone_dir = str(clone_dir).strip()
+        if not normalized_clone_dir:
+            raise HapeValidationError(
+                code="GITHUB_CLONE_REPOS_DIR_REQUIRED",
+                message=get_github_error_message("GITHUB_CLONE_REPOS_DIR_REQUIRED"),
+            )
+        resolved_clone_dir = Path(normalized_clone_dir).expanduser().resolve()
+        resolved_clone_dir.mkdir(parents=True, exist_ok=True)
+        if not resolved_clone_dir.is_dir():
+            raise HapeValidationError(
+                code="GITHUB_CLONE_REPOS_DIR_REQUIRED",
+                message=get_github_error_message("GITHUB_CLONE_REPOS_DIR_REQUIRED"),
+            )
+        return resolved_clone_dir
+
+    @staticmethod
+    def _run_git_clone(clone_url: str, target_path: Path) -> None:
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(
+            ["git", "clone", clone_url, str(target_path)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
 
     @staticmethod
     def _normalize_repository_payload(repository: dict[str, Any]) -> dict[str, Any]:
@@ -384,6 +421,59 @@ class GitHubService:
         normalized_repositories = [self._normalize_repository_payload(repository=repository) for repository in repositories]
         normalized_repositories.sort(key=lambda item: str(item.get("full_name", "")))
         return normalized_repositories
+
+    def clone_repositories(self, org: str, clone_dir: str) -> dict[str, Any]:
+        self.logger.debug("clone_repositories(org=%s, clone_dir=%s)", org, clone_dir)
+        normalized_org = self._resolve_clone_org(org=org)
+        resolved_clone_dir = self._resolve_clone_dir(clone_dir=clone_dir)
+        repositories = self.list_repositories(org=normalized_org, include_archived=False)
+        cloned_repositories: list[str] = []
+        skipped_repositories: list[str] = []
+        for repository in repositories:
+            repository_full_name = str(repository.get("full_name", "")).strip()
+            repository_clone_url = str(repository.get("ssh_url", "")).strip()
+            self.logger.info(
+                "Cloning repository %s",
+                repository_full_name,
+            )
+            if not repository_full_name or not repository_clone_url:
+                continue
+            repository_target_path = resolved_clone_dir / repository_full_name
+            if repository_target_path.exists():
+                self.logger.info(
+                    "Repository already exists at %s. Skipping clone for %s",
+                    repository_target_path,
+                    repository_full_name,
+                )
+                skipped_repositories.append(repository_full_name)
+                continue
+            try:
+                self._run_git_clone(clone_url=repository_clone_url, target_path=repository_target_path)
+            except subprocess.CalledProcessError as exc:
+                raise HapeExternalError(
+                    code="GITHUB_CLONE_REPO_FAILED",
+                    message=get_github_error_message(
+                        "GITHUB_CLONE_REPO_FAILED",
+                        full_name=repository_full_name,
+                    ),
+                ) from exc
+            self.logger.info(
+                "Cloned repository %s to %s",
+                repository_full_name,
+                repository_target_path,
+            )
+            cloned_repositories.append(repository_full_name)
+        cloned_repositories.sort()
+        skipped_repositories.sort()
+        return {
+            "org": normalized_org,
+            "clone_dir": str(resolved_clone_dir),
+            "cloned_repositories": cloned_repositories,
+            "skipped_repositories": skipped_repositories,
+            "cloned_count": len(cloned_repositories),
+            "skipped_count": len(skipped_repositories),
+            "total_repositories": len(repositories),
+        }
 
     def get_authenticated_user_info(self) -> dict[str, str]:
         self.logger.debug("get_authenticated_user_info()")
