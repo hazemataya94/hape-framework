@@ -1,13 +1,26 @@
 # GitHub CLI
 
 ## Purpose
-Use GitHub CLI commands in HAPE to initialize a local repository and create the matching GitHub repository.
+Use GitHub CLI commands in HAPE to create, initialize, list, inspect, and delete GitHub repositories.
 
 ## Prerequisites
 - Set `HAPE_GITHUB_TOKEN` in environment variables or config.
 - Optional: set `HAPE_GITHUB_DEFAULT_OWNER` to use a default owner when `--owner` is not passed.
-- Set global git user email on host with `git config --global user.email <email>` so HAPE can resolve and grant admin access for the repository.
-- Ensure `--repo-path` exists and does not contain a `.git` directory.
+- For `init-repo`, set global git user email on host with `git config --global user.email <email>` so HAPE can resolve and grant admin access for the repository.
+- For `init-repo`, ensure `--repo-path` exists and does not contain a `.git` directory.
+
+## Create repository
+Create a private repository in an organization by default:
+
+```bash
+python -m cli.main github create repo --name service-a --org example-org
+```
+
+Create a public repository in an organization:
+
+```bash
+python -m cli.main github create repo --name service-a --org example-org --public
+```
 
 ## Init repository
 Create a private repository by default:
@@ -74,6 +87,11 @@ Notes:
 - The command prints the repository list first, then asks for a confirmation phrase before deletion.
 
 ## Behavior
+- `create repo` creates a remote GitHub repository only.
+- `create repo --org <org-login>` creates the repository in the selected organization.
+- `create repo` requires `--name`.
+- `create repo` visibility defaults to private.
+- `create repo --public` creates a public repository.
 - Repository name defaults to the basename of `--repo-path` when `--name` is not set.
 - Visibility defaults to private.
 - Command fails when `--repo-path` already contains `.git`.

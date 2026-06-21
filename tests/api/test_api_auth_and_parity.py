@@ -4,9 +4,25 @@ from fastapi.testclient import TestClient
 
 
 class _FakeGitHubService:
+    last_create_call: dict[str, object] = {}
     last_list_call: dict[str, object] = {}
     user_info_calls: int = 0
     last_delete_call: dict[str, object] = {}
+
+    def create_repository(self, org: str, name: str, visibility: str = "private") -> dict[str, object]:
+        _FakeGitHubService.last_create_call = {
+            "org": org,
+            "name": name,
+            "visibility": visibility,
+        }
+        return {
+            "name": name,
+            "full_name": f"{org}/{name}",
+            "owner_login": org,
+            "private": visibility == "private",
+            "html_url": f"https://github.com/{org}/{name}",
+            "ssh_url": f"git@github.com:{org}/{name}.git",
+        }
 
     def list_repositories(self, org: str | None = None, include_archived: bool = False) -> list[dict[str, object]]:
         _FakeGitHubService.last_list_call = {
@@ -95,6 +111,7 @@ def test_cli_api_parity_routes_exist(monkeypatch, tmp_path) -> None:
         "/gitlab/clone",
         "/gitlab/mr-count-per-day",
         "/github/init-repo",
+        "/github/create/repo",
         "/github/list-repos",
         "/github/user-info",
         "/github/delete-repos",
@@ -122,6 +139,78 @@ def test_cli_api_parity_routes_exist(monkeypatch, tmp_path) -> None:
     }
     missing_paths = expected_paths - route_paths
     assert not missing_paths
+
+
+def test_github_create_repo_route_returns_service_payload(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr("api.routers.github_router.GitHubService", _FakeGitHubService)
+    client = _build_test_client(monkeypatch=monkeypatch, tmp_path=tmp_path)
+    token_response = client.post(
+        "/auth/tokens",
+        headers={"X-Hape-Admin-Key": "admin-key"},
+        json={"name": "test-token"},
+    )
+    assert token_response.status_code == 200
+    token = token_response.json()["token"]
+    auth_headers = {"Authorization": f"Bearer {token}"}
+    response = client.post(
+        "/github/create/repo",
+        headers=auth_headers,
+        json={"org": "hape-vibes", "name": "service-a", "visibility": "public"},
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert _FakeGitHubService.last_create_call == {
+        "org": "hape-vibes",
+        "name": "service-a",
+        "visibility": "public",
+    }
+    assert payload["full_name"] == "hape-vibes/service-a"
+    assert payload["private"] is False
+
+
+def test_github_create_repo_route_defaults_to_private_visibility(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr("api.routers.github_router.GitHubService", _FakeGitHubService)
+    client = _build_test_client(monkeypatch=monkeypatch, tmp_path=tmp_path)
+    token_response = client.post(
+        "/auth/tokens",
+        headers={"X-Hape-Admin-Key": "admin-key"},
+        json={"name": "test-token"},
+    )
+    assert token_response.status_code == 200
+    token = token_response.json()["token"]
+    auth_headers = {"Authorization": f"Bearer {token}"}
+    response = client.post(
+        "/github/create/repo",
+        headers=auth_headers,
+        json={"org": "hape-vibes", "name": "service-a"},
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert _FakeGitHubService.last_create_call == {
+        "org": "hape-vibes",
+        "name": "service-a",
+        "visibility": "private",
+    }
+    assert payload["private"] is True
+
+
+def test_github_create_repo_route_rejects_invalid_visibility(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr("api.routers.github_router.GitHubService", _FakeGitHubService)
+    client = _build_test_client(monkeypatch=monkeypatch, tmp_path=tmp_path)
+    token_response = client.post(
+        "/auth/tokens",
+        headers={"X-Hape-Admin-Key": "admin-key"},
+        json={"name": "test-token"},
+    )
+    assert token_response.status_code == 200
+    token = token_response.json()["token"]
+    auth_headers = {"Authorization": f"Bearer {token}"}
+    response = client.post(
+        "/github/create/repo",
+        headers=auth_headers,
+        json={"org": "hape-vibes", "name": "service-a", "visibility": "internal"},
+    )
+    assert response.status_code == 422
 
 
 def test_github_list_repos_route_returns_service_payload(monkeypatch, tmp_path) -> None:

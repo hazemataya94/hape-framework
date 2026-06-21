@@ -247,6 +247,26 @@ class GitHubService:
         return normalized_org
 
     @staticmethod
+    def _resolve_create_repo_org(org: str) -> str:
+        normalized_org = org.strip()
+        if not normalized_org:
+            raise HapeValidationError(
+                code="GITHUB_CREATE_REPO_ORG_REQUIRED",
+                message=get_github_error_message("GITHUB_CREATE_REPO_ORG_REQUIRED"),
+            )
+        return normalized_org
+
+    @staticmethod
+    def _resolve_create_repo_name(name: str) -> str:
+        normalized_name = name.strip()
+        if not normalized_name:
+            raise HapeValidationError(
+                code="GITHUB_CREATE_REPO_NAME_REQUIRED",
+                message=get_github_error_message("GITHUB_CREATE_REPO_NAME_REQUIRED"),
+            )
+        return normalized_name
+
+    @staticmethod
     def _normalize_repository_payload(repository: dict[str, Any]) -> dict[str, Any]:
         owner_payload = repository.get("owner", {})
         if not isinstance(owner_payload, dict):
@@ -281,9 +301,63 @@ class GitHubService:
             "html_url": str(repository.get("html_url", "")),
         }
 
+    @staticmethod
+    def _normalize_created_repository_payload(repository: dict[str, Any], owner: str, repo_name: str, private: bool) -> dict[str, Any]:
+        owner_payload = repository.get("owner", {})
+        if not isinstance(owner_payload, dict):
+            owner_payload = {}
+        return {
+            "name": str(repository.get("name", repo_name)),
+            "full_name": str(repository.get("full_name", f"{owner}/{repo_name}")),
+            "owner_login": str(owner_payload.get("login", owner)),
+            "private": bool(repository.get("private", private)),
+            "html_url": str(repository.get("html_url", "")),
+            "ssh_url": str(repository.get("ssh_url", "")),
+        }
+
     def __init__(self, github_client: GitHubClient | None = None) -> None:
         self.github_client = github_client or GitHubClient()
         self.logger = LocalLogging.get_logger("hape.git_hub_service")
+
+    def create_repository(self, org: str, name: str, visibility: str = "private") -> dict[str, Any]:
+        self.logger.debug(
+            "create_repository(org=%s, name=%s, visibility=%s)",
+            org,
+            name,
+            visibility,
+        )
+        normalized_org = self._resolve_create_repo_org(org=org)
+        normalized_repo_name = self._resolve_create_repo_name(name=name)
+        is_private_repo = self._resolve_visibility(visibility=visibility)
+        try:
+            repository_data = self.github_client.create_organization_repository(
+                org_name=normalized_org,
+                repo_name=normalized_repo_name,
+                private=is_private_repo,
+            )
+        except Exception as exc:
+            reason = self._extract_create_repo_failure_reason(exc=exc)
+            self.logger.error("create_repository failed for %s/%s: %s", normalized_org, normalized_repo_name, reason)
+            raise HapeExternalError(
+                code="GITHUB_CREATE_REPO_FAILED",
+                message=get_github_error_message(
+                    "GITHUB_CREATE_REPO_FAILED_WITH_REASON",
+                    owner=normalized_org,
+                    repo_name=normalized_repo_name,
+                    reason=reason,
+                ),
+            ) from exc
+        self.logger.info(
+            "Repository created as %s/%s",
+            normalized_org,
+            normalized_repo_name,
+        )
+        return self._normalize_created_repository_payload(
+            repository=repository_data,
+            owner=normalized_org,
+            repo_name=normalized_repo_name,
+            private=is_private_repo,
+        )
 
     def list_repositories(self, org: str | None = None, include_archived: bool = False) -> list[dict[str, Any]]:
         self.logger.debug(

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -15,6 +15,12 @@ class InitRepoRequest(BaseModel):
     owner: str | None = None
     name: str | None = None
     visibility: str = "private"
+
+
+class CreateRepoRequest(BaseModel):
+    org: str
+    name: str
+    visibility: Literal["private", "public"] = "private"
 
 
 class ListReposRequest(BaseModel):
@@ -34,6 +40,12 @@ class DeleteReposRequest(BaseModel):
 def init_repo(payload: InitRepoRequest) -> dict[str, str]:
     service = GitHubService()
     return service.init_repo(repo_path=payload.repo_path, owner=payload.owner, name=payload.name, visibility=payload.visibility)
+
+
+@router.post("/create/repo")
+def create_repo(payload: CreateRepoRequest) -> dict[str, Any]:
+    service = GitHubService()
+    return service.create_repository(org=payload.org, name=payload.name, visibility=payload.visibility)
 
 
 @router.post("/list-repos")

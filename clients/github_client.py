@@ -345,6 +345,19 @@ class GitHubClient:
             raise RuntimeError(f"Unexpected GitHub create repository response for owner={owner}, repo={repo_name}.")
         return response_payload
 
+    def create_organization_repository(self, org_name: str, repo_name: str, private: bool = True) -> dict[str, Any]:
+        normalized_org_name = org_name.strip()
+        normalized_repo_name = repo_name.strip()
+        payload = {
+            "name": normalized_repo_name,
+            "private": private,
+            "auto_init": False,
+        }
+        response_payload = self._request_json_post(endpoint_path=f"/orgs/{normalized_org_name}/repos", payload=payload)
+        if not isinstance(response_payload, dict):
+            raise RuntimeError(f"Unexpected GitHub create repository response for org={normalized_org_name}, repo={normalized_repo_name}.")
+        return response_payload
+
     def resolve_user_login_by_email(self, email: str) -> str:
         normalized_email = email.strip().lower()
         if not normalized_email:

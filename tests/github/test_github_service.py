@@ -25,6 +25,20 @@ class _FakeGitHubClient:
             "ssh_url": f"git@github.com:{owner}/{repo_name}.git",
         }
 
+    def create_organization_repository(self, org_name: str, repo_name: str, private: bool = True) -> dict[str, str]:
+        self.created_payloads.append(
+            {
+                "org_name": org_name,
+                "repo_name": repo_name,
+                "private": private,
+            }
+        )
+        return {
+            "full_name": f"{org_name}/{repo_name}",
+            "html_url": f"https://github.com/{org_name}/{repo_name}",
+            "ssh_url": f"git@github.com:{org_name}/{repo_name}.git",
+        }
+
     def resolve_token_default_owner(self) -> str:
         return "token-user"
 
@@ -45,6 +59,12 @@ class _FakeGitHubClient:
 
 class _FakeFailingGitHubClient:
     def create_repository(self, owner: str, repo_name: str, private: bool = True) -> dict[str, str]:
+        response = requests.Response()
+        response.status_code = 422
+        response._content = b'{"message":"Validation Failed","errors":[{"field":"name","code":"already_exists"}]}'
+        raise requests.HTTPError("422 Client Error", response=response)
+
+    def create_organization_repository(self, org_name: str, repo_name: str, private: bool = True) -> dict[str, str]:
         response = requests.Response()
         response.status_code = 422
         response._content = b'{"message":"Validation Failed","errors":[{"field":"name","code":"already_exists"}]}'
@@ -132,6 +152,58 @@ class _FakeFailingAuthenticatedUserGitHubClient:
 class _FakeFailingDeleteGitHubClient(_FakeListRepositoriesGitHubClient):
     def delete_repository(self, owner: str, repo_name: str) -> bool:
         raise RuntimeError("delete failed")
+
+
+def test_create_repository_uses_private_default() -> None:
+    service = GitHubService(github_client=_FakeGitHubClient())
+    result = service.create_repository(org="hape-vibes", name="service-a")
+    assert result == {
+        "name": "service-a",
+        "full_name": "hape-vibes/service-a",
+        "owner_login": "hape-vibes",
+        "private": True,
+        "html_url": "https://github.com/hape-vibes/service-a",
+        "ssh_url": "git@github.com:hape-vibes/service-a.git",
+    }
+    assert _FakeGitHubClient.created_payloads[-1] == {
+        "org_name": "hape-vibes",
+        "repo_name": "service-a",
+        "private": True,
+    }
+
+
+def test_create_repository_supports_public_visibility() -> None:
+    service = GitHubService(github_client=_FakeGitHubClient())
+    result = service.create_repository(org="hape-vibes", name="service-a", visibility="public")
+    assert result["private"] is False
+    assert _FakeGitHubClient.created_payloads[-1] == {
+        "org_name": "hape-vibes",
+        "repo_name": "service-a",
+        "private": False,
+    }
+
+
+def test_create_repository_requires_org() -> None:
+    service = GitHubService(github_client=_FakeGitHubClient())
+    with pytest.raises(HapeValidationError) as error:
+        service.create_repository(org=" ", name="service-a")
+    assert error.value.code == "GITHUB_CREATE_REPO_ORG_REQUIRED"
+
+
+def test_create_repository_requires_name() -> None:
+    service = GitHubService(github_client=_FakeGitHubClient())
+    with pytest.raises(HapeValidationError) as error:
+        service.create_repository(org="hape-vibes", name=" ")
+    assert error.value.code == "GITHUB_CREATE_REPO_NAME_REQUIRED"
+
+
+def test_create_repository_error_message_includes_github_reason() -> None:
+    service = GitHubService(github_client=_FakeFailingGitHubClient())
+    with pytest.raises(HapeExternalError) as error:
+        service.create_repository(org="hape-vibes", name="service-a")
+    assert error.value.code == "GITHUB_CREATE_REPO_FAILED"
+    assert "status=422" in error.value.message
+    assert "already_exists" in error.value.message
 
 
 def test_init_repo_uses_repo_basename_and_private_default(tmp_path: Path, monkeypatch) -> None:

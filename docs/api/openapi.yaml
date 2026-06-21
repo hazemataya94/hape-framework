@@ -262,6 +262,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /github/create/repo:
+    post:
+      tags:
+      - github
+      summary: Create Repo
+      operationId: create_repo_github_create_repo_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRepoRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Create Repo Github Create Repo Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /github/list-repos:
     post:
       tags:
@@ -1184,6 +1219,26 @@ components:
       - page_body
       - space_key
       title: CreatePageRequest
+    CreateRepoRequest:
+      properties:
+        org:
+          type: string
+          title: Org
+        name:
+          type: string
+          title: Name
+        visibility:
+          type: string
+          enum:
+          - private
+          - public
+          title: Visibility
+          default: private
+      type: object
+      required:
+      - org
+      - name
+      title: CreateRepoRequest
     CreateTokenRequest:
       properties:
         name:

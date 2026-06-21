@@ -20,6 +20,48 @@ class GitHubCommands:
         )
         github_subparsers.required = False
 
+        create_parser = github_subparsers.add_parser(
+            "create",
+            help="create GitHub resources.",
+        )
+        create_subparsers = create_parser.add_subparsers(
+            dest="github_create_command",
+            metavar="command",
+        )
+        create_subparsers.required = True
+        create_repo_parser = create_subparsers.add_parser(
+            "repo",
+            help="create a GitHub repository in an organization.",
+        )
+        create_repo_parser.add_argument(
+            "--name",
+            required=True,
+            default=None,
+            help="GitHub repository name to create.",
+        )
+        create_repo_parser.add_argument(
+            "--org",
+            required=True,
+            default=None,
+            help="GitHub organization login where the repository will be created.",
+        )
+        create_repo_visibility_group = create_repo_parser.add_mutually_exclusive_group(required=False)
+        create_repo_visibility_group.add_argument(
+            "--private",
+            action="store_true",
+            required=False,
+            default=False,
+            help="create repository as private (default).",
+        )
+        create_repo_visibility_group.add_argument(
+            "--public",
+            action="store_true",
+            required=False,
+            default=False,
+            help="create repository as public.",
+        )
+        create_repo_parser.set_defaults(func=GitHubCommands.run_create_repo)
+
         init_repo_parser = github_subparsers.add_parser(
             "init-repo",
             help="initialize local git repo and create GitHub repository.",
@@ -118,6 +160,18 @@ class GitHubCommands:
             help="delete all repositories in the org. Overrides --include.",
         )
         delete_repos_parser.set_defaults(func=GitHubCommands.run_delete_repos)
+
+    @staticmethod
+    def run_create_repo(args: Any) -> None:
+        LocalLogging.bootstrap()
+        github_service = GitHubService()
+        visibility = "public" if args.public else "private"
+        result = github_service.create_repository(
+            org=args.org,
+            name=args.name,
+            visibility=visibility,
+        )
+        print(json.dumps(result, indent=2, sort_keys=True))
 
     @staticmethod
     def run_init_repo(args: Any) -> None:

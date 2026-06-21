@@ -4,6 +4,8 @@ ERROR_MESSAGES = {
     "GITHUB_REPO_ALREADY_INITIALIZED": "Repository is already initialized with git: {repo_path}.",
     "GITHUB_VISIBILITY_INVALID": "Repository visibility must be private or public. Value is '{visibility}'.",
     "GITHUB_OWNER_UNRESOLVED": "Unable to resolve GitHub owner. Set --owner, HAPE_GITHUB_DEFAULT_OWNER, or use a token with user/org access.",
+    "GITHUB_CREATE_REPO_ORG_REQUIRED": "Organization is required for repository creation. Set --org.",
+    "GITHUB_CREATE_REPO_NAME_REQUIRED": "Repository name is required for repository creation. Set --name.",
     "GITHUB_CREATE_REPO_FAILED": "Failed to create GitHub repository '{owner}/{repo_name}'.",
     "GITHUB_CREATE_REPO_FAILED_WITH_REASON": "Failed to create GitHub repository '{owner}/{repo_name}'. Reason: {reason}.",
     "GITHUB_CREATE_REPO_INVALID_RESPONSE": "GitHub create repository response is invalid for '{owner}/{repo_name}'.",

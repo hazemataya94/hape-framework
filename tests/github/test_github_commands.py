@@ -7,10 +7,26 @@ from cli.commands.github_commands import GitHubCommands
 
 class _FakeGitHubService:
     last_call = {}
+    last_create_call = {}
     last_list_call = {}
     user_info_calls = 0
     last_delete_preview_call = {}
     last_delete_call = {}
+
+    def create_repository(self, org: str, name: str, visibility: str = "private") -> dict[str, object]:
+        _FakeGitHubService.last_create_call = {
+            "org": org,
+            "name": name,
+            "visibility": visibility,
+        }
+        return {
+            "name": name,
+            "full_name": f"{org}/{name}",
+            "owner_login": org,
+            "private": visibility == "private",
+            "html_url": f"https://github.com/{org}/{name}",
+            "ssh_url": f"git@github.com:{org}/{name}.git",
+        }
 
     def init_repo(self, repo_path: str, owner: str | None = None, name: str | None = None, visibility: str = "private") -> dict[str, str]:
         _FakeGitHubService.last_call = {
@@ -87,6 +103,90 @@ class _FakeGitHubService:
             "deleted_repositories": ["hape-vibes/service-a"],
             "deleted_count": 1,
         }
+
+
+def test_create_repo_command_parses_and_calls_service_with_private_default(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(github_commands_module, "GitHubService", _FakeGitHubService)
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(dest="command")
+    GitHubCommands.register(subparsers)
+    args = parser.parse_args(
+        [
+            "github",
+            "create",
+            "repo",
+            "--name",
+            "service-a",
+            "--org",
+            "hape-vibes",
+        ]
+    )
+    args.func(args)
+    assert _FakeGitHubService.last_create_call == {
+        "org": "hape-vibes",
+        "name": "service-a",
+        "visibility": "private",
+    }
+    output = capsys.readouterr().out
+    payload = json.loads(output)
+    assert payload["full_name"] == "hape-vibes/service-a"
+    assert payload["private"] is True
+
+
+def test_create_repo_command_parses_public_visibility(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(github_commands_module, "GitHubService", _FakeGitHubService)
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(dest="command")
+    GitHubCommands.register(subparsers)
+    args = parser.parse_args(
+        [
+            "github",
+            "create",
+            "repo",
+            "--name",
+            "service-a",
+            "--org",
+            "hape-vibes",
+            "--public",
+        ]
+    )
+    args.func(args)
+    assert _FakeGitHubService.last_create_call == {
+        "org": "hape-vibes",
+        "name": "service-a",
+        "visibility": "public",
+    }
+    output = capsys.readouterr().out
+    payload = json.loads(output)
+    assert payload["private"] is False
+
+
+def test_create_repo_command_accepts_explicit_private_visibility(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(github_commands_module, "GitHubService", _FakeGitHubService)
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(dest="command")
+    GitHubCommands.register(subparsers)
+    args = parser.parse_args(
+        [
+            "github",
+            "create",
+            "repo",
+            "--name",
+            "service-a",
+            "--org",
+            "hape-vibes",
+            "--private",
+        ]
+    )
+    args.func(args)
+    assert _FakeGitHubService.last_create_call == {
+        "org": "hape-vibes",
+        "name": "service-a",
+        "visibility": "private",
+    }
+    output = capsys.readouterr().out
+    payload = json.loads(output)
+    assert payload["private"] is True
 
 
 def test_init_repo_command_parses_and_calls_service(monkeypatch, capsys) -> None:

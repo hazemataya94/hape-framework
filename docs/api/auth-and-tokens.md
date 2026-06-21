@@ -42,6 +42,12 @@ curl -s -X POST "http://localhost:8080/auth/tokens/revoke"   -H "Content-Type: a
 curl -s -X POST "http://localhost:8080/github/init-repo"   -H "Authorization: Bearer <API_TOKEN>"   -H "Content-Type: application/json"   -d '{"repo_path":"/path/to/repo","owner":"hape-vibes"}'
 ```
 
+Create a GitHub repository through the API:
+
+```bash
+curl -s -X POST "http://localhost:8080/github/create/repo"   -H "Authorization: Bearer <API_TOKEN>"   -H "Content-Type: application/json"   -d '{"org":"example-org","name":"service-a","visibility":"private"}'
+```
+
 ## Rate limit behavior
 Each token is limited to `HAPE_API_RATE_LIMIT_PER_MINUTE` requests in a rolling 60-second window.
 Default is 10.
