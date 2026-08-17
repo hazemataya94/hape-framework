@@ -54,6 +54,11 @@ class GitHubService:
             return " | ".join(reason_parts)
         return str(exc).strip() or "unknown GitHub API error"
 
+    @classmethod
+    def _is_repository_already_exists_error(cls, exc: Exception) -> bool:
+        reason = cls._extract_create_repo_failure_reason(exc=exc).lower()
+        return "already_exists" in reason or "name already exists" in reason
+
     def _resolve_repo_path(self, repo_path: str) -> Path:
         resolved_repo_path = Path(repo_path).expanduser().resolve()
         if not resolved_repo_path.exists():
@@ -146,37 +151,40 @@ class GitHubService:
         return completed_process.stdout.strip()
 
     def _resolve_host_git_admin_login(self) -> str:
+        global_git_email = ""
         try:
             global_git_email = self._read_global_git_email()
-        except subprocess.CalledProcessError as exc:
-            raise HapeValidationError(
-                code="GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE",
-                message=get_github_error_message("GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE"),
-            ) from exc
-        if not global_git_email:
-            raise HapeValidationError(
-                code="GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE",
-                message=get_github_error_message("GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE"),
+        except subprocess.CalledProcessError:
+            global_git_email = ""
+        if global_git_email:
+            try:
+                resolved_login = self.github_client.resolve_user_login_by_email(email=global_git_email)
+            except Exception as exc:
+                raise HapeExternalError(
+                    code="GITHUB_USER_LOOKUP_FAILED",
+                    message=get_github_error_message(
+                        "GITHUB_USER_LOOKUP_FAILED",
+                        email=global_git_email,
+                    ),
+                ) from exc
+            if resolved_login:
+                return resolved_login
+            self.logger.warning(
+                "global git email did not resolve a GitHub login; falling back to authenticated user"
             )
         try:
-            resolved_login = self.github_client.resolve_user_login_by_email(email=global_git_email)
+            authenticated_login = str(self.github_client.resolve_token_default_owner() or "").strip()
         except Exception as exc:
-            raise HapeExternalError(
-                code="GITHUB_USER_LOOKUP_FAILED",
-                message=get_github_error_message(
-                    "GITHUB_USER_LOOKUP_FAILED",
-                    email=global_git_email,
-                ),
-            ) from exc
-        if not resolved_login:
             raise HapeValidationError(
-                code="GITHUB_USER_LOGIN_UNRESOLVED",
-                message=get_github_error_message(
-                    "GITHUB_USER_LOGIN_UNRESOLVED",
-                    email=global_git_email,
-                ),
-            )
-        return resolved_login
+                code="GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE",
+                message=get_github_error_message("GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE"),
+            ) from exc
+        if authenticated_login:
+            return authenticated_login
+        raise HapeValidationError(
+            code="GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE",
+            message=get_github_error_message("GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE"),
+        )
 
     def _ensure_host_user_admin_access(self, owner: str, repo_name: str) -> str:
         admin_login = self._resolve_host_git_admin_login()
@@ -613,6 +621,7 @@ class GitHubService:
         resolved_repo_name = self._resolve_repo_name(repo_path=resolved_repo_path, name=name)
         is_private_repo = self._resolve_visibility(visibility=visibility)
         resolved_owner = self._resolve_owner(owner=owner)
+        reused_existing = False
         try:
             repository_data = self.github_client.create_repository(
                 owner=resolved_owner,
@@ -621,16 +630,44 @@ class GitHubService:
             )
         except Exception as exc:
             reason = self._extract_create_repo_failure_reason(exc=exc)
-            self.logger.error("create_repository failed for %s/%s: %s", resolved_owner, resolved_repo_name, reason)
-            raise HapeExternalError(
-                code="GITHUB_CREATE_REPO_FAILED",
-                message=get_github_error_message(
-                    "GITHUB_CREATE_REPO_FAILED_WITH_REASON",
+            if not self._is_repository_already_exists_error(exc=exc):
+                self.logger.error("create_repository failed for %s/%s: %s", resolved_owner, resolved_repo_name, reason)
+                raise HapeExternalError(
+                    code="GITHUB_CREATE_REPO_FAILED",
+                    message=get_github_error_message(
+                        "GITHUB_CREATE_REPO_FAILED_WITH_REASON",
+                        owner=resolved_owner,
+                        repo_name=resolved_repo_name,
+                        reason=reason,
+                    ),
+                ) from exc
+            self.logger.info(
+                "repository %s/%s already exists; attaching local path and continuing init",
+                resolved_owner,
+                resolved_repo_name,
+            )
+            try:
+                repository_data = self.github_client.get_repository(
                     owner=resolved_owner,
-                    repo_name=resolved_repo_name,
-                    reason=reason,
-                ),
-            ) from exc
+                    repo=resolved_repo_name,
+                )
+            except Exception as get_exc:
+                self.logger.error(
+                    "create_repository failed for %s/%s: %s",
+                    resolved_owner,
+                    resolved_repo_name,
+                    reason,
+                )
+                raise HapeExternalError(
+                    code="GITHUB_CREATE_REPO_FAILED",
+                    message=get_github_error_message(
+                        "GITHUB_CREATE_REPO_FAILED_WITH_REASON",
+                        owner=resolved_owner,
+                        repo_name=resolved_repo_name,
+                        reason=reason,
+                    ),
+                ) from get_exc
+            reused_existing = True
         ssh_clone_url = str(repository_data.get("ssh_url", "")).strip()
         if not ssh_clone_url:
             raise HapeExternalError(
@@ -666,6 +703,7 @@ class GitHubService:
             "clone_url": ssh_clone_url,
             "local_path": str(resolved_repo_path),
             "admin_login": admin_login,
+            "reused_existing": reused_existing,
         }
 
 

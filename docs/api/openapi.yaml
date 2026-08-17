@@ -153,6 +153,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /config/show:
+    post:
+      tags:
+      - config
+      summary: Show Config File
+      operationId: show_config_file_config_show_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShowConfigFileRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  config_path:
+                    type: string
+                  config:
+                    type: object
+                    additionalProperties: true
+                title: Response Show Config File Config Show Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /gitlab/clone:
     post:
       tags:
@@ -1401,6 +1441,19 @@ components:
           title: Dot Env File
       type: object
       title: InitConfigFileRequest
+    ShowConfigFileRequest:
+      properties:
+        config_file_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Config File Path
+        reveal_secrets:
+          type: boolean
+          title: Reveal Secrets
+          default: false
+      type: object
+      title: ShowConfigFileRequest
     InitRepoRequest:
       properties:
         repo_path:

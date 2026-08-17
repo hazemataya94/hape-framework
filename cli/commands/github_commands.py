@@ -1,8 +1,10 @@
 import argparse
 import json
+import sys
 from typing import Any
 
 from core.logging import LocalLogging
+from services.github_auth_service import GitHubAuthService
 from services.github_service import GitHubService
 
 
@@ -144,6 +146,126 @@ class GitHubCommands:
         )
         user_info_parser.set_defaults(func=GitHubCommands.run_user_info)
 
+        auth_parser = github_subparsers.add_parser(
+            "auth",
+            help="bootstrap and inspect GitHub authentication for HAPE.",
+        )
+        auth_parser.set_defaults(func=GitHubCommands.run_help, parser=auth_parser)
+        auth_subparsers = auth_parser.add_subparsers(
+            dest="github_auth_command",
+            metavar="command",
+        )
+        auth_subparsers.required = False
+
+        auth_login_parser = auth_subparsers.add_parser(
+            "login",
+            help="authenticate with GitHub CLI and store HAPE_GITHUB_TOKEN.",
+        )
+        auth_login_parser.add_argument(
+            "--token-stdin",
+            action="store_true",
+            required=False,
+            default=False,
+            help="read a GitHub PAT from stdin instead of using gh auth login.",
+        )
+        auth_login_parser.add_argument(
+            "--web",
+            action="store_true",
+            required=False,
+            default=False,
+            help="use non-prompt gh web login with fixed github.com/https defaults.",
+        )
+        auth_login_parser.add_argument(
+            "--non-interactive",
+            action="store_true",
+            required=False,
+            default=False,
+            help="require --web; fail instead of running interactive gh prompts.",
+        )
+        auth_login_parser.add_argument(
+            "--scopes",
+            required=False,
+            default=None,
+            help="comma-separated scopes for --web/--non-interactive login (default: repo,read:org,admin:org).",
+        )
+        auth_login_parser.set_defaults(func=GitHubCommands.run_auth_login)
+
+        auth_configure_parser = auth_subparsers.add_parser(
+            "configure",
+            help="store HAPE_GITHUB_DEFAULT_OWNER in config.json.",
+        )
+        auth_configure_parser.add_argument(
+            "--owner",
+            required=True,
+            default=None,
+            help="GitHub organization or user login used as default owner.",
+        )
+        auth_configure_parser.set_defaults(func=GitHubCommands.run_auth_configure)
+
+        auth_status_parser = auth_subparsers.add_parser(
+            "status",
+            help="show GitHub auth status without printing token values.",
+        )
+        auth_status_parser.set_defaults(func=GitHubCommands.run_auth_status)
+
+        auth_bootstrap_parser = auth_subparsers.add_parser(
+            "bootstrap",
+            help="plan/confirm GitHub auth setup with ssh+github.com defaults.",
+        )
+        auth_bootstrap_parser.add_argument(
+            "--owner",
+            required=False,
+            default=None,
+            help="GitHub organization or user login (required unless --org is set).",
+        )
+        auth_bootstrap_parser.add_argument(
+            "--org",
+            required=False,
+            default=None,
+            help="Alias for --owner.",
+        )
+        auth_bootstrap_parser.add_argument(
+            "--yes",
+            action="store_true",
+            required=False,
+            default=False,
+            help="approve the printed bootstrap plan without an extra confirm prompt.",
+        )
+        auth_bootstrap_parser.add_argument(
+            "--set-github-auth-method",
+            action="store_true",
+            required=False,
+            default=False,
+            help="prompt once for git protocol (ssh/https). Default without this flag is ssh.",
+        )
+        auth_bootstrap_parser.add_argument(
+            "--git-protocol",
+            required=False,
+            default=None,
+            help="git protocol for gh auth login: ssh (default) or https.",
+        )
+        auth_bootstrap_parser.add_argument(
+            "--hostname",
+            required=False,
+            default=None,
+            help="GitHub hostname (default: github.com).",
+        )
+        auth_bootstrap_parser.add_argument(
+            "--token-stdin",
+            action="store_true",
+            required=False,
+            default=False,
+            help="read a GitHub PAT from stdin instead of using gh auth login.",
+        )
+        auth_bootstrap_parser.add_argument(
+            "--skip-list-repos",
+            action="store_true",
+            required=False,
+            default=False,
+            help="skip listing organization repositories after auth succeeds.",
+        )
+        auth_bootstrap_parser.set_defaults(func=GitHubCommands.run_auth_bootstrap)
+
         delete_repos_parser = github_subparsers.add_parser(
             "delete-repos",
             help="delete GitHub repositories from an organization.",
@@ -234,6 +356,59 @@ class GitHubCommands:
         github_service = GitHubService()
         user_info = github_service.get_authenticated_user_info()
         print(json.dumps(user_info, indent=2, sort_keys=True))
+
+    @staticmethod
+    def run_auth_login(args: Any) -> None:
+        LocalLogging.bootstrap()
+        github_auth_service = GitHubAuthService()
+        if args.token_stdin:
+            token = sys.stdin.read()
+            result = github_auth_service.login_with_token(
+                token=token,
+                config_path=args.config_file_path,
+            )
+        else:
+            result = github_auth_service.login_with_gh(
+                config_path=args.config_file_path,
+                web=args.web,
+                scopes=args.scopes,
+                non_interactive=args.non_interactive,
+            )
+        print(json.dumps(result, indent=2, sort_keys=True))
+
+    @staticmethod
+    def run_auth_configure(args: Any) -> None:
+        LocalLogging.bootstrap()
+        github_auth_service = GitHubAuthService()
+        result = github_auth_service.configure_owner(
+            owner=args.owner,
+            config_path=args.config_file_path,
+        )
+        print(json.dumps(result, indent=2, sort_keys=True))
+
+    @staticmethod
+    def run_auth_status(args: Any) -> None:
+        LocalLogging.bootstrap()
+        github_auth_service = GitHubAuthService()
+        result = github_auth_service.status(config_path=args.config_file_path)
+        print(json.dumps(result, indent=2, sort_keys=True))
+
+    @staticmethod
+    def run_auth_bootstrap(args: Any) -> None:
+        LocalLogging.bootstrap()
+        token_stdin = sys.stdin.read() if args.token_stdin else None
+        github_auth_service = GitHubAuthService()
+        result = github_auth_service.bootstrap(
+            owner=args.owner or args.org,
+            yes=args.yes,
+            list_repos=not args.skip_list_repos,
+            config_path=args.config_file_path,
+            token_stdin=token_stdin,
+            set_github_auth_method=args.set_github_auth_method,
+            git_protocol=args.git_protocol,
+            hostname=args.hostname,
+        )
+        print(json.dumps(result, indent=2, sort_keys=True))
 
     @staticmethod
     def run_delete_repos(args: Any) -> None:

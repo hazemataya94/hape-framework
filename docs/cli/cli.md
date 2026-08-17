@@ -19,6 +19,7 @@ Commands are grouped by integration. Each group has subcommands where needed.
 - `gitlab` - [gitlab.md](gitlab.md)
 - `github` - [github.md](github.md)
 - `jira` - [jira.md](jira.md)
+- `linkedin` - [linkedin.md](linkedin.md)
 - `confluence` - [confluence.md](confluence.md)
 - `csv` - [csv.md](csv.md)
 - `dora` - [dora.md](dora.md)

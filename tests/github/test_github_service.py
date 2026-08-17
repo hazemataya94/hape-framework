@@ -70,6 +70,30 @@ class _FakeFailingGitHubClient:
         response._content = b'{"message":"Validation Failed","errors":[{"field":"name","code":"already_exists"}]}'
         raise requests.HTTPError("422 Client Error", response=response)
 
+    def get_repository(self, owner: str, repo: str) -> dict[str, str]:
+        return {
+            "full_name": f"{owner}/{repo}",
+            "html_url": f"https://github.com/{owner}/{repo}",
+            "ssh_url": f"git@github.com:{owner}/{repo}.git",
+        }
+
+    def resolve_token_default_owner(self) -> str:
+        return "token-user"
+
+    def resolve_user_login_by_email(self, email: str) -> str:
+        return "host-admin"
+
+    def add_repository_collaborator(self, owner: str, repo_name: str, username: str, permission: str = "push") -> bool:
+        return True
+
+
+class _FakeCreateRepoOtherFailureGitHubClient:
+    def create_repository(self, owner: str, repo_name: str, private: bool = True) -> dict[str, str]:
+        response = requests.Response()
+        response.status_code = 403
+        response._content = b'{"message":"Resource not accessible by integration"}'
+        raise requests.HTTPError("403 Client Error", response=response)
+
     def resolve_token_default_owner(self) -> str:
         return "token-user"
 
@@ -264,15 +288,29 @@ def test_init_repo_error_message_includes_github_reason(tmp_path: Path, monkeypa
     repo_path.mkdir(parents=True, exist_ok=True)
     monkeypatch.setattr("services.github_service.Config.get_github_default_owner", lambda: "")
     monkeypatch.setattr("services.github_service.GitHubService._read_global_git_email", lambda *args, **kwargs: "admin@example.com")
-    service = GitHubService(github_client=_FakeFailingGitHubClient())
+    service = GitHubService(github_client=_FakeCreateRepoOtherFailureGitHubClient())
     with pytest.raises(HapeExternalError) as error:
         service.init_repo(repo_path=str(repo_path))
     assert error.value.code == "GITHUB_CREATE_REPO_FAILED"
-    assert "status=422" in error.value.message
-    assert "already_exists" in error.value.message
+    assert "status=403" in error.value.message
+    assert "Resource not accessible" in error.value.message
 
 
-def test_init_repo_fails_when_global_git_email_is_missing(tmp_path: Path, monkeypatch) -> None:
+def test_init_repo_reuses_existing_remote_when_name_already_exists(tmp_path: Path, monkeypatch) -> None:
+    repo_path = tmp_path / "service-d"
+    repo_path.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr("services.github_service.Config.get_github_default_owner", lambda: "hape-vibes")
+    monkeypatch.setattr("services.github_service.GitHubService._run_git_init", lambda *args, **kwargs: None)
+    monkeypatch.setattr("services.github_service.GitHubService._run_git_add_remote", lambda *args, **kwargs: None)
+    monkeypatch.setattr("services.github_service.GitHubService._read_global_git_email", lambda *args, **kwargs: "admin@example.com")
+    service = GitHubService(github_client=_FakeFailingGitHubClient())
+    result = service.init_repo(repo_path=str(repo_path), name="service-d")
+    assert result["full_name"] == "hape-vibes/service-d"
+    assert result["reused_existing"] is True
+    assert result["clone_url"] == "git@github.com:hape-vibes/service-d.git"
+
+
+def test_init_repo_falls_back_to_authenticated_user_when_global_git_email_missing(tmp_path: Path, monkeypatch) -> None:
     repo_path = tmp_path / "service-e"
     repo_path.mkdir(parents=True, exist_ok=True)
     monkeypatch.setattr("services.github_service.Config.get_github_default_owner", lambda: "")
@@ -280,9 +318,9 @@ def test_init_repo_fails_when_global_git_email_is_missing(tmp_path: Path, monkey
     monkeypatch.setattr("services.github_service.GitHubService._run_git_add_remote", lambda *args, **kwargs: None)
     monkeypatch.setattr("services.github_service.GitHubService._read_global_git_email", lambda *args, **kwargs: "")
     service = GitHubService(github_client=_FakeGitHubClient())
-    with pytest.raises(HapeValidationError) as error:
-        service.init_repo(repo_path=str(repo_path))
-    assert error.value.code == "GITHUB_GLOBAL_GIT_EMAIL_UNAVAILABLE"
+    result = service.init_repo(repo_path=str(repo_path))
+    assert result["admin_login"] == "token-user"
+    assert _FakeGitHubClient.added_collaborators[-1]["username"] == "token-user"
 
 
 def test_list_repositories_for_user_scope_returns_sorted_payload() -> None:

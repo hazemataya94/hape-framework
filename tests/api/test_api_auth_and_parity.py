@@ -108,6 +108,7 @@ def test_cli_api_parity_routes_exist(monkeypatch, tmp_path) -> None:
     route_paths = {route.path for route in client.app.routes}
     expected_paths = {
         "/config/init-config-file",
+        "/config/show",
         "/gitlab/clone",
         "/gitlab/mr-count-per-day",
         "/github/init-repo",

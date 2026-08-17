@@ -6,6 +6,7 @@ All command-execution endpoints use HTTP POST.
 
 ## Mappings
 - `hape config init-config-file` -> `POST /config/init-config-file`
+- `hape config show` -> `POST /config/show`
 - `hape gitlab clone` -> `POST /gitlab/clone`
 - `hape gitlab mr-count-per-day` -> `POST /gitlab/mr-count-per-day`
 - `hape github init-repo` -> `POST /github/init-repo`

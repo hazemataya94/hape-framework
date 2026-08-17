@@ -1,13 +1,80 @@
 # GitHub CLI
 
 ## Purpose
-Use GitHub CLI commands in HAPE to create, initialize, list, inspect, and delete GitHub repositories.
+Use GitHub CLI commands in HAPE to authenticate, create, initialize, list, inspect, and delete GitHub repositories.
 
 ## Prerequisites
-- Set `HAPE_GITHUB_TOKEN` in environment variables or config.
-- Optional: set `HAPE_GITHUB_DEFAULT_OWNER` to use a default owner when `--owner` is not passed.
+- Prefer `hape github auth login` (GitHub CLI `gh`) to store `HAPE_GITHUB_TOKEN` in `~/.hape/config.json`.
+- Prefer `hape github auth configure --owner <org-or-user>` to store `HAPE_GITHUB_DEFAULT_OWNER`.
+- You may still set those keys through environment variables or `hape config set`.
 - For `init-repo`, set global git user email on host with `git config --global user.email <email>` so HAPE can resolve and grant admin access for the repository.
 - For `init-repo`, ensure `--repo-path` exists and does not contain a `.git` directory.
+
+## Auth bootstrap
+Preferred path (required owner, defaults `github.com` + `ssh`):
+
+```bash
+python -m cli.main github auth bootstrap --owner hape-academy
+```
+
+Flow:
+1. Preflight: require `gh`; for SSH, resolve OpenSSH config with `ssh -G git@github.com` (uses `~/.ssh/config`, no assumed key paths).
+2. Print a plan with hostname, git protocol, owner, and actions (no secrets).
+3. Ask `Proceed with GitHub auth bootstrap? [y/N]` unless `--yes` is set.
+4. If `gh` already has a session token, import it into `HAPE_GITHUB_TOKEN`. Otherwise run `gh auth login` (with `--skip-ssh-key` when protocol is `ssh`), store `HAPE_GITHUB_TOKEN` and `HAPE_GITHUB_DEFAULT_OWNER`, verify `auth_ok`.
+5. Token write also sets process env and syncs `HAPE_GITHUB_TOKEN` in `hape-framework/.env` when that key already exists (env/.env override `config.json`).
+6. Stop before `init-repo`.
+
+Approve the printed plan without a second prompt:
+
+```bash
+python -m cli.main github auth bootstrap --owner hape-academy --yes
+```
+
+`--org` is an alias for `--owner`.
+
+Prompt once for git protocol (`ssh`/`https`) only when requested:
+
+```bash
+python -m cli.main github auth bootstrap --owner hape-academy --set-github-auth-method
+```
+
+Or set protocol directly:
+
+```bash
+python -m cli.main github auth bootstrap --owner hape-academy --git-protocol https --yes
+```
+
+Default `auth login` remains available for bare interactive `gh auth login`:
+
+```bash
+python -m cli.main github auth login
+```
+
+Non-interactive web helper (CI/non-TTY):
+
+```bash
+python -m cli.main github auth login --web
+python -m cli.main github auth login --non-interactive --web
+```
+
+If the org enforces SAML SSO, authorize the token for that org in GitHub after login.
+
+Fallback when `gh` is unavailable:
+
+```bash
+printf '%s' "$HAPE_GITHUB_TOKEN" | python -m cli.main github auth login --token-stdin
+```
+
+Manual configure and verify:
+
+```bash
+python -m cli.main github auth configure --owner hape-academy
+python -m cli.main github auth status
+python -m cli.main github user-info
+```
+
+`auth status` reports whether a token is configured and whether API auth works. It never prints the token value.
 
 ## Create repository
 Create a private repository in an organization by default:

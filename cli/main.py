@@ -9,11 +9,13 @@ from cli.commands.config_commands import ConfigCommands
 from cli.commands.confluence_commands import ConfluenceCommands
 from cli.commands.csv_commands import CsvCommands
 from cli.commands.dora_commands import DoraCommands
+from cli.commands.ecr_commands import EcrCommands
 from cli.commands.eks_deployment_cost_commands import EksDeploymentCostCommands
 from cli.commands.gitlab_commands import GitLabCommands
 from cli.commands.github_commands import GitHubCommands
 from cli.commands.jira_commands import JiraCommands
 from cli.commands.kube_agent_commands import KubeAgentCommands
+from cli.commands.linkedin_commands import LinkedInCommands
 from cli.commands.markdown_commands import MarkdownCommands
 
 class _CommandHelpFormatter(argparse.HelpFormatter):
@@ -75,9 +77,11 @@ class CLI:
         GitLabCommands.register(subparsers)
         GitHubCommands.register(subparsers)
         JiraCommands.register(subparsers)
+        LinkedInCommands.register(subparsers)
         ConfluenceCommands.register(subparsers)
         CsvCommands.register(subparsers)
         DoraCommands.register(subparsers)
+        EcrCommands.register(subparsers)
         EksDeploymentCostCommands.register(subparsers)
         KubeAgentCommands.register(subparsers)
         InitCicdCommands.register(subparsers)

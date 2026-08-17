@@ -17,7 +17,47 @@ class AwsClient:
         self.s3 = self.session.client("s3")
         self.pricing = self.session.client("pricing", region_name="us-east-1")
         self.region_name = self.session.region_name or self.ec2.meta.region_name
+        self._ecr_clients: dict[str, object] = {}
         self.logger = LocalLogging.get_logger("hape.aws_client")
+
+    def _ecr_client(self, region_name: str):
+        normalized_region = (region_name or "").strip() or self.region_name
+        if normalized_region not in self._ecr_clients:
+            self._ecr_clients[normalized_region] = self.session.client("ecr", region_name=normalized_region)
+        return self._ecr_clients[normalized_region]
+
+    def get_caller_account_id(self) -> str:
+        self.logger.debug("get_caller_account_id()")
+        sts = self.session.client("sts")
+        return str(sts.get_caller_identity().get("Account", "")).strip()
+
+    def describe_ecr_repository(self, repository_name: str, region_name: str) -> dict | None:
+        self.logger.debug(
+            "describe_ecr_repository(repository_name=%s, region_name=%s)",
+            repository_name,
+            region_name,
+        )
+        try:
+            response = self._ecr_client(region_name).describe_repositories(repositoryNames=[repository_name])
+        except ClientError as exc:
+            error_code = str(exc.response.get("Error", {}).get("Code", ""))
+            if error_code in {"RepositoryNotFoundException", "RepositoryNotFound"}:
+                return None
+            raise
+        repositories = response.get("repositories", [])
+        if not repositories:
+            return None
+        return repositories[0]
+
+    def create_ecr_repository(self, repository_name: str, region_name: str) -> dict:
+        self.logger.debug(
+            "create_ecr_repository(repository_name=%s, region_name=%s)",
+            repository_name,
+            region_name,
+        )
+        response = self._ecr_client(region_name).create_repository(repositoryName=repository_name)
+        return response.get("repository", {})
+
 
     @staticmethod
     def _build_region_location_mapping() -> dict[str, str]:

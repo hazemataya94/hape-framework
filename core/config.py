@@ -219,6 +219,11 @@ class Config:
             Config._config_data = None
 
     @staticmethod
+    def reload_config() -> None:
+        Config._config_loaded = False
+        Config._config_data = None
+
+    @staticmethod
     def ensure_env_loaded() -> None:
         Config._load_dotenv()
 

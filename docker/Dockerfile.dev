@@ -1,0 +1,10 @@
+FROM python:3.13-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    HAPE_API_HOST=0.0.0.0 \
+    HAPE_API_PORT=8080
+
+WORKDIR /app
+
+CMD ["sh", "-c", "pip install -r requirements.txt && python -m api.app"]

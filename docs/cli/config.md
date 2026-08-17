@@ -23,6 +23,37 @@ hape config init-config-file --dot-env-file /path/to/.env
 ```
 
 This overwrites any existing config file at the target path.
+Prefer `hape config set` when you only need to update one key.
+
+## Set one config key
+Merge a single supported key into `config.json` without rewriting unrelated keys.
+```
+hape config set --key HAPE_GITHUB_DEFAULT_OWNER --value hape-academy
+hape --config-file-path /path/to/config.json config set --key HAPE_GITHUB_TOKEN --value <YOUR_TOKEN>
+```
+
+Safety level: `write`.
+Side effects: creates or updates the target config file and reloads in-process config state.
+Do not paste real tokens into shell history notes, docs, or git.
+
+## Unset one config key
+Remove a single supported key from `config.json`.
+```
+hape config unset --key HAPE_GITHUB_TOKEN
+```
+
+## Show config.json
+Print the values from the JSON config file.
+Sensitive keys are redacted by default.
+```
+hape config show
+hape --config-file-path /path/to/config.json config show
+hape config show --reveal-secrets
+```
+
+Safety level: `read`.
+Side effects: none.
+`--reveal-secrets` prints token and secret values; use only for local debugging.
 
 ## Keys
 All config keys are optional in `config.json`.

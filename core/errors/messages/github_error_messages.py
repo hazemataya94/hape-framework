@@ -28,6 +28,19 @@ ERROR_MESSAGES = {
     "GITHUB_CLONE_REPOS_ORG_REQUIRED": "Organization is required for cloning repositories. Set --org.",
     "GITHUB_CLONE_REPOS_DIR_REQUIRED": "Clone directory is required. Set --clone-dir.",
     "GITHUB_CLONE_REPO_FAILED": "Failed to clone GitHub repository '{full_name}'.",
+    "GITHUB_AUTH_GH_UNAVAILABLE": "GitHub CLI 'gh' was not found on PATH. Install gh, or use 'hape github auth login --token-stdin'.",
+    "GITHUB_AUTH_GH_LOGIN_FAILED": "GitHub CLI login failed. Re-run 'gh auth login' or 'hape github auth login' and retry.",
+    "GITHUB_AUTH_GH_TOKEN_FAILED": "Unable to read a GitHub token from 'gh auth token'. Complete 'gh auth login' first.",
+    "GITHUB_AUTH_TOKEN_STDIN_EMPTY": "No token received on stdin. Pipe a GitHub PAT into 'hape github auth login --token-stdin'.",
+    "GITHUB_AUTH_OWNER_REQUIRED": "GitHub owner is required. Set --owner or --org.",
+    "GITHUB_AUTH_NON_TTY": "Interactive GitHub login requires a TTY. Re-run in a terminal, or use --web / --token-stdin.",
+    "GITHUB_AUTH_NON_INTERACTIVE_REQUIRES_WEB": "Non-interactive GitHub login requires --web (or use --token-stdin).",
+    "GITHUB_AUTH_BOOTSTRAP_CANCELLED": "GitHub auth bootstrap cancelled by operator.",
+    "GITHUB_AUTH_METHOD_INVALID": "Auth method must be '1' (gh interactive login) or '2' (token stdin). Value is '{method}'.",
+    "GITHUB_AUTH_GIT_PROTOCOL_INVALID": "Git protocol must be 'ssh' or 'https'. Value is '{git_protocol}'.",
+    "GITHUB_AUTH_SSH_UNAVAILABLE": "OpenSSH client 'ssh' was not found on PATH. Install OpenSSH or use --git-protocol https.",
+    "GITHUB_AUTH_SSH_CONFIG_UNRESOLVED": "Unable to resolve SSH config for git@{hostname} via 'ssh -G'. Check ~/.ssh/config and retry.",
+    "GITHUB_AUTH_VERIFY_FAILED": "GitHub auth bootstrap verify failed. Token/owner were written but API auth_ok is false. If HAPE_GITHUB_TOKEN is set in the environment or hape-framework/.env, it overrides ~/.hape/config.json — re-run bootstrap or align those sources.",
 }
 
 

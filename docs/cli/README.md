@@ -13,9 +13,11 @@ Use these docs to run commands, configure HAPE, and execute supported integratio
 - [eks-node-rotation.md](eks-node-rotation.md) - role-based EKS node rotation workflow.
 - [gitlab.md](gitlab.md) - GitLab automation usage.
 - [github.md](github.md) - GitHub repository bootstrap usage.
+- [ecr.md](ecr.md) - AWS ECR repository ensure usage.
 - [dora.md](dora.md) - GitLab DORA usage and debug commands.
 - [grafana.md](grafana.md) - Grafana datasources report usage.
 - [jira.md](jira.md) - Jira comment automation usage.
+- [linkedin.md](linkedin.md) - LinkedIn public profile post export usage.
 - [eks-deployment-cost.md](eks-deployment-cost.md) - EKS deployment and statefulset cost report usage.
 - [kubernetes.md](kubernetes.md) - Kubernetes ESO export workflow.
 - [markdown.md](markdown.md) - Markdown table import/export usage.
