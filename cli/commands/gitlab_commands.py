@@ -34,8 +34,8 @@ class GitLabCommands:
         )
         clone_parser.add_argument(
             "--clone-dir",
-            required=False,
-            default="/Users/hazem.ataya/workspace/repos",
+            required=True,
+            default=None,
             help="directory to clone projects into.",
         )
         clone_parser.set_defaults(func=GitLabCommands.run_clone)

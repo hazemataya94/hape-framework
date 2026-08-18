@@ -39,7 +39,7 @@ curl -s -X POST "http://localhost:8080/auth/tokens/revoke"   -H "Content-Type: a
 ## Use token on API calls
 
 ```bash
-curl -s -X POST "http://localhost:8080/github/init-repo"   -H "Authorization: Bearer <API_TOKEN>"   -H "Content-Type: application/json"   -d '{"repo_path":"/path/to/repo","owner":"hape-vibes"}'
+curl -s -X POST "http://localhost:8080/github/init-repo"   -H "Authorization: Bearer <API_TOKEN>"   -H "Content-Type: application/json"   -d '{"repo_path":"/path/to/repo","owner":"example-org"}'
 ```
 
 Create a GitHub repository through the API:

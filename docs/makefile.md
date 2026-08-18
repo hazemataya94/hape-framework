@@ -7,12 +7,13 @@ Document all `Makefile` variables and targets in one place.
 - `PYTHON` (default: `python`)
 - `VERSION_FILE` (default: `VERSION`)
 - `INSTALL_PREFIX` (default: empty)
-- `PYPI_TOKEN_FILE` (default: `../../pypi.token`)
 - `API_BASE_URL` (default: `http://localhost:8080`)
 - `API_TOKEN_NAME` (default: `default-token`)
 - `API_ADMIN_KEY` (default: empty; required for `make api-generate-token`)
 - `KIND_CLUSTER_NAME` (default: `hape`)
 - `KIND_CONFIG_PATH` (default: `infrastructure/kubernetes/kind/cluster-config.yaml`)
+- `DOCKER_IMAGE` (default: `example/hape`)
+- `DOCKERFILE_PATH` (default: `docker/Dockerfile`)
 - `KUSTOMIZE_TARGET_PATH` (derived from second argument to `make kustomize-apply` or `make kustomize-delete`)
 
 ## Targets
@@ -28,8 +29,8 @@ Document all `Makefile` variables and targets in one place.
 - `make kind-down`: delete local `kind` cluster when running.
 - `make kustomize-apply <path>`: render and apply a kustomization directory.
 - `make kustomize-delete <path>`: render and delete resources from a kustomization directory.
-- `make publish`: build and publish package to PyPI, then commit/tag/push the new version.
-  - Fails fast if `PYPI_TOKEN_FILE` does not exist or is empty.
+- `make publish`: retrieve the PyPI token with `hape vault kv-get`, upload `dist/` with twine, then commit/tag/push and publish Docker.
+  - Uses Vault AppRole plus `secret.id`. Does not read a local `pypi.token` file.
 
 ## Common usage
 Show available targets:
@@ -104,11 +105,11 @@ Publish package to PyPI:
 make publish
 ```
 
-Publish package with a custom PyPI token path:
+`make publish` calls `hape vault kv-get` to retrieve the token, then runs `python -m twine upload`.
 
-```bash
-make publish PYPI_TOKEN_FILE=/path/to/pypi.token
-```
+Set `HAPE_VAULT_ROLE_ID` and provide `secret.id`.
+
+Do not pass a local PyPI token file.
 
 ## Validation steps
 1. Run `make help` and verify listed targets match this document.

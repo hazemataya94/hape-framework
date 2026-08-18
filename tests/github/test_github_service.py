@@ -161,9 +161,9 @@ class _FakeListRepositoriesGitHubClient:
 class _FakeAuthenticatedUserGitHubClient:
     def get_authenticated_user(self) -> dict[str, str]:
         return {
-            "login": "hazemataya94",
-            "name": "Hazem Ataya",
-            "html_url": "http://github.com/hazemataya94",
+            "login": "example-user",
+            "name": "Example User",
+            "html_url": "http://github.com/example-user",
             "company": "example",
         }
 
@@ -492,9 +492,9 @@ def test_get_authenticated_user_info_returns_normalized_payload() -> None:
     service = GitHubService(github_client=_FakeAuthenticatedUserGitHubClient())
     payload = service.get_authenticated_user_info()
     assert payload == {
-        "login": "hazemataya94",
-        "name": "Hazem Ataya",
-        "html_url": "http://github.com/hazemataya94",
+        "login": "example-user",
+        "name": "Example User",
+        "html_url": "http://github.com/example-user",
     }
 
 

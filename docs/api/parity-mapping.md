@@ -35,3 +35,4 @@ All command-execution endpoints use HTTP POST.
 - `hape kube-agent incidents list` -> `POST /kube-agent/incidents/list`
 - `hape kube-agent incidents show` -> `POST /kube-agent/incidents/show`
 - `hape init-cicd` -> `POST /init-cicd`
+- `hape vault kv-get` -> `POST /vault/kv-get`

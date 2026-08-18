@@ -26,6 +26,7 @@ Apply these rules when creating, updating, or running tests in this repository.
 - State clearly that local tests do not require EKS unless explicitly requested.
 - Test README files must include explicit instructions to run the feature tests on local `kind` (including cluster startup command such as `make kind-up` when applicable).
 - When functional tests generate artifacts, document artifact file names and where they are written.
+- Test README commands must run from repository root. Do not use host-specific `cd` paths.
 
 ## Mandatory self-check before final response
 - Confirm the test approach uses local `kind` and does not require EKS by default.

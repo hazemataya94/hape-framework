@@ -12,9 +12,9 @@ FIXTURES = Path(__file__).parent / "fixtures"
 
 def test_parse_profile_url_accepts_public_in_slug() -> None:
     linkedin_client = LinkedInClient(request_delay_seconds=0)
-    parsed = linkedin_client.parse_profile_url("https://www.linkedin.com/in/hazem-ataya-29849b151")
-    assert parsed["profile_slug"] == "hazem-ataya-29849b151"
-    assert parsed["profile_url"] == "https://www.linkedin.com/in/hazem-ataya-29849b151/"
+    parsed = linkedin_client.parse_profile_url("https://www.linkedin.com/in/example-user")
+    assert parsed["profile_slug"] == "example-user"
+    assert parsed["profile_url"] == "https://www.linkedin.com/in/example-user/"
 
 
 def test_parse_profile_url_rejects_non_profile_paths() -> None:
@@ -82,8 +82,8 @@ def test_extracts_engagement_stats_from_activity_html() -> None:
       <span aria-label="1 reaction"></span>
       <span class="social-details-social-counts__reactions-count">1</span>
       <strong>218 impressions</strong>
-      <span aria-label="2 comments on Hazem Ataya’s post"></span>
-      <span aria-label="3 reposts of Hazem Ataya’s post"></span>
+      <span aria-label="2 comments on Example User’s post"></span>
+      <span aria-label="3 reposts of Example User’s post"></span>
     </body></html>
     """
     payload = linkedin_client.parse_posts_from_html(

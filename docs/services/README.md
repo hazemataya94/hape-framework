@@ -9,3 +9,4 @@ Use these docs for service boundaries, runtime flow, troubleshooting, and valida
 - [DORA GitHub Service Logic](dora-github.md) - DORA metric flow for GitHub provider and dashboard usage.
 - [Kube Agent Service Logic](kube-agent-service.md) - kube-agent runtime flow, boundaries, and validation steps.
 - [Init CI/CD Service Logic](init-cicd-service.md) - init-cicd command flow, behavior summary, and validation steps.
+- [Vault Service Logic](vault-service.md) - AppRole login and KV field retrieval, token handling, and validation steps.

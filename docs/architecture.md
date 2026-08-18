@@ -104,7 +104,7 @@ graph TD
 - **CLI**: Argument parsing and user input handling. Commands call services only.
 - **API**: HTTP request parsing and response mapping. Endpoints call services only.
 - **Services**: Domain logic that orchestrates one or more clients to perform automation tasks.
-- **Clients**: Low-level adapters for external systems (Jira, Confluence, GitLab, AWS, Kubernetes).
+- **Clients**: Low-level adapters for external systems (Jira, Confluence, GitLab, AWS, Kubernetes, Vault).
 - **Core**: Cross-cutting infrastructure (configuration, logging, centralized error handling). Shared across all layers.
 - **Utils**: Shared utilities that are not domain-specific (file management, helpers). Shared across all layers.
   - Formatters live under `utils/formatters/` and are split by target system.
@@ -143,7 +143,7 @@ Core and utils are shared across all layers.
 #### Directory Layout
 - `cli/` → CLI entry and command modules
 - `services/` → Domain services (e.g., `changelog_service.py`)
-- `clients/` → API clients (e.g., `jira_client.py`, `confluence_client.py`)
+- `clients/` → API clients (e.g., `jira_client.py`, `confluence_client.py`, `vault_client.py`)
 - `core/` → Config/logging
 - `utils/` → File, shared helpers, formatters
 - `infrastructure/` → Local Kubernetes setup (`kind`, Helmfile) and future Terraform assets

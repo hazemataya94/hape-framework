@@ -17,6 +17,7 @@ from cli.commands.jira_commands import JiraCommands
 from cli.commands.kube_agent_commands import KubeAgentCommands
 from cli.commands.linkedin_commands import LinkedInCommands
 from cli.commands.markdown_commands import MarkdownCommands
+from cli.commands.vault_commands import VaultCommands
 
 class _CommandHelpFormatter(argparse.HelpFormatter):
     def __init__(self, prog: str) -> None:
@@ -82,6 +83,7 @@ class CLI:
         CsvCommands.register(subparsers)
         DoraCommands.register(subparsers)
         EcrCommands.register(subparsers)
+        VaultCommands.register(subparsers)
         EksDeploymentCostCommands.register(subparsers)
         KubeAgentCommands.register(subparsers)
         InitCicdCommands.register(subparsers)

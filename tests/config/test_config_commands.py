@@ -60,12 +60,12 @@ def test_config_set_and_unset_register_parsers() -> None:
     subparsers = parser.add_subparsers(dest="command")
     ConfigCommands.register(subparsers)
     set_args = parser.parse_args(
-        ["config", "set", "--key", "HAPE_GITHUB_DEFAULT_OWNER", "--value", "hape-academy"]
+        ["config", "set", "--key", "HAPE_GITHUB_DEFAULT_OWNER", "--value", "example-org"]
     )
     unset_args = parser.parse_args(["config", "unset", "--key", "HAPE_GITHUB_TOKEN"])
     assert set_args.func == ConfigCommands.run_set
     assert set_args.key == "HAPE_GITHUB_DEFAULT_OWNER"
-    assert set_args.value == "hape-academy"
+    assert set_args.value == "example-org"
     assert unset_args.func == ConfigCommands.run_unset
     assert unset_args.key == "HAPE_GITHUB_TOKEN"
 

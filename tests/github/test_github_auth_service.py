@@ -46,7 +46,7 @@ def _install_command_fakes(monkeypatch, calls: list[list[str]], *, ssh_g_ok: boo
             if "-G" in command:
                 if not ssh_g_ok:
                     return _Result(1, "", "ssh config failed")
-                return _Result(0, "hostname github.com\nuser git\nidentityfile /Users/operator/.ssh/custom_key\n")
+                return _Result(0, "hostname github.com\nuser git\nidentityfile /path/to/.ssh/custom_key\n")
             if "-T" in command:
                 if ssh_probe_ok:
                     return _Result(1, "", "Hi operator! You've successfully authenticated")
@@ -68,10 +68,10 @@ def _install_command_fakes(monkeypatch, calls: list[list[str]], *, ssh_g_ok: boo
 def test_configure_owner_stores_default_owner(tmp_path: Path) -> None:
     config_path = tmp_path / "config.json"
     github_auth_service = GitHubAuthService(config_service=ConfigService())
-    result = github_auth_service.configure_owner(owner="hape-academy", config_path=str(config_path))
-    assert result["owner"] == "hape-academy"
+    result = github_auth_service.configure_owner(owner="example-org", config_path=str(config_path))
+    assert result["owner"] == "example-org"
     stored = json.loads(config_path.read_text(encoding="utf-8"))
-    assert stored["HAPE_GITHUB_DEFAULT_OWNER"] == "hape-academy"
+    assert stored["HAPE_GITHUB_DEFAULT_OWNER"] == "example-org"
 
 
 def test_login_with_token_stores_token(tmp_path: Path) -> None:
@@ -147,7 +147,7 @@ def test_bootstrap_cancelled_before_writes(monkeypatch, tmp_path: Path) -> None:
         input_func=lambda _prompt: "n",
     )
     with pytest.raises(HapeValidationError) as exc_info:
-        github_auth_service.bootstrap(owner="hape-academy", config_path=str(config_path))
+        github_auth_service.bootstrap(owner="example-org", config_path=str(config_path))
     assert exc_info.value.code == "GITHUB_AUTH_BOOTSTRAP_CANCELLED"
     assert not config_path.exists()
     assert not any(len(call) > 2 and call[1:3] == ["auth", "login"] for call in calls)
@@ -162,14 +162,14 @@ def test_bootstrap_yes_uses_ssh_defaults_and_writes(monkeypatch, tmp_path: Path,
         github_service=_FakeGitHubService(),  # type: ignore[arg-type]
         input_func=lambda _prompt: (_ for _ in ()).throw(AssertionError("prompt should not be used")),
     )
-    result = github_auth_service.bootstrap(owner="hape-academy", yes=True, config_path=str(config_path))
-    assert result["owner"] == "hape-academy"
+    result = github_auth_service.bootstrap(owner="example-org", yes=True, config_path=str(config_path))
+    assert result["owner"] == "example-org"
     assert result["hostname"] == "github.com"
     assert result["git_protocol"] == "ssh"
     assert result["status"]["auth_ok"] is True
-    assert result["plan"]["ssh_preflight"]["resolved"]["identity_files"] == ["/Users/operator/.ssh/custom_key"]
+    assert result["plan"]["ssh_preflight"]["resolved"]["identity_files"] == ["/path/to/.ssh/custom_key"]
     stored = json.loads(config_path.read_text(encoding="utf-8"))
-    assert stored["HAPE_GITHUB_DEFAULT_OWNER"] == "hape-academy"
+    assert stored["HAPE_GITHUB_DEFAULT_OWNER"] == "example-org"
     assert stored["HAPE_GITHUB_TOKEN"] == "ghp_from_gh"
     assert "Bootstrap plan" in capsys.readouterr().out
     assert any(call[:2] == ["/usr/bin/ssh", "-G"] for call in calls)
@@ -194,7 +194,7 @@ def test_bootstrap_falls_back_to_login_when_gh_session_missing(monkeypatch, tmp_
         binary = command[0]
         if binary.endswith("/ssh") or binary == "ssh":
             if "-G" in command:
-                return _Result(0, "hostname github.com\nuser git\nidentityfile /Users/operator/.ssh/custom_key\n")
+                return _Result(0, "hostname github.com\nuser git\nidentityfile /path/to/.ssh/custom_key\n")
             if "-T" in command:
                 return _Result(1, "", "Hi operator! You've successfully authenticated")
             return _Result(1, "")
@@ -215,7 +215,7 @@ def test_bootstrap_falls_back_to_login_when_gh_session_missing(monkeypatch, tmp_
         config_service=ConfigService(),
         github_service=_FakeGitHubService(),  # type: ignore[arg-type]
     )
-    result = github_auth_service.bootstrap(owner="hape-academy", yes=True, config_path=str(config_path))
+    result = github_auth_service.bootstrap(owner="example-org", yes=True, config_path=str(config_path))
     assert result["login"]["method"] == "gh"
     assert any(len(call) > 2 and call[1:3] == ["auth", "login"] for call in calls)
     stored = json.loads(config_path.read_text(encoding="utf-8"))
@@ -233,7 +233,7 @@ def test_bootstrap_set_github_auth_method_prompts_protocol(monkeypatch, tmp_path
         input_func=lambda _prompt: next(responses),
     )
     result = github_auth_service.bootstrap(
-        owner="hape-academy",
+        owner="example-org",
         yes=True,
         set_github_auth_method=True,
         config_path=str(config_path),
@@ -249,7 +249,7 @@ def test_bootstrap_ssh_config_unresolved_fails_before_login(monkeypatch, tmp_pat
     _install_command_fakes(monkeypatch, calls, ssh_g_ok=False)
     github_auth_service = GitHubAuthService(config_service=ConfigService(), github_service=_FakeGitHubService())  # type: ignore[arg-type]
     with pytest.raises(HapeOperationError) as exc_info:
-        github_auth_service.bootstrap(owner="hape-academy", yes=True, config_path=str(config_path))
+        github_auth_service.bootstrap(owner="example-org", yes=True, config_path=str(config_path))
     assert exc_info.value.code == "GITHUB_AUTH_SSH_CONFIG_UNRESOLVED"
     assert not any(len(call) > 2 and call[1:3] == ["auth", "login"] for call in calls)
 

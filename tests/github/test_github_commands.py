@@ -81,9 +81,9 @@ class _FakeGitHubService:
     def get_authenticated_user_info(self) -> dict[str, str]:
         _FakeGitHubService.user_info_calls += 1
         return {
-            "login": "hazemataya94",
-            "name": "Hazem Ataya",
-            "html_url": "http://github.com/hazemataya94",
+            "login": "example-user",
+            "name": "Example User",
+            "html_url": "http://github.com/example-user",
         }
 
     def list_repositories_for_deletion(self, org: str, include: list[str] | None = None, exclude: list[str] | None = None, delete_all: bool = False) -> list[dict[str, object]]:
@@ -322,8 +322,8 @@ def test_user_info_command_calls_service_and_prints_json(monkeypatch, capsys) ->
     assert _FakeGitHubService.user_info_calls >= 1
     output = capsys.readouterr().out
     payload = json.loads(output)
-    assert payload["login"] == "hazemataya94"
-    assert payload["html_url"] == "http://github.com/hazemataya94"
+    assert payload["login"] == "example-user"
+    assert payload["html_url"] == "http://github.com/example-user"
 
 
 def test_delete_repos_command_previews_and_deletes_after_confirmation(monkeypatch, capsys) -> None:

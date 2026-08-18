@@ -43,7 +43,7 @@ hape eks-deployment-cost report \
 hape eks-deployment-cost report \
   --kube-context dev-eu \
   --aws-profile hape \
-  --aws-region eu-central-1 \
+  --aws-region us-east-1 \
   --resource-types Deployment,StatefulSet \
   --namespaces payments,orders \
   --top-n 20 \

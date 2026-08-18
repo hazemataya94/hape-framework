@@ -14,6 +14,10 @@ Apply these rules when creating or updating documentation in this repository.
 ## Command examples in docs
 - When writing documentation command examples for Python, always use `python` (never virtualenv-prefixed interpreter paths or `python3`).
 - Keep commands copy-paste ready from repository root unless a different working directory is required.
+- Never include real user device paths, home directories, or host-specific workspace roots (for example `/Users/...`, `/home/...`, or Windows user-profile paths).
+- If a path example is required, use a placeholder such as `/path/to/...`.
+- Do not copy absolute `cd` targets from private workspace runbooks into this public repository.
+- Never document real default values. Use dummy placeholders such as `example-org`, `https://vault.example.com`, `/path/to/...`, and `12345`.
 
 ## Demo README requirements
 - Every feature demo under `demos/` must include a README with complete end-to-end reproduction instructions so a user can run the full workflow independently.

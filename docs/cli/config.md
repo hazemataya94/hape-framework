@@ -28,7 +28,7 @@ Prefer `hape config set` when you only need to update one key.
 ## Set one config key
 Merge a single supported key into `config.json` without rewriting unrelated keys.
 ```
-hape config set --key HAPE_GITHUB_DEFAULT_OWNER --value hape-academy
+hape config set --key HAPE_GITHUB_DEFAULT_OWNER --value example-org
 hape --config-file-path /path/to/config.json config set --key HAPE_GITHUB_TOKEN --value <YOUR_TOKEN>
 ```
 
@@ -104,6 +104,16 @@ Atlassian keys:
 - `CONFLUENCE_CHANGELOG_PARENT_PAGE_ID`
 - `CONFLUENCE_CHANGELOG_ENTRY_PAGE_TEMPLATE_ID`
 - `CONFLUENCE_TEST_PARENT_PAGE_ID`
+
+Vault keys:
+- `HAPE_WORKSPACE_ROOT`
+- `HAPE_VAULT_ADDR` (default `https://vault.example.com`)
+- `HAPE_VAULT_ROLE_ID`
+- `HAPE_VAULT_SECRET_ID_FILE`
+- `HAPE_VAULT_AUTH_PATH` (default `approle`)
+- `HAPE_VAULT_KV_MOUNT` (default `kv`)
+- `HAPE_VAULT_KV_PATH` (default `example/pypi`)
+- `HAPE_VAULT_KV_FIELD` (default `token`)
 
 Integer keys (when present):
 - `GITLAB_DEFAULT_GROUP_ID`

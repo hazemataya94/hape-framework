@@ -37,6 +37,7 @@ Apply these rules when changing code in this repository.
 - In CLI files (`cli/*.py`), include `required`, `default`, and `help` for each `add_argument` call when applicable.
 - In CLI files (`cli/*.py`), write all `add_argument` calls in multiline form.
 - In CLI files (`cli/*.py`), `add_argument` should always define arguments as flags (no positional args) in kebab-case (for example, `--argument-name`).
+- Never set CLI, API, config, Makefile, or documented defaults to real operator, org, host, path, account, or production endpoint values. Use dummy placeholders only.
 
 # Formatting preferences
 - Hard rule (pass/fail): function and class signatures MUST stay on one line when the full signature length is <= 200 characters.
@@ -47,3 +48,4 @@ Apply these rules when changing code in this repository.
 # Mandatory self-check before final response
 - Before final response, scan all edited Python files and fix every function/class signature that is multi-line while length is <= 200 characters.
 - After running all code checks, always run `python scripts/check_hape_rules.py` as a final validation step and fix all reported violations before final response.
+- That script also scans the repository for local device paths (`/Users/<name>`, `/home/<name>`, Windows user-profile paths). Do not add those paths.

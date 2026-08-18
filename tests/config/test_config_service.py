@@ -69,7 +69,7 @@ def test_set_config_value_merges_without_overwrite(tmp_path: Path) -> None:
     config_service = ConfigService()
     result = config_service.set_config_value(
         key="HAPE_GITHUB_DEFAULT_OWNER",
-        value="hape-academy",
+        value="example-org",
         config_path=str(config_path),
     )
     assert result["key"] == "HAPE_GITHUB_DEFAULT_OWNER"
@@ -78,7 +78,7 @@ def test_set_config_value_merges_without_overwrite(tmp_path: Path) -> None:
     stored = json.loads(config_path.read_text(encoding="utf-8"))
     assert stored["HAPE_GITLAB_DOMAIN"] == "https://gitlab.example.com"
     assert stored["HAPE_API_PORT"] == 8080
-    assert stored["HAPE_GITHUB_DEFAULT_OWNER"] == "hape-academy"
+    assert stored["HAPE_GITHUB_DEFAULT_OWNER"] == "example-org"
 
 
 def test_set_config_value_creates_file_and_redacts_sensitive_marker(tmp_path: Path) -> None:
@@ -110,7 +110,7 @@ def test_unset_config_value_removes_key(tmp_path: Path) -> None:
     config_path.write_text(
         json.dumps(
             {
-                "HAPE_GITHUB_DEFAULT_OWNER": "hape-academy",
+                "HAPE_GITHUB_DEFAULT_OWNER": "example-org",
                 "HAPE_API_PORT": 8080,
             }
         ),

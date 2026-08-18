@@ -14,7 +14,7 @@ Use GitHub CLI commands in HAPE to authenticate, create, initialize, list, inspe
 Preferred path (required owner, defaults `github.com` + `ssh`):
 
 ```bash
-python -m cli.main github auth bootstrap --owner hape-academy
+python -m cli.main github auth bootstrap --owner example-org
 ```
 
 Flow:
@@ -28,7 +28,7 @@ Flow:
 Approve the printed plan without a second prompt:
 
 ```bash
-python -m cli.main github auth bootstrap --owner hape-academy --yes
+python -m cli.main github auth bootstrap --owner example-org --yes
 ```
 
 `--org` is an alias for `--owner`.
@@ -36,13 +36,13 @@ python -m cli.main github auth bootstrap --owner hape-academy --yes
 Prompt once for git protocol (`ssh`/`https`) only when requested:
 
 ```bash
-python -m cli.main github auth bootstrap --owner hape-academy --set-github-auth-method
+python -m cli.main github auth bootstrap --owner example-org --set-github-auth-method
 ```
 
 Or set protocol directly:
 
 ```bash
-python -m cli.main github auth bootstrap --owner hape-academy --git-protocol https --yes
+python -m cli.main github auth bootstrap --owner example-org --git-protocol https --yes
 ```
 
 Default `auth login` remains available for bare interactive `gh auth login`:
@@ -69,7 +69,7 @@ printf '%s' "$HAPE_GITHUB_TOKEN" | python -m cli.main github auth login --token-
 Manual configure and verify:
 
 ```bash
-python -m cli.main github auth configure --owner hape-academy
+python -m cli.main github auth configure --owner example-org
 python -m cli.main github auth status
 python -m cli.main github user-info
 ```
@@ -93,7 +93,7 @@ python -m cli.main github create repo --name service-a --org example-org --publi
 Create a private repository by default:
 
 ```bash
-python -m cli.main github init-repo --repo-path /path/to/repo --owner hape-vibes
+python -m cli.main github init-repo --repo-path /path/to/repo --owner example-org
 ```
 
 Create a public repository and override the repository name:
@@ -118,20 +118,20 @@ python -m cli.main github list-repos
 List repositories in an organization:
 
 ```bash
-python -m cli.main github list-repos --org hape-vibes
+python -m cli.main github list-repos --org example-org
 ```
 
 Include archived repositories:
 
 ```bash
-python -m cli.main github list-repos --org hape-vibes --include-archived
+python -m cli.main github list-repos --org example-org --include-archived
 ```
 
 ## Clone repositories
 Clone all repositories in an organization into a target directory:
 
 ```bash
-python -m cli.main github clone-repos --org microagi-labs --clone-dir /path/to/dir
+python -m cli.main github clone-repos --org example-org --clone-dir /path/to/dir
 ```
 
 ## Authenticated user info
@@ -145,13 +145,13 @@ python -m cli.main github user-info
 Delete repositories in an organization by explicit include list:
 
 ```bash
-python -m cli.main github delete-repos --org hape-vibes --include service-a service-b
+python -m cli.main github delete-repos --org example-org --include service-a service-b
 ```
 
 Delete all organization repositories and keep exclusions:
 
 ```bash
-python -m cli.main github delete-repos --org hape-vibes --all --exclude service-a
+python -m cli.main github delete-repos --org example-org --all --exclude service-a
 ```
 
 Notes:

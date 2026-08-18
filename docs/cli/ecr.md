@@ -15,7 +15,7 @@ Print a plan and stop (no creates, no prompt):
 
 ```bash
 hape ecr ensure-repos \
-  --metadata workspace/scripts/hape-academy-system-metadata.json \
+  --metadata /path/to/example-system-metadata.json \
   --dry-run
 ```
 
@@ -23,14 +23,14 @@ Print a plan, then prompt `Proceed with ECR ensure-repos? [y/N]`:
 
 ```bash
 hape ecr ensure-repos \
-  --metadata workspace/scripts/hape-academy-system-metadata.json
+  --metadata /path/to/example-system-metadata.json
 ```
 
 Approve the printed plan without a second prompt:
 
 ```bash
 hape ecr ensure-repos \
-  --metadata workspace/scripts/hape-academy-system-metadata.json \
+  --metadata /path/to/example-system-metadata.json \
   --yes
 ```
 
@@ -38,9 +38,9 @@ Optional filters:
 
 ```bash
 hape ecr ensure-repos \
-  --metadata workspace/scripts/hape-academy-system-metadata.json \
+  --metadata /path/to/example-system-metadata.json \
   --services website,backend \
-  --region eu-central-1 \
+  --region us-east-1 \
   --yes
 ```
 
@@ -55,10 +55,10 @@ hape ecr ensure-repos \
 
 ## Make wrapper
 
-Academy workspace:
+From a product workspace repository:
 
 ```bash
-cd hape-academy/hape-academy-workspace
+cd /path/to/example-workspace
 make prod-ensure-ecr DRY_RUN=1
 make prod-ensure-ecr
 ```

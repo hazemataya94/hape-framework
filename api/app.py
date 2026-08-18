@@ -7,7 +7,7 @@ from api.auth.rate_limiter import TokenRateLimiter
 from api.auth.token_service import ApiTokenService
 from api.dependencies import require_auth_token
 from api.error_mapping import register_exception_handlers
-from api.routers import auth_router, config_router, confluence_router, csv_router, dora_router, eks_deployment_cost_router, github_router, gitlab_router, health_router, init_cicd_router, jira_router, kube_agent_router, markdown_router
+from api.routers import auth_router, config_router, confluence_router, csv_router, dora_router, eks_deployment_cost_router, github_router, gitlab_router, health_router, init_cicd_router, jira_router, kube_agent_router, markdown_router, vault_router
 from core.config import Config
 from core.logging import LocalLogging
 
@@ -34,6 +34,7 @@ def create_app() -> FastAPI:
     app.include_router(eks_deployment_cost_router.router, dependencies=[Depends(require_auth_token)])
     app.include_router(kube_agent_router.router, dependencies=[Depends(require_auth_token)])
     app.include_router(init_cicd_router.router, dependencies=[Depends(require_auth_token)])
+    app.include_router(vault_router.router, dependencies=[Depends(require_auth_token)])
     return app
 
 

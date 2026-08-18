@@ -46,9 +46,9 @@ class _FakeGitHubService:
     def get_authenticated_user_info(self) -> dict[str, str]:
         _FakeGitHubService.user_info_calls += 1
         return {
-            "login": "hazemataya94",
-            "name": "Hazem Ataya",
-            "html_url": "http://github.com/hazemataya94",
+            "login": "example-user",
+            "name": "Example User",
+            "html_url": "http://github.com/example-user",
         }
 
     def delete_repositories(self, org: str, include: list[str] | None = None, exclude: list[str] | None = None, delete_all: bool = False, confirmation_phrase: str = "") -> dict[str, object]:
@@ -105,7 +105,7 @@ def test_token_auth_and_rate_limit(monkeypatch, tmp_path) -> None:
 
 def test_cli_api_parity_routes_exist(monkeypatch, tmp_path) -> None:
     client = _build_test_client(monkeypatch=monkeypatch, tmp_path=tmp_path)
-    route_paths = {route.path for route in client.app.routes}
+    route_paths = set(client.app.openapi()["paths"].keys())
     expected_paths = {
         "/config/init-config-file",
         "/config/show",
@@ -137,6 +137,7 @@ def test_cli_api_parity_routes_exist(monkeypatch, tmp_path) -> None:
         "/kube-agent/incidents/list",
         "/kube-agent/incidents/show",
         "/init-cicd",
+        "/vault/kv-get",
     }
     missing_paths = expected_paths - route_paths
     assert not missing_paths
@@ -280,9 +281,9 @@ def test_github_user_info_route_returns_service_payload(monkeypatch, tmp_path) -
     payload = response.json()
     assert _FakeGitHubService.user_info_calls >= 1
     assert payload == {
-        "login": "hazemataya94",
-        "name": "Hazem Ataya",
-        "html_url": "http://github.com/hazemataya94",
+        "login": "example-user",
+        "name": "Example User",
+        "html_url": "http://github.com/example-user",
     }
 
 

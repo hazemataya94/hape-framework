@@ -16,7 +16,7 @@ from services.github_service import GitHubService
 
 class GitHubAuthService:
     DEFAULT_GH_SCOPES = "repo,read:org,admin:org"
-    DEFAULT_OWNER = "hape-academy"
+    DEFAULT_OWNER = "example-org"
     DEFAULT_HOSTNAME = "github.com"
     DEFAULT_GIT_PROTOCOL = "ssh"
     GITHUB_TOKEN_KEY = "HAPE_GITHUB_TOKEN"

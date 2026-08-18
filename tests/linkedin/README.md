@@ -8,9 +8,7 @@ These tests do not call LinkedIn over the network.
 
 ## Run
 
-```
-cd /Users/hazem/workspace/hape/hape-framework
-source .exec-venv/bin/activate
+```bash
 python -m pytest tests/linkedin/ -v
 ```
 

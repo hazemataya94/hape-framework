@@ -13,7 +13,7 @@ router = APIRouter(prefix="/gitlab", tags=["gitlab"])
 
 class CloneRequest(BaseModel):
     group_id: int | None = None
-    clone_dir: str = "/Users/hazem.ataya/workspace/repos"
+    clone_dir: str
 
 
 class MrCountPerDayRequest(BaseModel):

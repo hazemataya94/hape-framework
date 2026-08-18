@@ -76,6 +76,14 @@ class Config:
         "HAPE_KUBE_AGENT_COST_WORKLOAD_HOURLY_USD_THRESHOLD",
         "HAPE_KUBE_AGENT_COST_INCREASE_RATIO_THRESHOLD",
         "HAPE_KUBE_AGENT_COST_TOP_WORKLOADS_LIMIT",
+        "HAPE_WORKSPACE_ROOT",
+        "HAPE_VAULT_ADDR",
+        "HAPE_VAULT_ROLE_ID",
+        "HAPE_VAULT_SECRET_ID_FILE",
+        "HAPE_VAULT_AUTH_PATH",
+        "HAPE_VAULT_KV_MOUNT",
+        "HAPE_VAULT_KV_PATH",
+        "HAPE_VAULT_KV_FIELD",
     ]
 
     int_config_keys = [
@@ -595,4 +603,39 @@ class Config:
         value = Config._get_config_int_with_default("HAPE_KUBE_AGENT_COST_TOP_WORKLOADS_LIMIT", 5)
         ValidationUtils.validate_positive_int("HAPE_KUBE_AGENT_COST_TOP_WORKLOADS_LIMIT", value)
         return value
+
+    @staticmethod
+    def get_workspace_root() -> str:
+        workspace_root = Config._get_optional_config_value("HAPE_WORKSPACE_ROOT")
+        return workspace_root.strip() if workspace_root else ""
+
+    @staticmethod
+    def get_vault_addr() -> str:
+        return Config._get_config_value_with_default("HAPE_VAULT_ADDR", "https://vault.example.com").strip()
+
+    @staticmethod
+    def get_vault_role_id() -> str:
+        role_id = Config._get_optional_config_value("HAPE_VAULT_ROLE_ID")
+        return role_id.strip() if role_id else ""
+
+    @staticmethod
+    def get_vault_secret_id_file() -> str:
+        secret_id_file = Config._get_optional_config_value("HAPE_VAULT_SECRET_ID_FILE")
+        return secret_id_file.strip() if secret_id_file else ""
+
+    @staticmethod
+    def get_vault_auth_path() -> str:
+        return Config._get_config_value_with_default("HAPE_VAULT_AUTH_PATH", "approle")
+
+    @staticmethod
+    def get_vault_kv_mount() -> str:
+        return Config._get_config_value_with_default("HAPE_VAULT_KV_MOUNT", "kv")
+
+    @staticmethod
+    def get_vault_kv_relative_path() -> str:
+        return Config._get_config_value_with_default("HAPE_VAULT_KV_PATH", "example/pypi")
+
+    @staticmethod
+    def get_vault_kv_field() -> str:
+        return Config._get_config_value_with_default("HAPE_VAULT_KV_FIELD", "token")
 

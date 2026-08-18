@@ -1182,6 +1182,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /vault/kv-get:
+    post:
+      tags:
+      - vault
+      summary: Kv Get
+      operationId: kv_get_vault_kv_get_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KvGetRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Kv Get Vault Kv Get Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
     CloneRequest:
@@ -1194,7 +1229,8 @@ components:
         clone_dir:
           type: string
           title: Clone Dir
-          default: /Users/hazem.ataya/workspace/repos
+      required:
+      - clone_dir
       type: object
       title: CloneRequest
     CostAnalyzeRequest:
@@ -1427,6 +1463,49 @@ components:
       - project_path
       - deployment_type
       title: InitCicdRequest
+    KvGetRequest:
+      properties:
+        secret_id_file:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Secret Id File
+        role_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Role Id
+        vault_addr:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Vault Addr
+        auth_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Auth Path
+        kv_mount:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Kv Mount
+        kv_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Kv Path
+        kv_field:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Kv Field
+        omit_value:
+          type: boolean
+          title: Omit Value
+          default: false
+      type: object
+      title: KvGetRequest
     InitConfigFileRequest:
       properties:
         config_file_path:

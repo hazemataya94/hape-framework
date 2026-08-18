@@ -37,11 +37,13 @@ playground/
 .env
 */.env
 **/.env
+secret.id
 
 # Python
 .**venv
 */*.venv/
 **/*.venv/
+.tmp-readme-venv/
 .pytest_cache
 __pycache__/
 **/__pycache__/

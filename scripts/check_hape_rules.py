@@ -11,7 +11,15 @@ from pathlib import Path
 
 
 SIGNATURE_MAX_LENGTH = 200
-SKIP_DIR_NAMES = {".git", ".venv", ".exec-venv", "__pycache__"}
+SKIP_DIR_NAMES = {".git", ".venv", ".exec-venv", "__pycache__", "dist", "build", ".pytest_cache", "htmlcov"}
+TEXT_SUFFIXES = {".py", ".md", ".yaml", ".yml", ".json", ".toml", ".txt", ".sh", ".cfg", ".ini", ".rst", ".csv", ".html"}
+TEXT_FILENAMES = {"Makefile", "Dockerfile", ".gitignore", ".cursorignore"}
+DEVICE_PATH_REGEX = re.compile(
+    r"/Users/(?P<mac>[A-Za-z0-9._-]+)|/home/(?P<linux>[A-Za-z0-9._-]+)|[A-Za-z]:\\Users\\(?P<win>[A-Za-z0-9._-]+)"
+)
+PLACEHOLDER_DEVICE_USERS = {"...", "your-user", "username", "you", "hape"}
+FORBIDDEN_REAL_DEFAULT_MARKERS = ("vault.hape.dev", "hazemataya/hape")
+README_ALLOWLIST_NAMES = {"README.md"}
 
 
 @dataclass
@@ -49,13 +57,71 @@ def _parse_git_status_paths(status_output: str) -> tuple[set[str], set[str]]:
     return changed_paths, new_paths
 
 
+def _is_skipped_dir(path: Path) -> bool:
+    return any(
+        part in SKIP_DIR_NAMES or part.endswith(".egg-info") or part.endswith("venv") or part == "site-packages"
+        for part in path.parts
+    )
+
+
 def _get_repo_python_files(repo_root: Path) -> list[Path]:
     files: list[Path] = []
     for path in repo_root.rglob("*.py"):
-        if any(part in SKIP_DIR_NAMES for part in path.parts):
+        if _is_skipped_dir(path):
             continue
         files.append(path)
     return sorted(files)
+
+
+def _get_repo_text_files(repo_root: Path) -> list[Path]:
+    files: list[Path] = []
+    for path in repo_root.rglob("*"):
+        if not path.is_file():
+            continue
+        if _is_skipped_dir(path):
+            continue
+        if path.name in TEXT_FILENAMES or path.suffix in TEXT_SUFFIXES:
+            files.append(path)
+    return sorted(files)
+
+
+def _collect_local_path_violations(file_path: Path) -> list[Violation]:
+    if file_path.name == "check_hape_rules.py":
+        return []
+    try:
+        content = file_path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return []
+    violations: list[Violation] = []
+    for line_number, line in enumerate(content.splitlines(), start=1):
+        for match in DEVICE_PATH_REGEX.finditer(line):
+            username = match.group("mac") or match.group("linux") or match.group("win") or ""
+            if username in PLACEHOLDER_DEVICE_USERS:
+                continue
+            violations.append(
+                Violation(
+                    file_path=file_path,
+                    line=line_number,
+                    message=(
+                        f"local device path '{match.group(0)}' is not allowed in this public repository; "
+                        "use a placeholder such as /path/to/..."
+                    ),
+                )
+            )
+        if file_path.name not in README_ALLOWLIST_NAMES:
+            for marker in FORBIDDEN_REAL_DEFAULT_MARKERS:
+                if marker in line:
+                    violations.append(
+                        Violation(
+                            file_path=file_path,
+                            line=line_number,
+                            message=(
+                                f"real environment value '{marker}' is not allowed as a shipped default; "
+                                "use a dummy placeholder."
+                            ),
+                        )
+                    )
+    return violations
 
 
 def _get_changed_python_files(repo_root: Path) -> tuple[list[Path], set[Path]]:
@@ -263,20 +329,20 @@ def main() -> int:
         target_files, new_files = _get_changed_python_files(repo_root)
         changed_line_numbers_by_file = {file_path: _get_changed_line_numbers(repo_root=repo_root, file_path=file_path) for file_path in target_files}
     target_files = [path for path in target_files if path.exists() and path.suffix == ".py"]
-    if not target_files:
-        print("No Python files to validate.")
-        return 0
     violations: list[Violation] = []
     for file_path in target_files:
         changed_line_numbers = None if changed_line_numbers_by_file is None else changed_line_numbers_by_file.get(file_path, set())
         violations.extend(_check_file(file_path=file_path, new_files=new_files, changed_line_numbers=changed_line_numbers))
+    privacy_files = _get_repo_text_files(repo_root)
+    for file_path in privacy_files:
+        violations.extend(_collect_local_path_violations(file_path))
     if violations:
         print("HAPE rule check failed:")
         for violation in violations:
             relative_path = violation.file_path.relative_to(repo_root)
             print(f"- {relative_path}:{violation.line}: {violation.message}")
         return 1
-    print(f"HAPE rule check passed for {len(target_files)} file(s).")
+    print(f"HAPE rule check passed for {len(target_files)} Python file(s) and {len(privacy_files)} scanned text file(s).")
     return 0
 
 

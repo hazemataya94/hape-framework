@@ -1,17 +1,16 @@
 PYTHON ?= python
 VERSION_FILE ?= VERSION
 INSTALL_PREFIX ?=
-PYPI_TOKEN_FILE ?= ../pypi.token
 API_BASE_URL ?= http://localhost:8080
 API_TOKEN_NAME ?= default-token
 API_ADMIN_KEY ?=
 KIND_CLUSTER_NAME ?= hape
 KIND_CONFIG_PATH ?= infrastructure/kubernetes/kind/cluster-config.yaml
-DOCKER_IMAGE ?= hazemataya/hape
+DOCKER_IMAGE ?= example/hape
 DOCKERFILE_PATH ?= docker/Dockerfile
 KUSTOMIZE_TARGET_PATH := $(word 2,$(MAKECMDGOALS))
 
-.PHONY: help clean bump-version build install run-api api-generate-token kind-up helmfile-sync kind-down kustomize-apply kustomize-delete publish-docker
+.PHONY: help clean bump-version build install run-api api-generate-token kind-up helmfile-sync kind-down kustomize-apply kustomize-delete publish publish-docker
 
 ifneq ($(filter kustomize-apply kustomize-delete,$(firstword $(MAKECMDGOALS))),)
   ifneq ($(KUSTOMIZE_TARGET_PATH),)
@@ -121,15 +120,9 @@ kustomize-delete: ## Delete kustomization path passed as second make argument.
 	kubectl kustomize --load-restrictor=LoadRestrictionsNone "$(KUSTOMIZE_TARGET_PATH)" | kubectl delete -f -
 
 publish: ## Publish package to public PyPI. Commit, tag, and push the version.
-	@if [ ! -f "$(PYPI_TOKEN_FILE)" ]; then \
-		echo "Error: PyPI token file not found at $(PYPI_TOKEN_FILE). Set PYPI_TOKEN_FILE to a valid token file path."; \
-		exit 1; \
-	fi
-	@if [ ! -s "$(PYPI_TOKEN_FILE)" ]; then \
-		echo "Error: PyPI token file is empty at $(PYPI_TOKEN_FILE)."; \
-		exit 1; \
-	fi
-	@TWINE_USERNAME=__token__ TWINE_PASSWORD="$$(cat "$(PYPI_TOKEN_FILE)")" twine upload dist/* \
+	@set -eu; \
+	token=$$($(PYTHON) -m cli.main vault kv-get); \
+	TWINE_USERNAME=__token__ TWINE_PASSWORD="$$token" $(PYTHON) -m twine upload dist/* \
 	&& \
 	( \
 		version=$$(cat $(VERSION_FILE)); \

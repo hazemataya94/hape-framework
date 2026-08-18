@@ -14,6 +14,7 @@ Use these docs to run commands, configure HAPE, and execute supported integratio
 - [gitlab.md](gitlab.md) - GitLab automation usage.
 - [github.md](github.md) - GitHub repository bootstrap usage.
 - [ecr.md](ecr.md) - AWS ECR repository ensure usage.
+- [vault.md](vault.md) - Vault AppRole login and KV field retrieval.
 - [dora.md](dora.md) - GitLab DORA usage and debug commands.
 - [grafana.md](grafana.md) - Grafana datasources report usage.
 - [jira.md](jira.md) - Jira comment automation usage.
