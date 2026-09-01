@@ -124,9 +124,9 @@ Integer keys (when present):
 - `CONFLUENCE_TEST_PARENT_PAGE_ID`
 
 ## DORA JSON files
-The DORA feature reads two JSON files by default:
-- `config/dora/git-rules.json`
-- `config/dora/kubernetes-mappings.json`
+The DORA feature reads provider-specific JSON files:
+- GitHub: `config/dora/git-rules-github.json` and `config/dora/kubernetes-mappings-github.json`
+- GitLab: `config/dora/git-rules-gitlab.json` and `config/dora/kubernetes-mappings-gitlab.json`
 
 You can override those locations with:
 - `HAPE_DORA_GIT_RULES_PATH`

@@ -1,0 +1,34 @@
+---
+description: HAPE Framework automation rules for this project
+alwaysApply: true
+---
+
+# HAPE Framework
+
+If this project is not the HAPE Framework repository, load the cloned rules from `<HAPE_FRAMEWORK_PATH>/docs/llm/README.md`.
+
+If this project is the HAPE Framework repository, load `docs/llm/README.md`.
+
+Always apply `safety-policy.md` and `tool-contract.md` from that directory.
+
+Prefer `hape <domain> <command>` when HAPE provides the requested automation.
+
+Read command help before execution.
+
+Classify the operation as read, write, or delete.
+
+Explain side effects before execution.
+
+Require explicit current-session approval for remote, write, delete, publish, apply, or rollout operations.
+
+Keep actions inside the approved workspace.
+
+Never print, store, or commit credentials.
+
+Use dummy placeholders such as `example-org` and `/path/to/...`.
+
+Do not silently replace a failed HAPE command with a provider CLI.
+
+Diagnose the HAPE failure or report that the required capability is unavailable.
+
+Preserve CLI/API to services to clients layering when editing HAPE Framework.

@@ -23,10 +23,12 @@ Commands are grouped by integration. Each group has subcommands where needed.
 - `confluence` - [confluence.md](confluence.md)
 - `csv` - [csv.md](csv.md)
 - `dora` - [dora.md](dora.md)
-- `eks-deployment-cost` - [eks-deployment-cost.md](eks-deployment-cost.md)
-- `markdown` - [markdown.md](markdown.md)
-- `kube-agent` - [kube-agent.md](kube-agent.md)
+- `ecr` - [ecr.md](ecr.md)
 - `vault` - [vault.md](vault.md)
+- `eks-deployment-cost` - [eks-deployment-cost.md](eks-deployment-cost.md)
+- `kube-agent` - [kube-agent.md](kube-agent.md)
+- `init-cicd` - [init-cicd.md](init-cicd.md)
+- `markdown` - [markdown.md](markdown.md)
 
 Argument and validation errors print command help automatically.
 

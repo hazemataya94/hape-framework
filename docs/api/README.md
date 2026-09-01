@@ -9,7 +9,10 @@ make run-api
 ```
 
 The API binds to `HAPE_API_HOST` and `HAPE_API_PORT`.
-Default host is `0.0.0.0`.
+
+Documented local default port is `8080`.
+
+Do not bake `localhost`, `127.0.0.1`, or `*.hape.local` into production product surfaces.
 
 ## Authentication
 All workflow endpoints require bearer token auth.

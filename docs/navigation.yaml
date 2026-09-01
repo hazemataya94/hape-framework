@@ -1,0 +1,846 @@
+# Public documentation navigation for framework.hapesolutions.com
+# Routes are website paths. source is a path relative to the hape-framework repository root.
+
+site:
+  title: HAPE Framework
+  hostname: framework.hapesolutions.com
+  version_source: VERSION
+
+pages:
+  - source: README.md
+    route: /
+    title: Start
+    section: start
+    order: 10
+    audience: user
+    maturity: stable
+    primary: true
+    search: true
+  - source: docs/README.md
+    route: /docs
+    title: Documentation portal
+    section: start
+    order: 11
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/getting-started/README.md
+    route: /getting-started
+    title: Getting started
+    section: start
+    order: 20
+    audience: user
+    maturity: stable
+    primary: true
+    search: true
+  - source: docs/getting-started/installation.md
+    route: /getting-started/installation
+    title: Installation
+    section: start
+    order: 21
+    audience: user
+    maturity: stable
+    primary: true
+    search: true
+  - source: docs/getting-started/five-minute-quickstart.md
+    route: /getting-started/five-minute-quickstart
+    title: Five-minute quick start
+    section: start
+    order: 22
+    audience: user
+    maturity: stable
+    primary: true
+    search: true
+  - source: docs/getting-started/configuration.md
+    route: /getting-started/configuration
+    title: Configuration
+    section: start
+    order: 23
+    audience: user
+    maturity: stable
+    primary: true
+    search: true
+  - source: docs/getting-started/safety-basics.md
+    route: /getting-started/safety-basics
+    title: Safety basics
+    section: start
+    order: 24
+    audience: user
+    maturity: stable
+    primary: true
+    search: true
+  - source: docs/concepts/README.md
+    route: /concepts
+    title: Concepts
+    section: concepts
+    order: 30
+    audience: user
+    maturity: stable
+    primary: true
+    search: true
+  - source: docs/concepts/automation-platform.md
+    route: /concepts/automation-platform
+    title: Automation platform
+    section: concepts
+    order: 31
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/concepts/execution-model.md
+    route: /concepts/execution-model
+    title: Execution model
+    section: concepts
+    order: 32
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/concepts/cli-api-service-client.md
+    route: /concepts/cli-api-service-client
+    title: CLI API services clients
+    section: concepts
+    order: 33
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/architecture.md
+    route: /architecture
+    title: Architecture
+    section: concepts
+    order: 34
+    audience: user
+    maturity: stable
+    primary: true
+    search: true
+  - source: docs/guides/README.md
+    route: /guides
+    title: Guides
+    section: guides
+    order: 40
+    audience: user
+    maturity: stable
+    primary: true
+    search: true
+  - source: docs/guides/repository-automation.md
+    route: /guides/repository-automation
+    title: Repository automation
+    section: guides
+    order: 41
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/guides/dora-workflows.md
+    route: /guides/dora-workflows
+    title: DORA workflows
+    section: guides
+    order: 42
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/guides/kubernetes-investigation.md
+    route: /guides/kubernetes-investigation
+    title: Kubernetes investigation
+    section: guides
+    order: 43
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/guides/cost-reporting.md
+    route: /guides/cost-reporting
+    title: Cost reporting
+    section: guides
+    order: 44
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/guides/vault-safe-usage.md
+    route: /guides/vault-safe-usage
+    title: Vault safe usage
+    section: guides
+    order: 45
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/guides/api-quickstart.md
+    route: /guides/api-quickstart
+    title: API quick start
+    section: guides
+    order: 46
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/reference/README.md
+    route: /reference
+    title: Reference
+    section: reference
+    order: 50
+    audience: user
+    maturity: stable
+    primary: true
+    search: true
+  - source: docs/cli/README.md
+    route: /cli
+    title: CLI
+    section: reference
+    order: 51
+    audience: user
+    maturity: stable
+    primary: true
+    search: true
+  - source: docs/api/README.md
+    route: /api
+    title: API
+    section: reference
+    order: 52
+    audience: user
+    maturity: stable
+    primary: true
+    search: true
+  - source: docs/ai-ide/README.md
+    route: /ai-ide
+    title: AI IDE
+    section: ai
+    order: 60
+    audience: user
+    maturity: stable
+    primary: true
+    search: true
+  - source: docs/ai-ide/automation-context.md
+    route: /ai-ide/automation-context
+    title: Automation context
+    section: ai
+    order: 61
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/ai-ide/cursor.md
+    route: /ai-ide/cursor
+    title: Cursor
+    section: ai
+    order: 62
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/ai-ide/codex.md
+    route: /ai-ide/codex
+    title: Codex
+    section: ai
+    order: 63
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/ai-ide/claude-code.md
+    route: /ai-ide/claude-code
+    title: Claude Code
+    section: ai
+    order: 64
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/ai-ide/agents-md.md
+    route: /ai-ide/agents-md
+    title: AGENTS.md
+    section: ai
+    order: 65
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/operations/README.md
+    route: /operations
+    title: Operations
+    section: operations
+    order: 70
+    audience: operator
+    maturity: stable
+    primary: true
+    search: true
+  - source: docs/contributing/README.md
+    route: /contributing
+    title: Contributing
+    section: contributing
+    order: 80
+    audience: contributor
+    maturity: stable
+    primary: true
+    search: true
+  - source: CONTRIBUTING.md
+    route: /contributing/policy
+    title: Contribution policy
+    section: contributing
+    order: 81
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true
+  - source: SECURITY.md
+    route: /security
+    title: Security
+    section: contributing
+    order: 82
+    audience: contributor
+    maturity: stable
+    primary: true
+    search: true
+  - source: LICENSE
+    route: /license
+    title: License
+    section: contributing
+    order: 83
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/llm/README.md
+    route: /llm
+    title: LLM rules
+    section: llm
+    order: 90
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/cli.md
+    route: /cli/overview
+    title: CLI overview
+    section: reference
+    order: 53
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/config.md
+    route: /cli/config
+    title: config
+    section: reference
+    order: 54
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/github.md
+    route: /cli/github
+    title: github
+    section: reference
+    order: 55
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/gitlab.md
+    route: /cli/gitlab
+    title: gitlab
+    section: reference
+    order: 56
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/jira.md
+    route: /cli/jira
+    title: jira
+    section: reference
+    order: 57
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/confluence.md
+    route: /cli/confluence
+    title: confluence
+    section: reference
+    order: 58
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/csv.md
+    route: /cli/csv
+    title: csv
+    section: reference
+    order: 59
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/dora.md
+    route: /cli/dora
+    title: dora
+    section: reference
+    order: 60
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/ecr.md
+    route: /cli/ecr
+    title: ecr
+    section: reference
+    order: 61
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/vault.md
+    route: /cli/vault
+    title: vault
+    section: reference
+    order: 62
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/eks-deployment-cost.md
+    route: /cli/eks-deployment-cost
+    title: eks-deployment-cost
+    section: reference
+    order: 63
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/kube-agent.md
+    route: /cli/kube-agent
+    title: kube-agent
+    section: reference
+    order: 64
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/init-cicd.md
+    route: /cli/init-cicd
+    title: init-cicd
+    section: reference
+    order: 65
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/linkedin.md
+    route: /cli/linkedin
+    title: linkedin
+    section: reference
+    order: 66
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/cli/markdown.md
+    route: /cli/markdown
+    title: markdown
+    section: reference
+    order: 67
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/api/auth-and-tokens.md
+    route: /api/auth-and-tokens
+    title: Auth and tokens
+    section: reference
+    order: 70
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/api/parity-mapping.md
+    route: /api/parity-mapping
+    title: CLI and API parity
+    section: reference
+    order: 71
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/reference/cli.md
+    route: /reference/cli
+    title: CLI reference index
+    section: reference
+    order: 72
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/reference/api.md
+    route: /reference/api
+    title: API reference index
+    section: reference
+    order: 73
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/reference/configuration.md
+    route: /reference/configuration
+    title: Configuration reference
+    section: reference
+    order: 74
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/reference/makefile.md
+    route: /reference/makefile
+    title: Makefile reference
+    section: reference
+    order: 75
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/makefile.md
+    route: /makefile
+    title: Makefile
+    section: reference
+    order: 76
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/services/README.md
+    route: /services
+    title: Services
+    section: reference
+    order: 80
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/services/dora-github.md
+    route: /services/dora-github
+    title: DORA GitHub service
+    section: reference
+    order: 81
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/services/eks-deployment-cost-service.md
+    route: /services/eks-deployment-cost
+    title: EKS cost service
+    section: reference
+    order: 82
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/services/init-cicd-service.md
+    route: /services/init-cicd
+    title: init-cicd service
+    section: reference
+    order: 83
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/services/kube-agent-service.md
+    route: /services/kube-agent
+    title: kube-agent service
+    section: reference
+    order: 84
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/services/vault-service.md
+    route: /services/vault
+    title: Vault service
+    section: reference
+    order: 85
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/infra/README.md
+    route: /infra
+    title: Infrastructure
+    section: operations
+    order: 90
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/infra/overview.md
+    route: /infra/overview
+    title: Infrastructure overview
+    section: operations
+    order: 91
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/infra/terraform.md
+    route: /infra/terraform
+    title: Terraform
+    section: operations
+    order: 92
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/infra/terraform-dora-github.md
+    route: /infra/terraform-dora-github
+    title: Terraform DORA GitHub
+    section: operations
+    order: 93
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/infra/local-kubernetes.md
+    route: /infra/local-kubernetes
+    title: Local Kubernetes
+    section: operations
+    order: 94
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/infra/helmfile-monitoring.md
+    route: /infra/helmfile-monitoring
+    title: Helmfile monitoring
+    section: operations
+    order: 95
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/infra/kube-agent-fixtures.md
+    route: /infra/kube-agent-fixtures
+    title: kube-agent fixtures
+    section: operations
+    order: 96
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/infra/eks-deployment-cost-fixtures.md
+    route: /infra/eks-deployment-cost-fixtures
+    title: EKS cost fixtures
+    section: operations
+    order: 97
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/exporters/README.md
+    route: /exporters
+    title: Exporters
+    section: operations
+    order: 100
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/exporters/dora-exporter.md
+    route: /exporters/dora
+    title: DORA exporter
+    section: operations
+    order: 101
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/exporters/eks-deployment-cost-exporter.md
+    route: /exporters/eks-deployment-cost
+    title: EKS cost exporter
+    section: operations
+    order: 102
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/operations/infrastructure.md
+    route: /operations/infrastructure
+    title: Infrastructure operations
+    section: operations
+    order: 103
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/operations/exporters.md
+    route: /operations/exporters
+    title: Exporter operations
+    section: operations
+    order: 104
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/operations/demos.md
+    route: /operations/demos
+    title: Demos
+    section: operations
+    order: 105
+    audience: operator
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/dev/README.md
+    route: /dev
+    title: Development
+    section: contributing
+    order: 110
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/dev/build-and-install.md
+    route: /dev/build-and-install
+    title: Build and install
+    section: contributing
+    order: 111
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/dev/logging-guide.md
+    route: /dev/logging
+    title: Logging
+    section: contributing
+    order: 112
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/dev/code-policy-error-handling.md
+    route: /dev/error-handling
+    title: Error handling
+    section: contributing
+    order: 113
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/architectures/kube_agent_architecture.md
+    route: /architecture/kube-agent
+    title: kube-agent architecture
+    section: concepts
+    order: 35
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/ai-ide/templates/generic/AGENTS.md
+    route: /ai-ide/templates/agents-md
+    title: AGENTS.md template
+    section: ai
+    order: 66
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/ai-ide/templates/codex/AGENTS.md
+    route: /ai-ide/templates/codex
+    title: Codex AGENTS.md template
+    section: ai
+    order: 67
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/ai-ide/templates/claude-code/CLAUDE.md
+    route: /ai-ide/templates/claude-code
+    title: Claude Code template
+    section: ai
+    order: 68
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
+  - source: CODE_OF_CONDUCT.md
+    route: /code-of-conduct
+    title: Code of conduct
+    section: contributing
+    order: 84
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/llm/architecture.md
+    route: /llm/architecture
+    title: LLM architecture rules
+    section: llm
+    order: 91
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/llm/coding.md
+    route: /llm/coding
+    title: LLM coding rules
+    section: llm
+    order: 92
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/llm/documentation.md
+    route: /llm/documentation
+    title: LLM documentation rules
+    section: llm
+    order: 93
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/llm/exporters.md
+    route: /llm/exporters
+    title: LLM exporter rules
+    section: llm
+    order: 94
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/llm/kubernetes.md
+    route: /llm/kubernetes
+    title: LLM Kubernetes rules
+    section: llm
+    order: 95
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/llm/safety-policy.md
+    route: /llm/safety-policy
+    title: LLM safety policy
+    section: llm
+    order: 96
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/llm/testing.md
+    route: /llm/testing
+    title: LLM testing rules
+    section: llm
+    order: 97
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true
+  - source: docs/llm/tool-contract.md
+    route: /llm/tool-contract
+    title: LLM tool contract
+    section: llm
+    order: 98
+    audience: contributor
+    maturity: stable
+    primary: false
+    search: true

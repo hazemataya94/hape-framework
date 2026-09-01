@@ -23,6 +23,11 @@ dora-seed-github-output.json
 *.venv
 *.vscode
 *.cursor
+!.cursor/
+!.cursor/rules/
+!.cursor/rules/**
+
+.exec-venv/
 
 # MacOS
 .DS_Store

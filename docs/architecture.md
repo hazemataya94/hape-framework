@@ -160,7 +160,7 @@ Core and utils are shared across all layers.
 - Client: `jira_client.py` performs HTTP requests and returns JSON
 
 #### Configuration
-- Default config path: `~/.idap/config.json`
+- Default config path: `~/.hape/config.json`
 - Create config from `.env`: `config init-config-file`
 - Commands can override path using `--config-file-path`
 

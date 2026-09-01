@@ -1,14 +1,49 @@
 # HAPE Documentation
 
-## Overview
-HAPE provides CLI and FastAPI interfaces for platform and DevOps automations.
+## Purpose
 
-## Sections
-- [Architecture](architecture.md) - cross-cutting architecture and layering rules for HAPE.
-- [Development Docs](dev/README.md) - coding policies, logging standards, and local build/install guidance.
-- [Infrastructure Docs](infra/README.md) - local Kubernetes, Helmfile, fixtures, and Terraform documentation.
-- [Makefile Docs](makefile.md) - variables, targets, and common Make workflows.
-- [LLM Agent Rules](llm/README.md) - rule files for LLM agents working in this repository.
-- [Services Docs](services/README.md) - service logic, runtime behavior, and operational validation.
-- [CLI Docs](cli/README.md) - user-facing CLI command and workflow documentation.
-- [API Docs](api/README.md) - API endpoint usage, auth tokens, and parity mapping.
+This portal is the public technical documentation for HAPE Framework.
+
+Read by user intent first, then open the canonical command or service page for details.
+
+## Start here
+
+- [Getting started](getting-started/README.md)
+- [Installation](getting-started/installation.md)
+- [Five-minute quick start](getting-started/five-minute-quickstart.md)
+- [Configuration](getting-started/configuration.md)
+- [Safety basics](getting-started/safety-basics.md)
+
+## Learn the model
+
+- [Concepts](concepts/README.md)
+- [Architecture](architecture.md)
+
+## Do a task
+
+- [Guides](guides/README.md)
+
+## Look up a command
+
+- [Reference](reference/README.md)
+- [CLI](cli/README.md)
+- [API](api/README.md)
+- [Makefile](makefile.md)
+
+## Operate and extend
+
+- [Operations](operations/README.md)
+- [Infrastructure labs](infra/README.md)
+- [Exporters](exporters/README.md)
+- [Services](services/README.md)
+- [Development](dev/README.md)
+- [Contributing](contributing/README.md)
+
+## AI agents
+
+- [AI IDE integration](ai-ide/README.md)
+- [LLM agent rules](llm/README.md)
+
+## Navigation contract
+
+Website navigation is defined in [navigation.yaml](navigation.yaml).

@@ -1,8 +1,10 @@
 # CLI To API Parity Mapping
 
 ## Contract
-Every CLI command path must have an API endpoint with strict 1:1 naming.
+Workflow endpoints that exist on the API use strict 1:1 naming with CLI command paths.
 All command-execution endpoints use HTTP POST.
+
+Intentional CLI-only surfaces: `linkedin`, `ecr`, and interactive `github auth` commands.
 
 ## Mappings
 - `hape config init-config-file` -> `POST /config/init-config-file`
