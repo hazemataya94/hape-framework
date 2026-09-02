@@ -44,9 +44,28 @@ Side effects: permanently deletes matching GitHub repositories.
 
 Requires explicit current-session approval.
 
+## Init CI/CD
+
+`hape init-cicd` scaffolds Kubernetes manifests and a build workflow for a supported React project.
+
+```bash
+hape init-cicd --project-path /path/to/react/project --deployment-type kubernetes
+```
+
+Safety level: `write`.
+
+Side effects: writes local files in the target project directory.
+
+Existing files are skipped and are not overwritten.
+
+Example output:
+
+![Init CI/CD output](../../demos/init-cicd/init-cicd-output.png)
+
 ## Related documentation
 
 - [GitHub CLI reference](../cli/github.md)
 - [ECR repository ensure](../cli/ecr.md)
 - [Init CI/CD](../cli/init-cicd.md)
 - [Parity mapping](../api/parity-mapping.md)
+- [Init CI/CD demo](../../demos/init-cicd/README.md)

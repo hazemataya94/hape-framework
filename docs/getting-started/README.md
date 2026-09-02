@@ -2,14 +2,15 @@
 
 ## Purpose
 
-This section takes a new user from install to a safe first command.
+This section takes a new user from install to reports they can inspect.
 
 ## Sequence
 
 1. [Installation](installation.md)
 2. [Five-minute quick start](five-minute-quickstart.md)
-3. [Configuration](configuration.md)
-4. [Safety basics](safety-basics.md)
+3. [First useful output](first-useful-output.md)
+4. [Configuration](configuration.md)
+5. [Safety basics](safety-basics.md)
 
 ## Next
 

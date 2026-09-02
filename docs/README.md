@@ -11,8 +11,14 @@ Read by user intent first, then open the canonical command or service page for d
 - [Getting started](getting-started/README.md)
 - [Installation](getting-started/installation.md)
 - [Five-minute quick start](getting-started/five-minute-quickstart.md)
+- [First useful output](getting-started/first-useful-output.md)
 - [Configuration](getting-started/configuration.md)
 - [Safety basics](getting-started/safety-basics.md)
+
+## Demos
+
+- [Guides](guides/README.md)
+- [Demos on GitHub](https://github.com/hazemataya94/hape-framework/tree/main/demos)
 
 ## Learn the model
 

@@ -2,62 +2,68 @@
 
 # HAPE Framework
 
-HAPE Framework is a Python CLI and FastAPI toolkit for platform and DevOps automation.
+A Python CLI and FastAPI toolkit for platform and DevOps automation.
 
-Use it to run explicit, auditable commands against systems such as GitHub, GitLab, Kubernetes, Vault, AWS ECR, Jira, and Confluence.
+Same commands, safety levels, and approval rules for engineers and AI coding agents.
 
-An AI coding agent can generate a script in seconds.
+[Get started](docs/README.md)
 
-The hard part is making that automation safe, understandable, and trustworthy six months later.
+[View demos](docs/guides/README.md)
 
-HAPE gives engineers and AI assistants the same commands, the same safety levels, and the same human-approval rules.
+## How it compares
 
-It is for platform engineers, DevOps engineers, and teams that want AI-assisted automation without opaque scripts.
+HAPE complements CI and IaC.
 
-[Get started](docs/getting-started/five-minute-quickstart.md)
+It does not replace Terraform or Kubernetes.
 
-[View on GitHub](https://github.com/hazemataya94/hape-framework)
+✅ Yes  ❌ No  ◐ Partial
+
+| Approach | Named repeatable CLI | Safety level before run | Approval for write or delete | Shared human and AI rules | Secret redaction |
+| --- | --- | --- | --- | --- | --- |
+| Ad-hoc scripts plus kubectl | ❌ | ❌ | ❌ | ❌ | ◐ |
+| GitHub Actions or GitLab CI | ◐ | ❌ | ◐ | ❌ | ◐ |
+| Terraform | ✅ | ◐ | ◐ | ❌ | ◐ |
+| Unrestricted AI agent in an IDE | ❌ | ❌ | ❌ | ❌ | ❌ |
+| HAPE Framework | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+Read the [Comparison notes](docs/concepts/how-hape-compares.md).
 
 ## Benefits for engineers
 
-- Repeatable commands instead of one-off scripts that only one person understands.
-- Safety levels you can read before a command runs.
-- Auditable CLI and API surfaces that keep the same paths for most operations.
-- Shared rules so humans and AI coding agents follow the same workflow.
+- Repeatable commands: keep automation in auditable CLI and API paths instead of one-off scripts.
+- Readable safety: see read, write, or delete before a command runs.
+- Shared rules: humans and AI coding agents follow the same approval workflow.
+- Redacted secrets: sensitive values stay hidden unless you pass `--reveal-secrets`.
+
+## First useful output
+
+Two read commands produce reports you can inspect.
+
+- [Kubernetes investigation: findings for a pod.](docs/getting-started/first-useful-output.md#kubernetes-investigation)
+- [EKS cost: Deployment and StatefulSet cost report.](docs/getting-started/first-useful-output.md#eks-cost-report)
 
 ## AI-assisted automation
 
-HAPE is built for engineers who use AI coding agents in tools such as Cursor, Codex, and Claude Code.
+Agents can propose a `hape` command.
 
-The agent can propose a `hape` command.
+You still see the safety level, the side effects, and whether approval is required.
 
-You still see the safety level, the side effects, and whether the operation needs approval.
-
-- The CLI and HTTP API expose the same automation surface for most commands.
-- Repository LLM rules tell the agent how to classify tools, redact secrets, and stop for human approval.
-- Write, delete, remote, publish, apply, and rollout operations require explicit approval.
+- Same surface: CLI and HTTP API stay aligned for most commands.
+- Agent rules: repository LLM rules classify tools, redact secrets, and stop for approval.
+- Explicit gates: write, delete, remote, publish, apply, and rollout need a yes.
 
 Add those rules from the [AI IDE integration](docs/ai-ide/README.md) guide.
 
 ## What it automates
 
-- Repository bootstrap and GitHub or GitLab operations.
-- DORA metric computation and exporter workflows.
-- Kubernetes incident investigation.
-- EKS deployment cost reporting.
-- Vault AppRole login and KV field retrieval.
-- Jira, Confluence, CSV, and Markdown conversions.
-- FastAPI endpoints with 1:1 CLI path parity for most commands.
+- [Repositories: inspect or bootstrap GitHub and GitLab projects.](docs/guides/repository-automation.md)
+- [DORA metrics: compute delivery metrics and run exporters.](docs/guides/dora-workflows.md)
+- [Kubernetes: investigate incidents with explicit read commands.](docs/guides/kubernetes-investigation.md)
+- [EKS cost: report Deployment and StatefulSet cost.](docs/guides/cost-reporting.md)
 
 ## How it works
 
-Every command enters through the CLI or the HTTP API.
-
-Both paths call the same services.
-
-Services talk to system clients.
-
-Those clients reach GitHub, GitLab, Kubernetes, Vault, AWS ECR, Jira, and Confluence.
+CLI and API call the same services, then clients, then the external systems.
 
 ```mermaid
 flowchart LR
@@ -78,24 +84,22 @@ Read the [CLI, API, service, and client model](docs/concepts/cli-api-service-cli
 
 Classify a command before you run it.
 
-- `read` fetches, lists, describes, or shows only.
-- `write` creates or updates.
-- `delete` covers destructive actions such as delete, purge, rotate, apply, or rollout.
-- Side effects are documented on the command, not hidden in a wrapper script.
-- Remote, write, delete, publish, apply, and rollout operations require explicit approval.
-- Sensitive values stay redacted unless you pass `--reveal-secrets`.
+- Read: fetch, list, describe, or show only.
+- Write: create or update.
+- Delete: destructive actions such as delete, purge, rotate, apply, or rollout.
 
-Start with [command safety](docs/getting-started/safety-basics.md).
+Start with [Command safety](docs/getting-started/safety-basics.md).
 
 ## Get started
 
-Public technical documentation: [https://framework.hapesolutions.com](https://framework.hapesolutions.com)
+Install the CLI, then run a read command.
 
 1. [Install HAPE](docs/getting-started/installation.md)
 2. [Five-minute quick start](docs/getting-started/five-minute-quickstart.md)
-3. [Configure one integration](docs/getting-started/configuration.md)
-4. [Understand command safety](docs/getting-started/safety-basics.md)
-5. [Add HAPE rules to your AI IDE](docs/ai-ide/README.md)
+3. [First useful output](docs/getting-started/first-useful-output.md)
+4. [Configure one integration](docs/getting-started/configuration.md)
+5. [Understand command safety](docs/getting-started/safety-basics.md)
+6. [Add HAPE rules to your AI IDE](docs/ai-ide/README.md)
 
 ```bash
 python -m pip install hape
@@ -107,23 +111,18 @@ hape --help
 hape config show
 ```
 
-The first command prints the installed version and the command list.
-
 `hape config show` is a `read` command with no side effects.
-
-Sensitive values stay redacted unless you pass `--reveal-secrets`.
 
 ## Demos
 
 Runnable examples live with the source and in the documentation portal.
 
-- [Demos documentation](docs/operations/demos.md)
+- [Guides](docs/guides/README.md)
+- [Demos on GitHub](https://github.com/hazemataya94/hape-framework/tree/main/demos)
 
 ## Open source
 
 HAPE Framework is licensed under the MIT License.
-
-The source, contribution policy, and security reporting path are public.
 
 - [Source repository](https://github.com/hazemataya94/hape-framework)
 - [MIT License](LICENSE)

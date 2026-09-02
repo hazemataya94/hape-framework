@@ -46,9 +46,32 @@ Safety level: `read`.
 
 Side effects: reads VCS and Prometheus data; does not mutate those systems.
 
+## Example output
+
+Overview dashboard:
+
+![HAPE DORA GitHub overview dashboard](../../demos/dora-github/hape-dora-github-overview-dashboard.png)
+
+Project dashboard:
+
+![HAPE DORA GitHub project dashboard](../../demos/dora-github/hape-dora-github-project-dashboard.png)
+
+Project rows:
+
+![DORA project rows](../../demos/dora-github/dora-project-rows.png)
+
+Markdown report:
+
+![DORA markdown report](../../demos/dora-github/dora-report-md.png)
+
+Summary JSON:
+
+![DORA summary JSON](../../demos/dora-github/dora-summary-json.png)
+
 ## Related documentation
 
 - [DORA CLI reference](../cli/dora.md)
 - [DORA GitHub service](../services/dora-github.md)
 - [DORA exporter](../exporters/dora-exporter.md)
 - [GitHub DORA sandbox](../infra/terraform-dora-github.md)
+- [Demo](../../demos/dora-github/README.md)

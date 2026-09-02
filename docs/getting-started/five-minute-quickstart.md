@@ -49,6 +49,7 @@ Delete `~/.hape/config.json` if you do not want a local config file.
 
 ## Related documentation
 
+- [First useful output](first-useful-output.md)
 - [Configuration](configuration.md)
 - [Safety basics](safety-basics.md)
 - [Config command reference](../cli/config.md)

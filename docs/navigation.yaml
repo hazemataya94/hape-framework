@@ -7,7 +7,7 @@ site:
   version_source: VERSION
 
 pages:
-  - source: README.md
+  - source: docs/README.md
     route: /start
     title: Start
     section: start
@@ -15,15 +15,6 @@ pages:
     audience: user
     maturity: stable
     primary: true
-    search: true
-  - source: docs/README.md
-    route: /docs
-    title: Documentation portal
-    section: start
-    order: 11
-    audience: user
-    maturity: stable
-    primary: false
     search: true
   - source: docs/getting-started/README.md
     route: /getting-started
@@ -52,11 +43,20 @@ pages:
     maturity: stable
     primary: true
     search: true
+  - source: docs/getting-started/first-useful-output.md
+    route: /getting-started/first-useful-output
+    title: First useful output
+    section: start
+    order: 23
+    audience: user
+    maturity: stable
+    primary: true
+    search: true
   - source: docs/getting-started/configuration.md
     route: /getting-started/configuration
     title: Configuration
     section: start
-    order: 23
+    order: 24
     audience: user
     maturity: stable
     primary: true
@@ -65,7 +65,7 @@ pages:
     route: /getting-started/safety-basics
     title: Safety basics
     section: start
-    order: 24
+    order: 25
     audience: user
     maturity: stable
     primary: true
@@ -106,11 +106,20 @@ pages:
     maturity: stable
     primary: false
     search: true
+  - source: docs/concepts/how-hape-compares.md
+    route: /concepts/how-hape-compares
+    title: How HAPE compares
+    section: concepts
+    order: 34
+    audience: user
+    maturity: stable
+    primary: false
+    search: true
   - source: docs/architecture.md
     route: /architecture
     title: Architecture
     section: concepts
-    order: 34
+    order: 35
     audience: user
     maturity: stable
     primary: true
@@ -678,15 +687,6 @@ pages:
     title: Exporter operations
     section: operations
     order: 104
-    audience: operator
-    maturity: stable
-    primary: false
-    search: true
-  - source: docs/operations/demos.md
-    route: /operations/demos
-    title: Demos
-    section: operations
-    order: 105
     audience: operator
     maturity: stable
     primary: false
