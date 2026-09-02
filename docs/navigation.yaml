@@ -8,7 +8,7 @@ site:
 
 pages:
   - source: README.md
-    route: /
+    route: /start
     title: Start
     section: start
     order: 10
