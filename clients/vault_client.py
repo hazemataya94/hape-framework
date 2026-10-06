@@ -54,6 +54,24 @@ class VaultClient:
         self.logger.info("kv_v2_read mount=%s path=%s field=%s", kv_mount, kv_relative_path, field)
         return value.strip()
 
+    def kv_v2_read_fields(self, vault_addr: str, client_token: str, kv_mount: str, kv_relative_path: str) -> dict[str, str]:
+        read_url = f"{vault_addr.rstrip('/')}/v1/{kv_mount.strip('/')}/data/{kv_relative_path.strip('/')}"
+        payload = self._request_json("GET", read_url, headers={"X-Vault-Token": client_token})
+        data = payload.get("data")
+        if not isinstance(data, dict):
+            raise ValueError("Vault KV response is missing data.")
+        inner = data.get("data")
+        if not isinstance(inner, dict):
+            raise ValueError("Vault KV response is missing data.data.")
+        fields: dict[str, str] = {}
+        for key, value in inner.items():
+            if isinstance(value, str) and value.strip():
+                fields[str(key)] = value.strip()
+        if not fields:
+            raise ValueError("Vault KV response has no string fields.")
+        self.logger.info("kv_v2_read_fields mount=%s path=%s field_count=%s", kv_mount, kv_relative_path, len(fields))
+        return fields
+
 
 if __name__ == "__main__":
     print(VaultClient.DEFAULT_ADDR)

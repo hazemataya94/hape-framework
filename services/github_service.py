@@ -364,7 +364,65 @@ class GitHubService:
         self.github_client = github_client or GitHubClient()
         self.logger = LocalLogging.get_logger("hape.git_hub_service")
 
-    def create_repository(self, org: str, name: str, visibility: str = "private") -> dict[str, Any]:
+    def _grant_write_collaborator(
+        self,
+        owner: str,
+        repo_name: str,
+        write_collaborator_email: str = "",
+        write_collaborator_login: str = "",
+    ) -> str:
+        login = str(write_collaborator_login or "").strip()
+        email = str(write_collaborator_email or "").strip()
+        if not login and email:
+            try:
+                login = str(self.github_client.resolve_user_login_by_email(email=email) or "").strip()
+            except Exception as exc:
+                raise HapeExternalError(
+                    code="GITHUB_USER_LOOKUP_FAILED",
+                    message=get_github_error_message("GITHUB_USER_LOOKUP_FAILED", email=email),
+                ) from exc
+        if not login:
+            raise HapeValidationError(
+                code="GITHUB_WRITE_COLLABORATOR_REQUIRED",
+                message=get_github_error_message("GITHUB_WRITE_COLLABORATOR_REQUIRED"),
+            )
+        try:
+            added = self.github_client.add_repository_collaborator(
+                owner=owner,
+                repo_name=repo_name,
+                username=login,
+                permission="push",
+            )
+        except Exception as exc:
+            raise HapeExternalError(
+                code="GITHUB_ADD_WRITE_COLLABORATOR_FAILED",
+                message=get_github_error_message(
+                    "GITHUB_ADD_WRITE_COLLABORATOR_FAILED",
+                    owner=owner,
+                    repo_name=repo_name,
+                    username=login,
+                ),
+            ) from exc
+        if not added:
+            raise HapeExternalError(
+                code="GITHUB_ADD_WRITE_COLLABORATOR_FAILED",
+                message=get_github_error_message(
+                    "GITHUB_ADD_WRITE_COLLABORATOR_FAILED",
+                    owner=owner,
+                    repo_name=repo_name,
+                    username=login,
+                ),
+            )
+        return login
+
+    def create_repository(
+        self,
+        org: str,
+        name: str,
+        visibility: str = "private",
+        write_collaborator_email: str = "",
+        write_collaborator_login: str = "",
+    ) -> dict[str, Any]:
         self.logger.debug(
             "create_repository(org=%s, name=%s, visibility=%s)",
             org,
@@ -392,17 +450,28 @@ class GitHubService:
                     reason=reason,
                 ),
             ) from exc
+        write_login = ""
+        if write_collaborator_email.strip() or write_collaborator_login.strip():
+            write_login = self._grant_write_collaborator(
+                owner=normalized_org,
+                repo_name=normalized_repo_name,
+                write_collaborator_email=write_collaborator_email,
+                write_collaborator_login=write_collaborator_login,
+            )
         self.logger.info(
             "Repository created as %s/%s",
             normalized_org,
             normalized_repo_name,
         )
-        return self._normalize_created_repository_payload(
+        payload = self._normalize_created_repository_payload(
             repository=repository_data,
             owner=normalized_org,
             repo_name=normalized_repo_name,
             private=is_private_repo,
         )
+        if write_login:
+            payload["write_collaborator_login"] = write_login
+        return payload
 
     def list_repositories(self, org: str | None = None, include_archived: bool = False) -> list[dict[str, Any]]:
         self.logger.debug(

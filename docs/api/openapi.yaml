@@ -436,6 +436,209 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /github/v2/managed-destinations/{destination_id}/status:
+    get:
+      tags:
+      - github
+      summary: Managed destination status
+      parameters:
+      - name: destination_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: x-hape-grant
+        in: header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Safe destination projection
+  /github/v2/managed-targets/setup-url:
+    post:
+      tags:
+      - github
+      summary: Customer target setup URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitHubV2Request'
+      responses:
+        '200':
+          description: github.v2 receipt
+  /github/v2/managed-targets/verify:
+    post:
+      tags:
+      - github
+      summary: Verify customer target
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitHubV2Request'
+      responses:
+        '200':
+          description: github.v2 receipt
+  /github/v2/managed-targets/{target_binding_id}/status:
+    get:
+      tags:
+      - github
+      summary: Customer target status
+      parameters:
+      - name: target_binding_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: destination_mode
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: x-hape-grant
+        in: header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Safe destination projection
+  /github/v2/managed-repositories:
+    post:
+      tags:
+      - github
+      summary: Create private managed repository
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitHubV2Request'
+      responses:
+        '200':
+          description: github.v2 receipt
+  /github/v2/managed-repositories/{repository_id}/commits/baseline:
+    post:
+      tags:
+      - github
+      summary: Publish baseline commit
+      parameters:
+      - name: repository_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitHubV2Request'
+      responses:
+        '200':
+          description: github.v2 receipt
+  /github/v2/managed-repositories/{repository_id}/commits/artifact:
+    post:
+      tags:
+      - github
+      summary: Publish reviewed artifact
+      parameters:
+      - name: repository_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitHubV2Request'
+      responses:
+        '200':
+          description: github.v2 receipt
+  /github/v2/managed-repositories/{repository_id}/tags:
+    post:
+      tags:
+      - github
+      summary: Publish annotated tag
+      parameters:
+      - name: repository_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitHubV2Request'
+      responses:
+        '200':
+          description: github.v2 receipt
+  /github/v2/managed-repositories/{repository_id}/dispose:
+    post:
+      tags:
+      - github
+      summary: Dispose ledger-owned repository
+      parameters:
+      - name: repository_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitHubV2Request'
+      responses:
+        '200':
+          description: github.v2 receipt
+  /github/v2/provider-operations/{operation_id}:
+    get:
+      tags:
+      - github
+      summary: Get provider operation
+      parameters:
+      - name: operation_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: x-hape-grant
+        in: header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Operation projection
+  /github/v2/provider-receipts/{receipt_id}:
+    get:
+      tags:
+      - github
+      summary: Get provider receipt
+      parameters:
+      - name: receipt_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: x-hape-grant
+        in: header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: github.v2 receipt
   /jira/md-to-comment:
     post:
       tags:
@@ -1310,6 +1513,14 @@ components:
           - public
           title: Visibility
           default: private
+        writeCollaboratorEmail:
+          type: string
+          title: Write Collaborator Email
+          default: ''
+        writeCollaboratorLogin:
+          type: string
+          title: Write Collaborator Login
+          default: ''
       type: object
       required:
       - org
@@ -1600,6 +1811,60 @@ components:
       - org
       - confirmation_phrase
       title: DeleteReposRequest
+    GitHubV2Request:
+      type: object
+      additionalProperties: false
+      required:
+      - authorization_grant
+      - operation_id
+      properties:
+        authorization_grant:
+          type: string
+        idempotency_key:
+          type: string
+        subject_id:
+          type: string
+        operation_id:
+          type: string
+        destination_mode:
+          type: string
+        target_binding_id:
+          type: string
+        destination_id:
+          type: string
+        repository_id:
+          type: string
+        source_snapshot_digest:
+          type: string
+        artifact_digest:
+          type: string
+        expected_parent:
+          type: string
+        collaborator_login:
+          type: string
+        installation_id:
+          type: integer
+        setup_state:
+          type: string
+        code_verifier:
+          type: string
+        receipt_id:
+          type: string
+        files:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              path:
+                type: string
+              mode:
+                type: string
+              bytes:
+                type: string
+              hex_bytes:
+                type: string
+      title: GitHubV2Request
     UserInfoResponse:
       properties:
         login:

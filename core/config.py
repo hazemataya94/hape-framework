@@ -84,6 +84,12 @@ class Config:
         "HAPE_VAULT_KV_MOUNT",
         "HAPE_VAULT_KV_PATH",
         "HAPE_VAULT_KV_FIELD",
+        "HAPE_GITHUB_APP_LIVE_ENABLED",
+        "HAPE_GITHUB_APP_VAULT_SINK_ENABLED",
+        "HAPE_GITHUB_APP_VAULT_ENVIRONMENT",
+        "HAPE_GITHUB_APP_MANAGED_ORGANIZATION",
+        "HAPE_GITHUB_PROVIDER_SQLITE_PATH",
+        "HAPE_VAULT_TOKEN",
     ]
 
     int_config_keys = [
@@ -498,6 +504,67 @@ class Config:
         installation_id = Config.get_dora_github_installation_id()
         private_key_path = Config.get_dora_github_app_private_key_path()
         return app_id is not None and installation_id is not None and private_key_path is not None
+
+    GITHUB_APP_API_URL_DEFAULT = "https://api.github.example.com"
+    GITHUB_APP_API_URL_LIVE = "https://api.github.com"
+    GITHUB_APP_OAUTH_URL_DEFAULT = "https://github.example.com"
+    GITHUB_APP_OAUTH_URL_LIVE = "https://github.com"
+    GITHUB_APP_SOURCE_IMPORT_VAULT_PATH = "secret/example-org/framework/hape-framework/{environment}/github-apps/source-import"
+    GITHUB_APP_MANAGED_REPOSITORIES_VAULT_PATH = "secret/example-org/framework/hape-framework/{environment}/github-apps/managed-repositories"
+    GITHUB_APP_MANAGED_ORGANIZATION_DEFAULT = "example-org"
+
+    @staticmethod
+    def github_app_live_enabled() -> bool:
+        value = Config._get_optional_config_value("HAPE_GITHUB_APP_LIVE_ENABLED")
+        return bool(value) and value.strip().lower() == "true"
+
+    @staticmethod
+    def github_app_vault_sink_enabled() -> bool:
+        value = Config._get_optional_config_value("HAPE_GITHUB_APP_VAULT_SINK_ENABLED")
+        return bool(value) and value.strip().lower() == "true"
+
+    @staticmethod
+    def get_vault_token() -> str:
+        env_token = os.environ.get("VAULT_TOKEN", "").strip()
+        if env_token:
+            return env_token
+        value = Config._get_optional_config_value("HAPE_VAULT_TOKEN")
+        return (value or "").strip()
+
+    @staticmethod
+    def get_github_app_api_url() -> str:
+        if Config.github_app_live_enabled():
+            return Config.GITHUB_APP_API_URL_LIVE
+        return Config.GITHUB_APP_API_URL_DEFAULT
+
+    @staticmethod
+    def get_github_app_oauth_url() -> str:
+        if Config.github_app_live_enabled():
+            return Config.GITHUB_APP_OAUTH_URL_LIVE
+        return Config.GITHUB_APP_OAUTH_URL_DEFAULT
+
+    @staticmethod
+    def get_github_app_vault_environment() -> str:
+        value = Config._get_optional_config_value("HAPE_GITHUB_APP_VAULT_ENVIRONMENT")
+        return (value or "dev").strip() or "dev"
+
+    @staticmethod
+    def get_github_app_source_import_vault_path() -> str:
+        return Config.GITHUB_APP_SOURCE_IMPORT_VAULT_PATH.format(environment=Config.get_github_app_vault_environment())
+
+    @staticmethod
+    def get_github_app_managed_repositories_vault_path() -> str:
+        return Config.GITHUB_APP_MANAGED_REPOSITORIES_VAULT_PATH.format(environment=Config.get_github_app_vault_environment())
+
+    @staticmethod
+    def get_github_provider_sqlite_path() -> str:
+        return Config._get_config_value_with_default("HAPE_GITHUB_PROVIDER_SQLITE_PATH", "~/.hape/github-provider.sqlite")
+
+    def get_github_app_managed_organization() -> str:
+        value = Config._get_optional_config_value("HAPE_GITHUB_APP_MANAGED_ORGANIZATION")
+        if value and value.strip():
+            return value.strip()
+        return Config.GITHUB_APP_MANAGED_ORGANIZATION_DEFAULT
 
     @staticmethod
     def get_edc_kube_context() -> str:

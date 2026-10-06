@@ -42,7 +42,7 @@ Example summary screenshot:
 
 ![Kube agent findings summary](../../demos/kube-agent/kube-agent-findings-summary.png)
 
-Full kind lab steps stay in the [kube-agent demo](https://github.com/hazemataya94/hape-framework/tree/main/demos/kube-agent).
+Full kind lab steps stay in the [kube-agent demo](https://github.com/hazemataya94/framework/hape-framework/tree/main/demos/kube-agent).
 
 The task guide is [Kubernetes investigation](../guides/kubernetes-investigation.md).
 
@@ -69,7 +69,7 @@ Example Grafana screenshot from the demo:
 
 ![Grafana dashboard](../../demos/eks-deployment-cost/grafana-dashboard.png)
 
-Full kind and fixture steps stay in the [EKS deployment cost demo](https://github.com/hazemataya94/hape-framework/tree/main/demos/eks-deployment-cost).
+Full kind and fixture steps stay in the [EKS deployment cost demo](https://github.com/hazemataya94/framework/hape-framework/tree/main/demos/eks-deployment-cost).
 
 The task guide is [Cost reporting](../guides/cost-reporting.md).
 

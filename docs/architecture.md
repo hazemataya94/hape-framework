@@ -164,6 +164,55 @@ Core and utils are shared across all layers.
 - Create config from `.env`: `config init-config-file`
 - Commands can override path using `--config-file-path`
 
+#### GitHub App provider
+
+Product callers use versioned `/github/v1` routes for the transitional HAPE-owned qualification path.
+
+Selectable destination ownership uses `/github/v2` with signed compact grants, opaque `subject_id` and `operation_id`, and a durable SQLite provider ledger. v2 does not fall back to v1.
+
+Those routes call `GitHubAppService`, and the service calls `GitHubAppClient`.
+
+Caller tokens carry an exact operation claim and a `source-read` or `managed-write` role.
+
+Provider credentials stay inside Framework memory and are never returned.
+
+The App credential path does not use `HAPE_GITHUB_TOKEN`, config files, dotenv, GitHub CLI, or SSH.
+
+Private keys resolve from a Vault-agent memory sink in tests, or from a Vault KV sink when a reader is supplied.
+
+The documented sink identities are dummy paths under `secret/example-org/framework/hape-framework/{environment}/github-apps/`.
+
+```mermaid
+flowchart LR
+  productNode[Product caller] --> apiNode[API /github/v1]
+  apiNode --> claimNode[Operation claim]
+  claimNode --> serviceNode[GitHubAppService]
+  serviceNode --> sourceNode[source-read registration]
+  serviceNode --> managedNode[managed-write registration]
+  sourceNode --> clientNode[GitHubAppClient]
+  managedNode --> clientNode
+  clientNode --> providerNode[GitHub HTTPS API]
+  serviceNode --> receiptNode[Redacted receipt]
+```
+
+```mermaid
+sequenceDiagram
+  participant Product
+  participant API
+  participant Service
+  participant Client
+  Product->>API: Bearer token plus grant
+  API->>API: Verify exact operation claim
+  API->>Service: Generic provider request
+  Service->>Service: Verify grant and credential role
+  Service->>Client: In-memory installation token
+  Client->>Client: Authorization header only
+  Client-->>Service: Provider result
+  Service-->>API: Redacted receipt
+```
+
+See [GitHub App provider](github-app-provider.md) for the bounded operation list, receipt envelope, and rollback.
+
 ---
 
 ## Observation Platform

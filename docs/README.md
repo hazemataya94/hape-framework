@@ -18,7 +18,7 @@ Read by user intent first, then open the canonical command or service page for d
 ## Demos
 
 - [Guides](guides/README.md)
-- [Demos on GitHub](https://github.com/hazemataya94/hape-framework/tree/main/demos)
+- [Demos on GitHub](https://github.com/hazemataya94/framework/hape-framework/tree/main/demos)
 
 ## Learn the model
 

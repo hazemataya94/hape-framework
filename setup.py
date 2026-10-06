@@ -30,7 +30,7 @@ setup(
     project_urls={
         "Documentation": "https://framework.hapesolutions.com",
         "Source": "https://github.com/hazemataya94/hape-framework",
-        "Issues": "https://github.com/hazemataya94/hape-framework/issues",
+        "Issues": "https://github.com/hazemataya94/framework/hape-framework/issues",
     },
     classifiers=[
         "License :: OSI Approved :: MIT License",

@@ -14,6 +14,8 @@ ERROR_MESSAGES = {
     "GITHUB_USER_LOOKUP_FAILED": "Failed to resolve GitHub user login for email '{email}'.",
     "GITHUB_USER_LOGIN_UNRESOLVED": "Could not resolve any GitHub login for host global git email '{email}'.",
     "GITHUB_ADD_ADMIN_COLLABORATOR_FAILED": "Failed to add GitHub admin collaborator '{username}' to '{owner}/{repo_name}'.",
+    "GITHUB_WRITE_COLLABORATOR_REQUIRED": "A write collaborator email or login is required when creating a private repository.",
+    "GITHUB_ADD_WRITE_COLLABORATOR_FAILED": "Failed to add GitHub write collaborator '{username}' to '{owner}/{repo_name}'.",
     "GITHUB_LIST_REPO_SCOPE_INVALID": "Repository scope must be 'user' or 'org'. Value is '{scope}'.",
     "GITHUB_LIST_REPO_ORG_NAME_REQUIRED": "Organization name is required when repository scope is 'org'. Set --org.",
     "GITHUB_LIST_REPOS_FAILED": "Failed to list GitHub repositories for scope '{scope}' and target '{scope_target}'.",
@@ -40,7 +42,7 @@ ERROR_MESSAGES = {
     "GITHUB_AUTH_GIT_PROTOCOL_INVALID": "Git protocol must be 'ssh' or 'https'. Value is '{git_protocol}'.",
     "GITHUB_AUTH_SSH_UNAVAILABLE": "OpenSSH client 'ssh' was not found on PATH. Install OpenSSH or use --git-protocol https.",
     "GITHUB_AUTH_SSH_CONFIG_UNRESOLVED": "Unable to resolve SSH config for git@{hostname} via 'ssh -G'. Check ~/.ssh/config and retry.",
-    "GITHUB_AUTH_VERIFY_FAILED": "GitHub auth bootstrap verify failed. Token/owner were written but API auth_ok is false. If HAPE_GITHUB_TOKEN is set in the environment or hape-framework/.env, it overrides ~/.hape/config.json — re-run bootstrap or align those sources.",
+    "GITHUB_AUTH_VERIFY_FAILED": "GitHub auth bootstrap verify failed. Token/owner were written but API auth_ok is false. If HAPE_GITHUB_TOKEN is set in the environment or framework/hape-framework/.env, it overrides ~/.hape/config.json — re-run bootstrap or align those sources.",
 }
 
 

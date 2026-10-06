@@ -49,6 +49,15 @@ def test_kv_v2_read_field_returns_token_field() -> None:
     assert session.calls[0]["url"] == "https://vault.example.com/v1/kv/data/example/pypi"
 
 
+def test_kv_v2_read_fields_returns_string_map() -> None:
+    session = _FakeSession({"data": {"data": {"app_id": "1001", "slug": "example-source-import", "empty": ""}}})
+    vault_client = VaultClient(session=session, timeout_seconds=5)  # type: ignore[arg-type]
+    fields = vault_client.kv_v2_read_fields("https://vault.example.com", "s.test-client-token", "secret", "example-org/framework/hape-framework/dev/github-apps/source-import")
+    assert fields == {"app_id": "1001", "slug": "example-source-import"}
+    assert session.calls[0]["url"] == "https://vault.example.com/v1/secret/data/example-org/framework/hape-framework/dev/github-apps/source-import"
+    assert "1001" not in session.calls[0]["url"]
+
+
 def test_kv_v2_read_field_rejects_missing_field() -> None:
     session = _FakeSession({"data": {"data": {}}})
     vault_client = VaultClient(session=session, timeout_seconds=5)  # type: ignore[arg-type]

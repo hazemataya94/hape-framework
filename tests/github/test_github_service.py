@@ -183,11 +183,11 @@ def test_create_repository_uses_private_default() -> None:
     result = service.create_repository(org="hape-vibes", name="service-a")
     assert result == {
         "name": "service-a",
-        "full_name": "hape-vibes/service-a",
+        "full_name": "other/hape-vibes/service-a",
         "owner_login": "hape-vibes",
         "private": True,
-        "html_url": "https://github.com/hape-vibes/service-a",
-        "ssh_url": "git@github.com:hape-vibes/service-a.git",
+        "html_url": "https://github.com/other/hape-vibes/service-a",
+        "ssh_url": "git@github.com:other/hape-vibes/service-a.git",
     }
     assert _FakeGitHubClient.created_payloads[-1] == {
         "org_name": "hape-vibes",
@@ -230,6 +230,51 @@ def test_create_repository_error_message_includes_github_reason() -> None:
     assert "already_exists" in error.value.message
 
 
+def test_create_repository_adds_write_collaborator_from_email() -> None:
+    service = GitHubService(github_client=_FakeGitHubClient())
+    result = service.create_repository(
+        org="hape-vibes",
+        name="service-write",
+        write_collaborator_email="operator@example.com",
+    )
+    assert result["write_collaborator_login"] == "host-admin"
+    assert _FakeGitHubClient.added_collaborators[-1] == {
+        "owner": "hape-vibes",
+        "repo_name": "service-write",
+        "username": "host-admin",
+        "permission": "push",
+    }
+
+
+def test_create_repository_prefers_write_collaborator_login() -> None:
+    service = GitHubService(github_client=_FakeGitHubClient())
+    result = service.create_repository(
+        org="hape-vibes",
+        name="service-login",
+        write_collaborator_email="operator@example.com",
+        write_collaborator_login="octocat",
+    )
+    assert result["write_collaborator_login"] == "octocat"
+    assert _FakeGitHubClient.added_collaborators[-1]["username"] == "octocat"
+    assert _FakeGitHubClient.added_collaborators[-1]["permission"] == "push"
+
+
+class _FakeUnresolvedWriteCollaboratorGitHubClient(_FakeGitHubClient):
+    def resolve_user_login_by_email(self, email: str) -> str:
+        return ""
+
+
+def test_create_repository_fails_closed_when_write_collaborator_unresolved() -> None:
+    service = GitHubService(github_client=_FakeUnresolvedWriteCollaboratorGitHubClient())
+    with pytest.raises(HapeValidationError) as error:
+        service.create_repository(
+            org="hape-vibes",
+            name="service-missing",
+            write_collaborator_email="hidden@example.com",
+        )
+    assert error.value.code == "GITHUB_WRITE_COLLABORATOR_REQUIRED"
+
+
 def test_init_repo_uses_repo_basename_and_private_default(tmp_path: Path, monkeypatch) -> None:
     repo_path = tmp_path / "service-a"
     repo_path.mkdir(parents=True, exist_ok=True)
@@ -264,7 +309,7 @@ def test_init_repo_prefers_configured_default_owner(tmp_path: Path, monkeypatch)
     monkeypatch.setattr("services.github_service.GitHubService._read_global_git_email", lambda *args, **kwargs: "admin@example.com")
     service = GitHubService(github_client=_FakeGitHubClient())
     result = service.init_repo(repo_path=str(repo_path), name="custom-name", visibility="public")
-    assert result["full_name"] == "hape-vibes/custom-name"
+    assert result["full_name"] == "other/hape-vibes/custom-name"
     assert result["admin_login"] == "host-admin"
     assert _FakeGitHubClient.created_payloads[-1] == {
         "owner": "hape-vibes",
@@ -305,9 +350,9 @@ def test_init_repo_reuses_existing_remote_when_name_already_exists(tmp_path: Pat
     monkeypatch.setattr("services.github_service.GitHubService._read_global_git_email", lambda *args, **kwargs: "admin@example.com")
     service = GitHubService(github_client=_FakeFailingGitHubClient())
     result = service.init_repo(repo_path=str(repo_path), name="service-d")
-    assert result["full_name"] == "hape-vibes/service-d"
+    assert result["full_name"] == "other/hape-vibes/service-d"
     assert result["reused_existing"] is True
-    assert result["clone_url"] == "git@github.com:hape-vibes/service-d.git"
+    assert result["clone_url"] == "git@github.com:other/hape-vibes/service-d.git"
 
 
 def test_init_repo_falls_back_to_authenticated_user_when_global_git_email_missing(tmp_path: Path, monkeypatch) -> None:
@@ -365,7 +410,7 @@ def test_list_repositories_for_org_scope_calls_org_endpoint() -> None:
     service = GitHubService(github_client=fake_client)
     repositories = service.list_repositories(org="hape-vibes", include_archived=True)
     assert fake_client.org_calls[-1] == {"org_name": "hape-vibes", "include_archived": True}
-    assert repositories[0]["full_name"] == "hape-vibes/service-c"
+    assert repositories[0]["full_name"] == "other/hape-vibes/service-c"
     assert repositories[0]["archived"] is True
 
 
@@ -528,7 +573,7 @@ def test_list_repositories_for_deletion_all_overrides_include_and_respects_exclu
         exclude=["service-not-present"],
         delete_all=True,
     )
-    assert repositories[0]["full_name"] == "hape-vibes/service-c"
+    assert repositories[0]["full_name"] == "other/hape-vibes/service-c"
 
 
 def test_list_repositories_for_deletion_include_not_found() -> None:
@@ -562,7 +607,7 @@ def test_delete_repositories_success() -> None:
     )
     assert fake_client.deleted_calls[-1] == {"owner": "hape-vibes", "repo_name": "service-c"}
     assert result["deleted_count"] == 1
-    assert result["deleted_repositories"] == ["hape-vibes/service-c"]
+    assert result["deleted_repositories"] == ["other/hape-vibes/service-c"]
 
 
 def test_delete_repositories_handles_client_delete_failure() -> None:

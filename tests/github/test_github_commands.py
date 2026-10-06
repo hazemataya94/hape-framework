@@ -37,9 +37,9 @@ class _FakeGitHubService:
             "visibility": visibility,
         }
         return {
-            "full_name": "hape-vibes/service-a",
-            "html_url": "https://github.com/hape-vibes/service-a",
-            "clone_url": "git@github.com:hape-vibes/service-a.git",
+            "full_name": "other/hape-vibes/service-a",
+            "html_url": "https://github.com/other/hape-vibes/service-a",
+            "clone_url": "git@github.com:other/hape-vibes/service-a.git",
             "local_path": repo_path,
             "admin_login": "host-admin",
         }
@@ -53,13 +53,13 @@ class _FakeGitHubService:
             {
                 "id": 21,
                 "name": "service-a",
-                "full_name": "hape-vibes/service-a",
+                "full_name": "other/hape-vibes/service-a",
                 "owner_login": "hape-vibes",
                 "private": True,
                 "archived": False,
                 "default_branch": "main",
-                "html_url": "https://github.com/hape-vibes/service-a",
-                "ssh_url": "git@github.com:hape-vibes/service-a.git",
+                "html_url": "https://github.com/other/hape-vibes/service-a",
+                "ssh_url": "git@github.com:other/hape-vibes/service-a.git",
             }
         ]
 
@@ -71,7 +71,7 @@ class _FakeGitHubService:
         return {
             "org": org,
             "clone_dir": clone_dir,
-            "cloned_repositories": ["hape-vibes/service-a"],
+            "cloned_repositories": ["other/hape-vibes/service-a"],
             "skipped_repositories": [],
             "cloned_count": 1,
             "skipped_count": 0,
@@ -96,10 +96,10 @@ class _FakeGitHubService:
         return [
             {
                 "name": "service-a",
-                "full_name": "hape-vibes/service-a",
+                "full_name": "other/hape-vibes/service-a",
                 "private": True,
                 "archived": False,
-                "html_url": "https://github.com/hape-vibes/service-a",
+                "html_url": "https://github.com/other/hape-vibes/service-a",
             }
         ]
 
@@ -116,7 +116,7 @@ class _FakeGitHubService:
         }
         return {
             "org": org,
-            "deleted_repositories": ["hape-vibes/service-a"],
+            "deleted_repositories": ["other/hape-vibes/service-a"],
             "deleted_count": 1,
         }
 
@@ -145,7 +145,7 @@ def test_create_repo_command_parses_and_calls_service_with_private_default(monke
     }
     output = capsys.readouterr().out
     payload = json.loads(output)
-    assert payload["full_name"] == "hape-vibes/service-a"
+    assert payload["full_name"] == "other/hape-vibes/service-a"
     assert payload["private"] is True
 
 
@@ -231,7 +231,7 @@ def test_init_repo_command_parses_and_calls_service(monkeypatch, capsys) -> None
         "visibility": "public",
     }
     output = capsys.readouterr().out
-    assert "repository: hape-vibes/service-a" in output
+    assert "repository: other/hape-vibes/service-a" in output
     assert "admin_collaborator: host-admin" in output
 
 
@@ -256,7 +256,7 @@ def test_list_repos_command_parses_and_calls_service(monkeypatch, capsys) -> Non
     }
     output = capsys.readouterr().out
     payload = json.loads(output)
-    assert payload[0]["full_name"] == "hape-vibes/service-a"
+    assert payload[0]["full_name"] == "other/hape-vibes/service-a"
     assert payload[0]["owner_login"] == "hape-vibes"
 
 
@@ -278,7 +278,7 @@ def test_list_repos_command_defaults_to_user_context_when_org_is_not_passed(monk
     }
     output = capsys.readouterr().out
     payload = json.loads(output)
-    assert payload[0]["full_name"] == "hape-vibes/service-a"
+    assert payload[0]["full_name"] == "other/hape-vibes/service-a"
 
 
 def test_clone_repos_command_parses_and_calls_service(monkeypatch, capsys) -> None:
@@ -359,7 +359,7 @@ def test_delete_repos_command_previews_and_deletes_after_confirmation(monkeypatc
     }
     output = capsys.readouterr().out
     assert "Repositories scheduled for deletion:" in output
-    assert "hape-vibes/service-a" in output
+    assert "other/hape-vibes/service-a" in output
     assert '"deleted_count": 1' in output
 
 

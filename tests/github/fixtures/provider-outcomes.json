@@ -1,0 +1,5 @@
+{
+  "unknown": "operation_unknown",
+  "unavailable": "provider_unavailable",
+  "retry_classes": ["none", "idempotent_replay", "reconcile_then_retry", "manual"]
+}

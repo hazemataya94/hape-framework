@@ -10,6 +10,9 @@ from api.error_mapping import register_exception_handlers
 from api.routers import auth_router, config_router, confluence_router, csv_router, dora_router, eks_deployment_cost_router, github_router, gitlab_router, health_router, init_cicd_router, jira_router, kube_agent_router, markdown_router, vault_router
 from core.config import Config
 from core.logging import LocalLogging
+from services.github_app_service import GitHubAppService
+from services.github_app_vault_sink import create_github_app_credential_sink
+from services.github_provider.v2_service import create_github_v2_service
 
 
 def create_app() -> FastAPI:
@@ -18,6 +21,8 @@ def create_app() -> FastAPI:
     app.state.token_service = ApiTokenService(store_file_path=Config.get_api_tokens_file_path())
     app.state.rate_limiter = TokenRateLimiter(limit_per_minute=Config.get_api_rate_limit_per_minute())
     app.state.api_admin_key = Config.get_api_admin_key()
+    app.state.github_app_service = GitHubAppService(credential_sink=create_github_app_credential_sink())
+    app.state.github_v2_service = create_github_v2_service()
 
     register_exception_handlers(app)
 

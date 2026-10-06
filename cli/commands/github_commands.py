@@ -5,7 +5,33 @@ from typing import Any
 
 from core.logging import LocalLogging
 from services.github_auth_service import GitHubAuthService
+from services.github_provider.v2_service import create_github_v2_service
 from services.github_service import GitHubService
+
+V2_OPERATIONS = {
+    ("managed-destination", "status"): "destination_status",
+    ("managed-target", "setup-url"): "target_setup_url",
+    ("managed-target", "verify"): "target_verify",
+    ("managed-target", "status"): "target_status",
+    ("managed-repository", "create-private"): "create_private",
+    ("managed-repository", "publish-baseline"): "publish_baseline",
+    ("managed-repository", "publish-artifact"): "publish_artifact",
+    ("managed-repository", "publish-tag"): "publish_tag",
+    ("managed-repository", "dispose"): "dispose",
+    ("provider-operation", "get"): "get_operation",
+    ("provider-receipt", "get"): "get_receipt",
+}
+
+
+def _register_v2_group(v2_subparsers: Any, group: str, actions: list[str]) -> None:
+    parser = v2_subparsers.add_parser(group, help=f"{group} operations.")
+    parser.set_defaults(func=GitHubCommands.run_help, parser=parser)
+    action_parsers = parser.add_subparsers(dest="github_v2_action", metavar="command")
+    action_parsers.required = True
+    for action in actions:
+        action_parser = action_parsers.add_parser(action, help=f"{group} {action}.")
+        action_parser.add_argument("--request-file-path", required=True, default=None, help="JSON request document path.")
+        action_parser.set_defaults(func=GitHubCommands.run_v2_request, github_v2_group=group, github_v2_action=action)
 
 
 class GitHubCommands:
@@ -301,6 +327,16 @@ class GitHubCommands:
         )
         delete_repos_parser.set_defaults(func=GitHubCommands.run_delete_repos)
 
+        v2_parser = github_subparsers.add_parser("v2", help="GitHub provider v2 operations.")
+        v2_parser.set_defaults(func=GitHubCommands.run_help, parser=v2_parser)
+        v2_subparsers = v2_parser.add_subparsers(dest="github_v2_command", metavar="command")
+        v2_subparsers.required = False
+        _register_v2_group(v2_subparsers, "managed-destination", ["status"])
+        _register_v2_group(v2_subparsers, "managed-target", ["setup-url", "verify", "status"])
+        _register_v2_group(v2_subparsers, "managed-repository", ["create-private", "publish-baseline", "publish-artifact", "publish-tag", "dispose"])
+        _register_v2_group(v2_subparsers, "provider-operation", ["get"])
+        _register_v2_group(v2_subparsers, "provider-receipt", ["get"])
+
     @staticmethod
     def run_create_repo(args: Any) -> None:
         LocalLogging.bootstrap()
@@ -436,6 +472,18 @@ class GitHubCommands:
             delete_all=args.all,
             confirmation_phrase=entered_phrase,
         )
+        print(json.dumps(result, indent=2, sort_keys=True))
+
+    @staticmethod
+    def run_v2_request(args: Any) -> None:
+        LocalLogging.bootstrap()
+        with open(args.request_file_path, encoding="utf-8") as handle:
+            request = json.load(handle)
+        if not isinstance(request, dict):
+            raise ValueError("v2 request file must contain a JSON object.")
+        method_name = V2_OPERATIONS[(args.github_v2_group, args.github_v2_action)]
+        service = create_github_v2_service()
+        result = getattr(service, method_name)(request)
         print(json.dumps(result, indent=2, sort_keys=True))
 
     @staticmethod

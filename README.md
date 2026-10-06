@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/hazemataya94/hape-framework/refs/heads/main/docs/logo.jpg" width="100%" alt="HAPE Framework">
+<img src="https://raw.githubusercontent.com/hazemataya94/framework/hape-framework/refs/heads/main/docs/logo.jpg" width="100%" alt="HAPE Framework">
 
 # HAPE Framework
 
@@ -118,7 +118,7 @@ hape config show
 Runnable examples live with the source and in the documentation portal.
 
 - [Guides](docs/guides/README.md)
-- [Demos on GitHub](https://github.com/hazemataya94/hape-framework/tree/main/demos)
+- [Demos on GitHub](https://github.com/hazemataya94/framework/hape-framework/tree/main/demos)
 
 ## Open source
 

@@ -5,13 +5,34 @@ from fastapi import APIRouter, Depends, HTTPException
 from api.dependencies import get_token_service, require_admin_key
 from api.schemas.auth_schemas import CreateTokenRequest, CreateTokenResponse, RevokeTokenRequest, TokenMetadata
 from api.auth.token_service import ApiTokenService
+from services.github_app_service import MANAGED_OPERATIONS, SOURCE_OPERATIONS
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+PRODUCT_CALLER_ROLE_OPERATIONS = {
+    "source-read": sorted(SOURCE_OPERATIONS),
+    "managed-write": sorted(MANAGED_OPERATIONS),
+}
 
 
 @router.post("/tokens", response_model=CreateTokenResponse, dependencies=[Depends(require_admin_key)])
 def create_token(payload: CreateTokenRequest, token_service: ApiTokenService = Depends(get_token_service)) -> dict[str, str]:
-    return token_service.create_token(name=payload.name)
+    role = (payload.credential_role or "").strip() or None
+    if role is None:
+        return token_service.create_token(name=payload.name)
+    if role not in PRODUCT_CALLER_ROLE_OPERATIONS:
+        raise HTTPException(status_code=400, detail="credential_role must be source-read or managed-write.")
+    operations = list(PRODUCT_CALLER_ROLE_OPERATIONS[role])
+    if not operations:
+        raise HTTPException(status_code=400, detail="allowed_operations cannot be empty.")
+    if payload.exp_seconds is not None and int(payload.exp_seconds) <= 0:
+        raise HTTPException(status_code=400, detail="exp_seconds must be a positive TTL.")
+    return token_service.create_token(
+        name=payload.name,
+        credential_role=role,
+        allowed_operations=operations,
+        exp_seconds=payload.exp_seconds,
+    )
 
 
 @router.get("/tokens", response_model=list[TokenMetadata], dependencies=[Depends(require_admin_key)])

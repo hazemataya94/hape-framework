@@ -50,7 +50,7 @@ def _write_metadata(path: Path, *, include_backend: bool = True) -> Path:
             {
                 "name": "backend",
                 "enabled": True,
-                "path": "hape-academy/hape-academy-backend",
+                "path": "academy/hape-academy-backend",
                 "ecr_repository": "hape-academy-backend",
                 "depends_on": [],
             }

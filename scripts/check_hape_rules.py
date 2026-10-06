@@ -18,7 +18,7 @@ DEVICE_PATH_REGEX = re.compile(
     r"/Users/(?P<mac>[A-Za-z0-9._-]+)|/home/(?P<linux>[A-Za-z0-9._-]+)|[A-Za-z]:\\Users\\(?P<win>[A-Za-z0-9._-]+)"
 )
 PLACEHOLDER_DEVICE_USERS = {"...", "your-user", "username", "you", "hape"}
-FORBIDDEN_REAL_DEFAULT_MARKERS = ("vault.hape.dev", "hazemataya/hape")
+FORBIDDEN_REAL_DEFAULT_MARKERS = ("vault.hape.dev", "vault.hape.solutions", "hazemataya/hape")
 README_ALLOWLIST_NAMES = {"README.md"}
 
 

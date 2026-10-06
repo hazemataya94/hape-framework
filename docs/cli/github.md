@@ -22,7 +22,7 @@ Flow:
 2. Print a plan with hostname, git protocol, owner, and actions (no secrets).
 3. Ask `Proceed with GitHub auth bootstrap? [y/N]` unless `--yes` is set.
 4. If `gh` already has a session token, import it into `HAPE_GITHUB_TOKEN`. Otherwise run `gh auth login` (with `--skip-ssh-key` when protocol is `ssh`), store `HAPE_GITHUB_TOKEN` and `HAPE_GITHUB_DEFAULT_OWNER`, verify `auth_ok`.
-5. Token write also sets process env and syncs `HAPE_GITHUB_TOKEN` in `hape-framework/.env` when that key already exists (env/.env override `config.json`).
+5. Token write also sets process env and syncs `HAPE_GITHUB_TOKEN` in `framework/hape-framework/.env` when that key already exists (env/.env override `config.json`).
 6. Stop before `init-repo`.
 
 Approve the printed plan without a second prompt:
@@ -88,6 +88,13 @@ Create a public repository in an organization:
 ```bash
 hape github create repo --name service-a --org example-org --public
 ```
+
+`POST /github/create/repo` accepts optional `writeCollaboratorEmail` and
+`writeCollaboratorLogin`. When either is present, Framework resolves a login
+if needed and adds that user as a repository collaborator with
+`permission=push` before returning the URL. Missing identity or a failed add
+fails closed. CLI create without those fields still creates the repository
+without a collaborator grant.
 
 ## Init repository
 Create a private repository by default:
@@ -159,6 +166,25 @@ Notes:
 - `--all` overrides `--include`.
 - `--exclude` still applies when `--all` is used.
 - The command prints the repository list first, then asks for a confirmation phrase before deletion.
+
+## Provider v2
+
+v2 commands are service-backed and read a JSON request document. Grants are never passed as command-line values.
+
+```bash
+hape github v2 managed-destination status --request-file-path /path/to/status.json
+hape github v2 managed-target setup-url --request-file-path /path/to/setup.json
+hape github v2 managed-target verify --request-file-path /path/to/verify.json
+hape github v2 managed-repository create-private --request-file-path /path/to/create.json
+hape github v2 managed-repository publish-baseline --request-file-path /path/to/baseline.json
+hape github v2 managed-repository publish-artifact --request-file-path /path/to/artifact.json
+hape github v2 managed-repository publish-tag --request-file-path /path/to/tag.json
+hape github v2 managed-repository dispose --request-file-path /path/to/dispose.json
+hape github v2 provider-operation get --request-file-path /path/to/operation.json
+hape github v2 provider-receipt get --request-file-path /path/to/receipt.json
+```
+
+Request documents use snake_case `subject_id`, `operation_id`, `destination_mode`, `target_binding_id`, `artifact_digest`, `expected_parent`, and `idempotency_key` only.
 
 ## Behavior
 - `create repo` creates a remote GitHub repository only.

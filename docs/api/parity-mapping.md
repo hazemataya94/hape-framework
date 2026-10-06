@@ -16,6 +16,17 @@ Intentional CLI-only surfaces: `linkedin`, `ecr`, and interactive `github auth` 
 - `hape github list-repos` -> `POST /github/list-repos`
 - `hape github user-info` -> `POST /github/user-info`
 - `hape github delete-repos` -> `POST /github/delete-repos`
+- `hape github v2 managed-destination status` -> `GET /github/v2/managed-destinations/{destination_id}/status`
+- `hape github v2 managed-target setup-url` -> `POST /github/v2/managed-targets/setup-url`
+- `hape github v2 managed-target verify` -> `POST /github/v2/managed-targets/verify`
+- `hape github v2 managed-target status` -> `GET /github/v2/managed-targets/{target_binding_id}/status`
+- `hape github v2 managed-repository create-private` -> `POST /github/v2/managed-repositories`
+- `hape github v2 managed-repository publish-baseline` -> `POST /github/v2/managed-repositories/{repository_id}/commits/baseline`
+- `hape github v2 managed-repository publish-artifact` -> `POST /github/v2/managed-repositories/{repository_id}/commits/artifact`
+- `hape github v2 managed-repository publish-tag` -> `POST /github/v2/managed-repositories/{repository_id}/tags`
+- `hape github v2 managed-repository dispose` -> `POST /github/v2/managed-repositories/{repository_id}/dispose`
+- `hape github v2 provider-operation get` -> `GET /github/v2/provider-operations/{operation_id}`
+- `hape github v2 provider-receipt get` -> `GET /github/v2/provider-receipts/{receipt_id}`
 - `hape jira md-to-comment` -> `POST /jira/md-to-comment`
 - `hape confluence get-page` -> `POST /confluence/get-page`
 - `hape confluence create-page` -> `POST /confluence/create-page`

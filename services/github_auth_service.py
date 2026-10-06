@@ -86,7 +86,7 @@ class GitHubAuthService:
             ) from exc
 
     def _sync_dotenv_token(self, token: str) -> bool:
-        """Keep hape-framework/.env aligned when it already defines HAPE_GITHUB_TOKEN.
+        """Keep framework/hape-framework/.env aligned when it already defines HAPE_GITHUB_TOKEN.
 
         Config prefers env/.env over config.json, so a stale dotenv value would
         shadow the token just written to config and make auth_ok false.

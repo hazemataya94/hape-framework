@@ -1,0 +1,20 @@
+{
+  "hape_organization": {
+    "mode": "hape_organization",
+    "account_login": "example-org",
+    "account_type": "Organization",
+    "installation_id": 1
+  },
+  "customer_organization": {
+    "mode": "customer_organization",
+    "account_login": "customer-org",
+    "account_type": "Organization",
+    "installation_id": 201
+  },
+  "customer_personal": {
+    "mode": "customer_personal",
+    "account_login": "customer-user",
+    "account_type": "User",
+    "installation_id": 301
+  }
+}
